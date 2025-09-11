@@ -3,6 +3,10 @@ title: "Recover corrupted USB in Linux terminal (required complete data wipe)"
 date: 2025-09-11
 draft: false
 ShowToc: true
+tags: 
+    - Misc 
+    - Forensics
+    - Tips
 ---
 
 # Step 1
