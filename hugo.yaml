@@ -24,4 +24,6 @@ menu:
     url: /posts/
     weight: 20
 
-
+caches:
+  images:
+    dir: :cacheDir/images
