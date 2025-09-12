@@ -2,6 +2,7 @@
 title: ScriptCTF Writeup - Forensics
 date: 2025-09-12
 draft: false
+showToc: true 
 tags:
   - Writeup
   - Forensics
