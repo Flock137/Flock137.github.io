@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>ScriptCTF on Flock137</title>
+    <link>http://localhost:1313/tags/scriptctf/</link>
+    <description>Recent content in ScriptCTF on Flock137</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/scriptctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ScriptCTF Writeup - Forensics</title>
+      <link>http://localhost:1313/posts/scriptctf/</link>
+      <pubDate>Fri, 12 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/scriptctf/</guid>
+      <description>&lt;h1 id=&#34;pdf&#34;&gt;pdf&lt;/h1&gt;
+&lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;
+&lt;p&gt;The challenge attachment can be found here: &lt;a href=&#34;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&#34;&gt;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&amp;rsquo;t need to use it. All we have to do is using &lt;code&gt;binwalk&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;binwalk -e challenge.pdf 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the extracted folder, click on (or &lt;code&gt;cat&lt;/code&gt;) the text file, the flag is in there&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

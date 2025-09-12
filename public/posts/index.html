@@ -89,6 +89,42 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">ScriptCTF Writeup - Forensics
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>pdf Description: so sad cause no flag in pdf
+The challenge attachment can be found here: https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf
+For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won’t need to use it. All we have to do is using binwalk
+binwalk -e challenge.pdf In the extracted folder, click on (or cat) the text file, the flag is in there
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-09-12 00:00:00 +0000 UTC'>September 12, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to ScriptCTF Writeup - Forensics" href="http://localhost:1313/posts/scriptctf/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">How did I repair an (Arch) Linux bootloader twice
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Introduction: Updating BIOS, got Linux overwritten After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk. Not to mention, I no longer see my systemd bootloader screen.
+Disable bitlocker key To disable bitlocker key (not decrypt the whole drive), so the windows partition won’t ask you bitlocker password over and over again when you dual-boot:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-09-11 00:00:00 +0000 UTC'>September 11, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to How did I repair an (Arch) Linux bootloader twice" href="http://localhost:1313/posts/bootloader_failed/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Recover corrupted USB in Linux terminal (required complete data wipe)
     </h2>
   </header>
@@ -99,7 +135,21 @@ Step 2 If the system mount any of your partition, you need to unmount them first
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-09-11 00:00:00 +0000 UTC'>September 11, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Recover corrupted USB in Linux terminal (required complete data wipe)" href="http://localhost:1313/posts/how-to-uncoruppt-usb-nuke-option/"></a>
+  <a class="entry-link" aria-label="post link to Recover corrupted USB in Linux terminal (required complete data wipe)" href="http://localhost:1313/posts/usb_uncorrupted/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Revive FlareVM Network Connection (VirtualBox)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Introduction Normally, installing a FlareVM won’t mutate your network connection. However, for some reason, I wasn’t able to access network inside the VM. This could have caused by one or a couple of reasons:
+Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish…) The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues A driver “Other” was spotted to be missing after FlareVM completely finish its installation VirtualBox network setting walkthrough You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of “Intel… Desktop”, or if you don’t know what to choose, just leave the default option.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-09-11 00:00:00 +0000 UTC'>September 11, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Revive FlareVM Network Connection (VirtualBox)" href="http://localhost:1313/posts/flarevm_network/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -114,7 +164,7 @@ Step 3: For my case, I also need to:
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-09-03 00:00:00 +0000 UTC'>September 3, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Merging multiple singular .ics files into one in Linux" href="http://localhost:1313/posts/merging-multiple-singular-.ics-files-into-one-in-linux/"></a>
+  <a class="entry-link" aria-label="post link to Merging multiple singular .ics files into one in Linux" href="http://localhost:1313/posts/calendar/"></a>
 </article>
     </main>
     
