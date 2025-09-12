@@ -67,15 +67,15 @@ Else, let's continue.
 
 # DNS Server 
 1. Go to Control Panel > Network and Internet > Network and Sharing Center. On the left pane, click on Change Adapter Settings.
-![alt text](../../static/images/Change_adapter_settings.png)
+![alt text](static/images/Change_adapter_settings.png)
 
 2. Then right-click on Ethernet > Properties 
-![alt text](../../static/images/Ethernet_prop.png)
+![alt text](static/images/Ethernet_prop.png)
 
 3. In Ethernet Properties window, single-click on "Internet Protocol Version 4 (TCP/IPv4)", then click on the Properties button underneath it. 
 
 4. On the pop-up window, check on "Obtain IP address automatically" and "Use the following DNS server address". We will use `8.8.8.8` (Google DNS) and `1.1.1.1` (Cloudflare DNS). Click OK and close all windows 
-![alt text](../../static/images/props_and_config.png)
+![alt text](static/images/props_and_config.png)
 
 5. Type in Admin Terminal: 
 ```
