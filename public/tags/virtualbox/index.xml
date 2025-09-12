@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>VirtualBox on Flock137</title>
+    <link>http://localhost:1313/tags/virtualbox/</link>
+    <description>Recent content in VirtualBox on Flock137</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/virtualbox/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Revive FlareVM Network Connection (VirtualBox)</title>
+      <link>http://localhost:1313/posts/flarevm_network/</link>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/flarevm_network/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;)&lt;/li&gt;
+&lt;li&gt;The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues&lt;/li&gt;
+&lt;li&gt;A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;virtualbox-network-setting-walkthrough&#34;&gt;VirtualBox network setting walkthrough&lt;/h1&gt;
+&lt;p&gt;You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &amp;ldquo;Intel&amp;hellip; Desktop&amp;rdquo;, or if you don&amp;rsquo;t know what to choose, just leave the default option.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

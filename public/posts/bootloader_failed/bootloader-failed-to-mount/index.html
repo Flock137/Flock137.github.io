@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>How did I repair an (Arch) Linux bootloader twice | Flock137</title>
+<meta name="keywords" content="Arch, Linux">
+<meta name="description" content="Introduction: Updating BIOS, got Linux overwritten
+After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.
+Not to mention, I no longer see my systemd bootloader screen.
+Disable bitlocker key
+To disable bitlocker key (not decrypt the whole drive), so the windows partition won&rsquo;t ask you bitlocker password over and over again when you dual-boot:">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/bootloader_failed/bootloader-failed-to-mount/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/bootloader_failed/bootloader-failed-to-mount/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flock137 (Alt + H)">Flock137</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      How did I repair an (Arch) Linux bootloader twice
+    </h1>
+    <div class="post-meta"><span title='2025-09-11 00:00:00 +0000 UTC'>September 11, 2025</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#introduction-updating-bios-got-linux-overwritten" aria-label="Introduction: Updating BIOS, got Linux overwritten">Introduction: Updating BIOS, got Linux overwritten</a><ul>
+                        
+                <li>
+                    <a href="#disable-bitlocker-key" aria-label="Disable bitlocker key">Disable bitlocker key</a></li>
+                <li>
+                    <a href="#secure-boot" aria-label="Secure boot">Secure boot</a></li>
+                <li>
+                    <a href="#restart-again" aria-label="Restart again">Restart again</a></li></ul>
+                </li>
+                <li>
+                    <a href="#save-linux-partition" aria-label="Save Linux partition">Save Linux partition</a></li>
+                <li>
+                    <a href="#inside-rescue-mode-systemd" aria-label="Inside Rescue mode (systemd)">Inside Rescue mode (systemd)</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="introduction-updating-bios-got-linux-overwritten">Introduction: Updating BIOS, got Linux overwritten<a hidden class="anchor" aria-hidden="true" href="#introduction-updating-bios-got-linux-overwritten">#</a></h1>
+<p>After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.
+Not to mention, I no longer see my <code>systemd</code> bootloader screen.</p>
+<h2 id="disable-bitlocker-key">Disable bitlocker key<a hidden class="anchor" aria-hidden="true" href="#disable-bitlocker-key">#</a></h2>
+<p>To disable bitlocker key (not decrypt the whole drive), so the windows partition won&rsquo;t ask you bitlocker password over and over again when you dual-boot:</p>
+<pre tabindex="0"><code>manage-bde -off F:
+</code></pre><p>Where <code>F:</code> is the letter disk you want the key to be disable. For me, I use <code>C:</code>.</p>
+<h2 id="secure-boot">Secure boot<a hidden class="anchor" aria-hidden="true" href="#secure-boot">#</a></h2>
+<p>Enter the BIOS to turn off secure boot. The way you would enter the BIOS would be depend on your desktop model.
+On Google, search:&quot;[Your desktop model] how to enter BIOS&quot;</p>
+<h2 id="restart-again">Restart again<a hidden class="anchor" aria-hidden="true" href="#restart-again">#</a></h2>
+<p>After finish the two steps above, you need to enter the windows partition again and type in your bitlocker key, or if it doesn&rsquo;t ask, then nice! You&rsquo;re in!</p>
+<p>Let&rsquo;s check our Linux partition</p>
+<h1 id="save-linux-partition">Save Linux partition<a hidden class="anchor" aria-hidden="true" href="#save-linux-partition">#</a></h1>
+<p>Since I can&rsquo;t see my usual bootloader screen shows up, the laptop just straight up boot into my Windows partition instead. When checking with BIOS, turns out, what used to be my Linux Boot is now called &ldquo;Windows Boot Manager&rdquo;, that means the <strong>Linux bootloader got rewritten</strong>. In this case there&rsquo;s pretty much nothing you can do about it except for reinstallation.</p>
+<p>Lucky for me, when I was installing EndeavourOS, I have made a partition table in which I have separated <code>/</code> (root) with <code>/home</code>. It means that, none of my data got corrupted during the BIOS update, only the root partition was. Therefore, in my reinstallation, I only need to reformat my root and reinstall apps again, which luckily doesn&rsquo;t take long, with all data in <code>/home</code> perfectly intact after installation.</p>
+<p>However, there&rsquo;s an issue with bootloader right after I did my second update on the system, and I got thrown to rescue mode.</p>
+<h1 id="inside-rescue-mode-systemd">Inside Rescue mode (systemd)<a hidden class="anchor" aria-hidden="true" href="#inside-rescue-mode-systemd">#</a></h1>
+<ul>
+<li>Use <code>journalctl -xb</code>, read all the logs. You might like to do <code>arch-chroot</code> (It&rsquo;s a bit complicate, a tutorial might be written later)</li>
+<li>After <code>arch-chroot</code> failed, I use <code>lsblk -f</code>, to check the mount status, somehow the EFI partition failed to mount itself (it doesn&rsquo;t appear to be mounted anywhere, indicated by the table)</li>
+<li>Now, do <code>cat /etc/stab</code>, see if there is any: wrong UUID, unusual mount point, etc. In my case, the UUID of the bootloader was wrong (or perhaps outdated after update), that&rsquo;s why it failed to mount itself to the system</li>
+<li>Copy the UUID from <code>lsblk -f</code> and write it to <code>/etc/stab</code>, then reboot.</li>
+</ul>
+<p>If bootloader failing to mount itself is your only issue, you should be able to boot your system again.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/arch/">Arch</a></li>
+      <li><a href="http://localhost:1313/tags/linux/">Linux</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Flock137</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

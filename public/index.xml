@@ -6,13 +6,36 @@
     <description>Recent content on Flock137</description>
     <generator>Hugo -- 0.149.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Recover corrupted USB in Linux terminal (required complete data wipe)</title>
-      <link>http://localhost:1313/posts/how-to-uncoruppt-usb-nuke-option/</link>
+      <title>ScriptCTF Writeup - Forensics</title>
+      <link>http://localhost:1313/posts/scriptctf/</link>
+      <pubDate>Fri, 12 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/scriptctf/</guid>
+      <description>&lt;h1 id=&#34;pdf&#34;&gt;pdf&lt;/h1&gt;
+&lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;
+&lt;p&gt;The challenge attachment can be found here: &lt;a href=&#34;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&#34;&gt;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&amp;rsquo;t need to use it. All we have to do is using &lt;code&gt;binwalk&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;binwalk -e challenge.pdf 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the extracted folder, click on (or &lt;code&gt;cat&lt;/code&gt;) the text file, the flag is in there&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How did I repair an (Arch) Linux bootloader twice</title>
+      <link>http://localhost:1313/posts/bootloader_failed/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/how-to-uncoruppt-usb-nuke-option/</guid>
+      <guid>http://localhost:1313/posts/bootloader_failed/</guid>
+      <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;
+&lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.
+Not to mention, I no longer see my &lt;code&gt;systemd&lt;/code&gt; bootloader screen.&lt;/p&gt;
+&lt;h2 id=&#34;disable-bitlocker-key&#34;&gt;Disable bitlocker key&lt;/h2&gt;
+&lt;p&gt;To disable bitlocker key (not decrypt the whole drive), so the windows partition won&amp;rsquo;t ask you bitlocker password over and over again when you dual-boot:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Recover corrupted USB in Linux terminal (required complete data wipe)</title>
+      <link>http://localhost:1313/posts/usb_uncorrupted/</link>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/usb_uncorrupted/</guid>
       <description>&lt;h1 id=&#34;step-1&#34;&gt;Step 1&lt;/h1&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;lsblk
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The USB would likely to be something like &lt;code&gt;sda&lt;/code&gt; or &lt;code&gt;sdb&lt;/code&gt; (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.&lt;/p&gt;
@@ -24,10 +47,25 @@ sudo umount /dev/sdX1
 &lt;p&gt;Use &lt;code&gt;wipefs&lt;/code&gt; command to completely erase all partition tables and filesystem signatures from the drive.&lt;/p&gt;</description>
     </item>
     <item>
+      <title>Revive FlareVM Network Connection (VirtualBox)</title>
+      <link>http://localhost:1313/posts/flarevm_network/</link>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/flarevm_network/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;)&lt;/li&gt;
+&lt;li&gt;The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues&lt;/li&gt;
+&lt;li&gt;A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;virtualbox-network-setting-walkthrough&#34;&gt;VirtualBox network setting walkthrough&lt;/h1&gt;
+&lt;p&gt;You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &amp;ldquo;Intel&amp;hellip; Desktop&amp;rdquo;, or if you don&amp;rsquo;t know what to choose, just leave the default option.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>Merging multiple singular .ics files into one in Linux</title>
-      <link>http://localhost:1313/posts/merging-multiple-singular-.ics-files-into-one-in-linux/</link>
+      <link>http://localhost:1313/posts/calendar/</link>
       <pubDate>Wed, 03 Sep 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/merging-multiple-singular-.ics-files-into-one-in-linux/</guid>
+      <guid>http://localhost:1313/posts/calendar/</guid>
       <description>&lt;p&gt;Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Comhbine all .ics to a new text file
 cat *.ics &amp;gt; temp.txt 
