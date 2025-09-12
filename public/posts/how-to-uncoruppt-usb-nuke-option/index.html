@@ -5,11 +5,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Posts | Flock137</title>
-<meta name="keywords" content="">
-<meta name="description" content="Posts - Flock137">
+<title>Recover corrupted USB in Linux terminal (required complete data wipe) | Flock137</title>
+<meta name="keywords" content="Misc, Forensics, Tips">
+<meta name="description" content="Step 1
+lsblk
+The USB would likely to be something like sda or sdb (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.
+Step 2
+If the system mount any of your partition, you need to unmount them first before wiping.
+# Replace sdX1 with your actual partition identifier (e.g., sdb1)
+sudo umount /dev/sdX1
+Step 3
+Use wipefs command to completely erase all partition tables and filesystem signatures from the drive.">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/">
+<link rel="canonical" href="http://localhost:1313/posts/how-to-uncoruppt-usb-nuke-option/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +26,7 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/posts/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/how-to-uncoruppt-usb-nuke-option/">
 <noscript>
     <style>
         #theme-toggle,
@@ -31,7 +38,7 @@
 </noscript>
 </head>
 
-<body class="list dark" id="top">
+<body class=" dark" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "light") {
         document.body.classList.remove('dark')
@@ -74,47 +81,93 @@
             </li>
             <li>
                 <a href="http://localhost:1313/posts/" title="Blog">
-                    <span class="active">Blog</span>
+                    <span>Blog</span>
                 </a>
             </li>
         </ul>
     </nav>
 </header>
-<main class="main"> 
-<header class="page-header">
-  <h1>
-    Posts
-  </h1>
-</header>
+<main class="main">
 
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Recover corrupted USB in Linux terminal (required complete data wipe)
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Step 1 lsblk The USB would likely to be something like sda or sdb (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.
-Step 2 If the system mount any of your partition, you need to unmount them first before wiping.
-# Replace sdX1 with your actual partition identifier (e.g., sdb1) sudo umount /dev/sdX1 Step 3 Use wipefs command to completely erase all partition tables and filesystem signatures from the drive.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-09-11 00:00:00 +0000 UTC'>September 11, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Recover corrupted USB in Linux terminal (required complete data wipe)" href="http://localhost:1313/posts/how-to-uncoruppt-usb-nuke-option/"></a>
-</article>
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Recover corrupted USB in Linux terminal (required complete data wipe)
+    </h1>
+    <div class="post-meta"><span title='2025-09-11 00:00:00 +0000 UTC'>September 11, 2025</span>
 
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Merging multiple singular .ics files into one in Linux
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.
-# Comhbine all .ics to a new text file cat *.ics &gt; temp.txt Step 2: If you check with cat temp.txt you can see there is this weird string that you need to get rid off: END:VCALENDARBEGIN:VCALENDAR. Use cat temp.txt | grep -v DARBEG &gt; temp1.txt
-Step 3: For my case, I also need to:
-...</p>
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#step-1" aria-label="Step 1">Step 1</a></li>
+                <li>
+                    <a href="#step-2" aria-label="Step 2">Step 2</a></li>
+                <li>
+                    <a href="#step-3" aria-label="Step 3">Step 3</a></li>
+                <li>
+                    <a href="#step-4" aria-label="Step 4">Step 4</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="step-1">Step 1<a hidden class="anchor" aria-hidden="true" href="#step-1">#</a></h1>
+<pre tabindex="0"><code>lsblk
+</code></pre><p>The USB would likely to be something like <code>sda</code> or <code>sdb</code> (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.</p>
+<h1 id="step-2">Step 2<a hidden class="anchor" aria-hidden="true" href="#step-2">#</a></h1>
+<p>If the system mount any of your partition, you need to unmount them first before wiping.</p>
+<pre tabindex="0"><code># Replace sdX1 with your actual partition identifier (e.g., sdb1)
+sudo umount /dev/sdX1
+</code></pre><h1 id="step-3">Step 3<a hidden class="anchor" aria-hidden="true" href="#step-3">#</a></h1>
+<p>Use <code>wipefs</code> command to completely erase all partition tables and filesystem signatures from the drive.</p>
+<pre tabindex="0"><code># REPLACE /dev/sdX WITH THE CORRECT DEVICE FROM STEP 1 (e.g., /dev/sdb)
+sudo wipefs --all /dev/sdX
+</code></pre><h1 id="step-4">Step 4<a hidden class="anchor" aria-hidden="true" href="#step-4">#</a></h1>
+<p>Use <code>fdisk</code> to create new structure for the drive</p>
+<pre tabindex="0"><code># REPLACE /dev/sdX WITH THE CORRECT DEVICE (e.g., /dev/sdb)
+sudo fdisk /dev/sdX
+</code></pre><p>In <code>fdisk</code> prompt:</p>
+<ul>
+<li>Type <code>g</code> and press Enter for GPT partition table (recomended). In the case that you know what you are doing and you need an MBR/DOS table, type <code>o</code></li>
+<li>Type <code>n</code>, press Enter to create new partition
+<ul>
+<li>Partition number: type 1, you only need one partition for the thumb drive</li>
+<li>First sector: Press Enter (default)</li>
+<li>Last sector: Press Enter (default)</li>
+</ul>
+</li>
+<li>Type <code>w</code> to write the partition table and exit. <strong>You can not go back after doing this.</strong></li>
+</ul>
+<p>Step 5: You need to have a file system for your USB to make it usable. Choose from one option: FAT32 or NTFS or ext4. FAT32 is more recommended because it can be use on any operating system, unless you have a specific use case in your mind. You may reformat it later with <code>Gparted</code>, if you change your mind, but make sure you make a back up of your data, if there is.</p>
+<p>After you make your decision, execute one of the below:</p>
+<ul>
+<li>FAT32: <code>sudo mkfs.vfat -n 'USBDRIVE' /dev/sdX1</code></li>
+<li>NTFS: <code>sudo mkfs.ntfs -L 'USBDRIVE' /dev/sdX1</code></li>
+<li>ext4: <code>sudo mkfs.ext4 -L 'USBDRIVE' /dev/sdX1</code></li>
+</ul>
+<p>Step 6: Safe ejection
+Eject the drive and plug back in:</p>
+<pre tabindex="0"><code>sudo eject /dev/sdX
+</code></pre><p>It should now be automatically detected and mounted by your system as a perfectly clean, empty, and healthy USB drive.</p>
+
+
   </div>
-  <footer class="entry-footer"><span title='2025-09-03 00:00:00 +0000 UTC'>September 3, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Merging multiple singular .ics files into one in Linux" href="http://localhost:1313/posts/merging-multiple-singular-.ics-files-into-one-in-linux/"></a>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/misc/">Misc</a></li>
+      <li><a href="http://localhost:1313/tags/forensics/">Forensics</a></li>
+      <li><a href="http://localhost:1313/tags/tips/">Tips</a></li>
+    </ul>
+  </footer>
 </article>
     </main>
     

@@ -91,12 +91,45 @@
     </div>
     <footer class="entry-footer">
         <div class="social-icons" >
-    <a href="mailto:some@emailadres.com" target="_blank" rel="noopener noreferrer me"
+    <a href="23ha.dt@vinuni.edu.vn" target="_blank" rel="noopener noreferrer me"
         title="Email">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 21" fill="none" stroke="currentColor" stroke-width="2"
     stroke-linecap="round" stroke-linejoin="round">
     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
     <polyline points="22,6 12,13 2,6"></polyline>
+</svg>
+    </a>
+    <a href="https://github.com/Flock137" target="_blank" rel="noopener noreferrer me"
+        title="Github">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+    </a>
+    <a href="https://www.linkedin.com/in/ha-dinh-53696429a/" target="_blank" rel="noopener noreferrer me"
+        title="Linkedin">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+    <rect x="2" y="9" width="4" height="12"></rect>
+    <circle cx="4" cy="4" r="2"></circle>
+</svg>
+    </a>
+    <a href="https://x.com/Flo_ck137" target="_blank" rel="noopener noreferrer me"
+        title="X">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path
+        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z">
+    </path>
+</svg>
+    </a>
+    <a href="https://www.facebook.com/thanh.ha.inh.340510" target="_blank" rel="noopener noreferrer me"
+        title="Facebook">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
 </svg>
     </a>
 </div>
@@ -106,15 +139,32 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">My first blog post
+    <h2 class="entry-hint-parent">Recover corrupted USB in Linux terminal (required complete data wipe)
     </h2>
   </header>
   <div class="entry-content">
-    <p>Hi!
-</p>
+    <p>Step 1 lsblk The USB would likely to be something like sda or sdb (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.
+Step 2 If the system mount any of your partition, you need to unmount them first before wiping.
+# Replace sdX1 with your actual partition identifier (e.g., sdb1) sudo umount /dev/sdX1 Step 3 Use wipefs command to completely erase all partition tables and filesystem signatures from the drive.
+...</p>
   </div>
-  <footer class="entry-footer"><span title='1970-01-01 00:00:00 +0000 UTC'>January 1, 1970</span></footer>
-  <a class="entry-link" aria-label="post link to My first blog post" href="http://localhost:1313/posts/example/"></a>
+  <footer class="entry-footer"><span title='2025-09-11 00:00:00 +0000 UTC'>September 11, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Recover corrupted USB in Linux terminal (required complete data wipe)" href="http://localhost:1313/posts/how-to-uncoruppt-usb-nuke-option/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Merging multiple singular .ics files into one in Linux
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.
+# Comhbine all .ics to a new text file cat *.ics &gt; temp.txt Step 2: If you check with cat temp.txt you can see there is this weird string that you need to get rid off: END:VCALENDARBEGIN:VCALENDAR. Use cat temp.txt | grep -v DARBEG &gt; temp1.txt
+Step 3: For my case, I also need to:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-09-03 00:00:00 +0000 UTC'>September 3, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Merging multiple singular .ics files into one in Linux" href="http://localhost:1313/posts/merging-multiple-singular-.ics-files-into-one-in-linux/"></a>
 </article>
     </main>
     
