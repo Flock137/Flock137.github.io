@@ -11,7 +11,7 @@ params:
       Welcome to my website.
   socialIcons:
     - name: email
-      url: '23ha.dt@vinuni.edu.vn'
+      url: 'mailto:23ha.dt@vinuni.edu.vn'
     - name: github
       url: https://github.com/Flock137
     - name: linkedin
