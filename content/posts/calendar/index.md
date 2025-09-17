@@ -17,10 +17,10 @@ cat *.ics > temp.txt
 Step 2: If you check with `cat temp.txt` you can see there is this weird string that you need to get rid off: `END:VCALENDARBEGIN:VCALENDAR`. Use `cat temp.txt | grep -v DARBEG > temp1.txt`
 
 Step 3: For my case, I also need to: 
-- Adjust so that METHOD, PUBLISH and VERSION only appeared once 
+- Adjust so that METHOD, PRODID and VERSION only appeared once 
 ```
 # Concatenate temp1.txt; -v means 'inverse grep'
-cat temp1.txt | grep -v METHOD -v PRODID -v VERSION > temp2.txt 
+cat temp1.txt | grep -v -e METHOD -e PRODID -e VERSION > temp2.txt 
 ```
 Note: You need to manually put back your METHOD, PUBLISH and VERSION back manually after using the command above. They should be located after `BEGIN: VCALENDAR` and right before `BEGIN:VEVENT`
 
