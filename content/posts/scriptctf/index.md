@@ -27,7 +27,7 @@ Description: i accidentally vanished my flag, can u find it for me
 
 Attachment: https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/diskchal/attachments/stick.img
 
-After doing some basic investigatio on the image, I was bored and decided to use `binwalk` according to... gut feelings. I somehow found the `flag.txt` and it effectively ended the challenge. 
+After doing some basic investigation on the image, I was bored and decided to use `binwalk` according to... gut feelings. I somehow found the `flag.txt` and it effectively ended the challenge. 
 ![alt text](images/stick.png)
 
 
