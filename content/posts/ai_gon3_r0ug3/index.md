@@ -10,4 +10,4 @@ tags:
   - CTF
 ---
 
-# Coming soon - CTF is still online
+Coming soon - CTF is still online
