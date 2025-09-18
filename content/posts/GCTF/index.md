@@ -9,6 +9,7 @@ tags:
   - AI
   - Girls-in-CTF
   - GCTF
+  - CTF
 ---
 
 
