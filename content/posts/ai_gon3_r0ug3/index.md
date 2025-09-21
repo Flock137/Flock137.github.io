@@ -1,6 +1,6 @@
 ---
 title:  ai_gon3_r0ug3 Writeup
-date: 2025-09-18
+date: 2025-09-22
 draft: false
 showToc: true 
 tags:
