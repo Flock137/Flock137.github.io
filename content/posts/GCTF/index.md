@@ -13,9 +13,9 @@ tags:
 ---
 
 # Introduction
-To encourage and celebrate women/girls in cyber security, Re:Hack has organized this girls-only CTF. As a woman myself, I really appreciate this effort and it feels incredibly inspiring. This is my first time that I see so many girls and women gather in one place and all are incradibly passionate about this very technical field. I hereby give a very special thank-you to the organizers and all the challenge writers involved to make this sort of event possible.
+To encourage and celebrate women/girls in cyber security, [Re:Hack](https://www.rehack.xyz/) has organized this girls-only-CTF. As a woman, I really appreciate this effort and it feels incredibly inspiring. This is the first time that myself see so many girls and women gather in one place and all are incredibly passionate about this very technical field. So, I would like to give a very special thank-you to the organizers and all the challenge writers involved to make this sort of event possible.
 
-OK, I'm done with my speeches. Let's dive into the challs. 
+OK, finally done with my speeches. Let's dive into the challs. 
 
 # Ocean&Engine
 ## 1
