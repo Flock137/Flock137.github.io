@@ -11,7 +11,7 @@ params:
       Welcome to my website.
   socialIcons:
     - name: email
-      url: 'mailto:23ha.dt@vinuni.edu.vn'
+      url: 'mailto:hadinhworks@vinuni.edu.vn'
     - name: github
       url: https://github.com/Flock137
     - name: linkedin
@@ -30,6 +30,10 @@ menu:
   - identifier: posts
     name: Blog
     url: /posts/
+    weight: 20
+  - identifier: daily-tech-tips
+    name: Daily Tips 
+    url: /daily-tips/
     weight: 20
 
 caches:
