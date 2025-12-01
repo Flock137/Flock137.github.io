@@ -161,8 +161,6 @@ ZSH_THEME="heapbytes"
 ```
 save and exit terminal for the change to take effect.
 
-# (Unrelated) notes 
-- If an encrypted `.zip` failed to extract while you are at it, chances are you were typing in the wrong password
 
 
 
