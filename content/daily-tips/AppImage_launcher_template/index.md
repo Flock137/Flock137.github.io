@@ -1,7 +1,7 @@
 ---
 title: "How do you make a launcher for an AppImage?"
 date: 2025-12-01
-draft: true
+draft: false
 ShowToc: true
 tags: 
     - daily-tech-tips
@@ -17,7 +17,7 @@ However, if you do mind the bloatness of said app (300 MB-ish), or the devs just
 
 # AppImage Launcher Template (`AppName.desktop`)
 
-This is my standard template for almost every AppImage, and I will explain how it work: 
+This is my standard template for almost every AppImage: 
 
 ```
 [Desktop Entry]
@@ -33,6 +33,7 @@ Terminal=false
 StartupNotify=true
 ```
 
+Explanations (don't copy this part to your file, please): 
 - `Version` - The app version. If you got too lazy to find which version it is, you may leave it as 1.0.0
 - `Type` - Just leave it as "Application"
 - `Name` - Write your App name here, you can use any name you like. 
@@ -41,8 +42,8 @@ StartupNotify=true
 - `Comment` - A brief description of what your app does 
 - `Exec` - Path to the app's executable
 - `Icon` - Path to the app's icon (sometimes, the app is able to display the icon by itself, although you didn't set the icon path)
-- `Terminal` - Whether to invoke the terminal when open the app. Highly recommend to leave it as `false`, unless for specific reasons
-- `StartupNotify` - Would the app notify you when it launch? This one is depends on your need. By default it is `true`
+- `Terminal` - Whether to invoke the terminal when open the app. Highly recommend leaving it as `false`, unless for specific reasons
+- `StartupNotify` - Would the app notify you when it launches? This one is depending on your need. By default, it is `true`
 
-
+Then open up your favourite text editor (vim, notepad, vscode, etc.), copy and save the file as `your_app.desktop` at `~/.local/share/applications`, or anywhere you feel convenient to store (I personally like `~/AppImage`).
 

@@ -1,7 +1,7 @@
 ---
 title: "Checking whether media files are (partly) corrupted using ffmpeg"
 date: 2025-12-01
-draft: true
+draft: false
 ShowToc: true
 tags: 
     - daily-tech-tips
@@ -14,7 +14,7 @@ Normally, you wouldn't need to this kind of check, even in the case of serious c
 
 However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up). 
 
-This is due to partial corruption in your file. Normally, when you play the file in your system, it will be able to automatically "fill in the blank" of the corruption bits. But in the self-host or streaming scenarios, these services won't be able to pick that up and recover your file (well, to be fair, it did try, but can't since this is a computing intensive task), hence the reason it doesn't play (and also heats your CPU up whilst trying).
+This is due to partial corruption in your file. Normally, when you play the file in your system, it will be able to automatically "fill in the blank" of the corruption bits. But in self-hosting or streaming scenarios, these services won't be able to pick that up and recover your file (well, to be fair, it did try, but can't since this is a computing intensive task), hence the reason it doesn't play (and also heats your CPU up whilst trying).
 
 # To check whether there is corruption...
 
