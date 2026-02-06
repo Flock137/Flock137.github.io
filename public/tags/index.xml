@@ -6,159 +6,173 @@
     <description>Recent content in Tags on Flock137</description>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Feb 2026 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Debug</title>
+      <link>http://localhost:1313/tags/debug/</link>
+      <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/tags/debug/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Forensics</title>
+      <link>http://localhost:1313/tags/forensics/</link>
+      <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/tags/forensics/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hardware</title>
+      <link>http://localhost:1313/tags/hardware/</link>
+      <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/tags/hardware/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux</title>
+      <link>http://localhost:1313/tags/linux/</link>
+      <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/tags/linux/</guid>
+      <description></description>
+    </item>
     <item>
       <title>CLI</title>
       <link>http://localhost:1313/tags/cli/</link>
-      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/cli/</guid>
       <description></description>
     </item>
     <item>
       <title>Daily-Tech-Tips</title>
       <link>http://localhost:1313/tags/daily-tech-tips/</link>
-      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/daily-tech-tips/</guid>
       <description></description>
     </item>
     <item>
       <title>Ffmpeg</title>
       <link>http://localhost:1313/tags/ffmpeg/</link>
-      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/ffmpeg/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Linux</title>
-      <link>http://localhost:1313/tags/linux/</link>
-      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/linux/</guid>
       <description></description>
     </item>
     <item>
       <title>Yt-Dlp</title>
       <link>http://localhost:1313/tags/yt-dlp/</link>
-      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/yt-dlp/</guid>
       <description></description>
     </item>
     <item>
       <title>Media</title>
       <link>http://localhost:1313/tags/media/</link>
-      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/media/</guid>
       <description></description>
     </item>
     <item>
       <title>AI</title>
       <link>http://localhost:1313/tags/ai/</link>
-      <pubDate>Mon, 22 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/ai/</guid>
       <description></description>
     </item>
     <item>
       <title>Ai_gon3_r0ug3</title>
       <link>http://localhost:1313/tags/ai_gon3_r0ug3/</link>
-      <pubDate>Mon, 22 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/ai_gon3_r0ug3/</guid>
       <description></description>
     </item>
     <item>
       <title>CTF</title>
       <link>http://localhost:1313/tags/ctf/</link>
-      <pubDate>Mon, 22 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/ctf/</guid>
       <description></description>
     </item>
     <item>
       <title>Writeup</title>
       <link>http://localhost:1313/tags/writeup/</link>
-      <pubDate>Mon, 22 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/writeup/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Forensics</title>
-      <link>http://localhost:1313/tags/forensics/</link>
-      <pubDate>Thu, 18 Sep 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/forensics/</guid>
       <description></description>
     </item>
     <item>
       <title>GCTF</title>
       <link>http://localhost:1313/tags/gctf/</link>
-      <pubDate>Thu, 18 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 18 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/gctf/</guid>
       <description></description>
     </item>
     <item>
       <title>Girls-in-CTF</title>
       <link>http://localhost:1313/tags/girls-in-ctf/</link>
-      <pubDate>Thu, 18 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 18 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/girls-in-ctf/</guid>
       <description></description>
     </item>
     <item>
       <title>ScriptCTF</title>
       <link>http://localhost:1313/tags/scriptctf/</link>
-      <pubDate>Fri, 12 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 12 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/scriptctf/</guid>
       <description></description>
     </item>
     <item>
       <title>Arch</title>
       <link>http://localhost:1313/tags/arch/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/arch/</guid>
       <description></description>
     </item>
     <item>
       <title>FlareVM</title>
       <link>http://localhost:1313/tags/flarevm/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/flarevm/</guid>
       <description></description>
     </item>
     <item>
       <title>Malware Analysis</title>
       <link>http://localhost:1313/tags/malware-analysis/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/malware-analysis/</guid>
       <description></description>
     </item>
     <item>
       <title>Network</title>
       <link>http://localhost:1313/tags/network/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/network/</guid>
       <description></description>
     </item>
     <item>
       <title>Tips</title>
       <link>http://localhost:1313/tags/tips/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/tips/</guid>
       <description></description>
     </item>
     <item>
       <title>VirtualBox</title>
       <link>http://localhost:1313/tags/virtualbox/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/virtualbox/</guid>
       <description></description>
     </item>
     <item>
       <title>Windows</title>
       <link>http://localhost:1313/tags/windows/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/windows/</guid>
       <description></description>
     </item>
     <item>
       <title>Misc</title>
       <link>http://localhost:1313/tags/misc/</link>
-      <pubDate>Wed, 03 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 03 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/tags/misc/</guid>
       <description></description>
     </item>

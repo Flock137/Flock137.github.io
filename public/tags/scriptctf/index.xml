@@ -6,12 +6,12 @@
     <description>Recent content in ScriptCTF on Flock137</description>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/scriptctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ScriptCTF Writeup - Forensics</title>
       <link>http://localhost:1313/posts/scriptctf/</link>
-      <pubDate>Fri, 12 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 12 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/scriptctf/</guid>
       <description>&lt;h1 id=&#34;pdf-author-connor-chang&#34;&gt;pdf (Author: Connor Chang)&lt;/h1&gt;
 &lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;

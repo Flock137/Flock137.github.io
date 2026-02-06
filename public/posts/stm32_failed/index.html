@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Failed attempt on performing Hardware Forensics (STM32) | Flock137</title>
+<meta name="keywords" content="Forensics, Hardware, Debug, Linux">
+<meta name="description" content="Introduction
+I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.
+As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/stm32_failed/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/stm32_failed/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flock137 (Alt + H)">Flock137</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/daily-tips/" title="Daily Tips">
+                    <span>Daily Tips</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Failed attempt on performing Hardware Forensics (STM32)
+    </h1>
+    <div class="post-meta"><span title='2026-02-06 00:00:00 +0700 +07'>February 6, 2026</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#introduction" aria-label="Introduction">Introduction</a></li>
+                <li>
+                    <a href="#prerequisites" aria-label="Prerequisites">Prerequisites</a></li>
+                <li>
+                    <a href="#file-structure" aria-label="File structure">File structure</a></li>
+                <li>
+                    <a href="#executed-steps" aria-label="Executed steps">Executed steps</a></li>
+                <li>
+                    <a href="#gdb" aria-label="GDB">GDB</a></li>
+                <li>
+                    <a href="#errors-encountered-and-issues" aria-label="Errors encountered and Issues">Errors encountered and Issues</a><ul>
+                        
+                <li>
+                    <a href="#program-continuing-forever-inside-gdb" aria-label="Program continuing forever inside gdb">Program continuing forever inside gdb</a></li></ul>
+                </li>
+                <li>
+                    <a href="#logs" aria-label="Logs">Logs</a></li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
+<p>I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.</p>
+<p>As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.</p>
+<h2 id="prerequisites">Prerequisites<a hidden class="anchor" aria-hidden="true" href="#prerequisites">#</a></h2>
+<p>For this, you need these packages: <code>arm-none-eabi-gcc</code>, <code>gdb</code> (or <code>gdb-multiarch</code>, it might depend on which distro you use) and <code>qemu-system-arm</code></p>
+<p>Installation command on all Arch and Arch-based systems:</p>
+<pre tabindex="0"><code>sudo pacman -S arm-none-eabi-gcc gdb qemu-system-arm 
+</code></pre><p>For other distros, please search for your equivalent command and packages, as sometimes, it varies.</p>
+<h2 id="file-structure">File structure<a hidden class="anchor" aria-hidden="true" href="#file-structure">#</a></h2>
+<pre tabindex="0"><code>❯ tree
+.
+├── build
+│   ├── blink.bin
+│   ├── blink.elf
+│   └── blink.map
+├── inc
+│   └── stm32f103c8t6.h
+├── src
+│   ├── main.c
+│   └── vectors.c
+└── stm32f103c8t6.ld
+</code></pre><p>.bin is created later, after successfully compiling the .elf file by typing the command:</p>
+<pre tabindex="0"><code>❯ arm-none-eabi-objcopy -O binary build/blink.elf build/blink.bin
+</code></pre><h2 id="executed-steps">Executed steps<a hidden class="anchor" aria-hidden="true" href="#executed-steps">#</a></h2>
+<p>Write <code>main.c</code>, header (<code>.h</code>) linker (<code>.ld</code>) and vector table (<code>vector.c</code>) and put into its respective places, which was mentionned above. Then you will start to compile the binary (<code>.elf</code>):</p>
+<pre tabindex="0"><code>arm-none-eabi-gcc \
+  -mcpu=cortex-m3 \
+  -mthumb \
+  -mfloat-abi=soft \
+  -nostdlib \
+  -ffreestanding \
+  -Isrc -Iinc \
+  -T stm32f103c8t6.ld \
+  -Wl,-Map=build/blink.map \
+  -Wl,--gc-sections \
+  -Wl,--print-memory-usage \
+  src/vectors.c src/main.c \
+  -o build/blink.elf
+</code></pre><p>Output:</p>
+<pre tabindex="0"><code>/usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/bin/ld: warning: build/blink.elf has a LOAD segment with RWX permissions
+Memory region         Used Size  Region Size  %age Used
+           FLASH:         132 B        64 KB      0.20%
+             RAM:          1 KB        20 KB      5.00%
+</code></pre><p>Then make the <code>.bin</code> file, you make this to flash the task into the hardware itself:</p>
+<pre tabindex="0"><code>❯ arm-none-eabi-objcopy -O binary build/blink.elf build/blink.bin
+</code></pre><p>Output:</p>
+<pre tabindex="0"><code>qemu-system-arm -M netduinoplus2 -kernel build/blink.bin -S -s &amp;
+echo &#34;QEMU started. PID: $!&#34;
+[1] 40761
+QEMU started. PID: 40761
+</code></pre><p>After obtaining the .bin file for flashing, do this:</p>
+<pre tabindex="0"><code>cd ~/stm32_forensics/blink
+
+# Terminal 1: Launch QEMU (stops CPU, waits for debugger)
+qemu-system-arm -M netduinoplus2 -kernel build/blink.bin -S -s &amp;
+echo &#34;QEMU started. PID: $!&#34;
+</code></pre><p>Right after that, this might appear:</p>
+<pre tabindex="0"><code>✦ ❯ VNC server running on ::1:5900
+</code></pre><p>Now we can start debugging session within gdb.</p>
+<h2 id="gdb">GDB<a hidden class="anchor" aria-hidden="true" href="#gdb">#</a></h2>
+<p>In a separated terminal:</p>
+<pre tabindex="0"><code>cd ~/stm32_forensics/blink
+gdb build/blink.elf
+</code></pre><pre tabindex="0"><code># Inside GDB:
+(gdb) target remote localhost:1234
+(gdb) load  # Load your program
+(gdb) break main
+(gdb) continue  
+</code></pre><h2 id="errors-encountered-and-issues">Errors encountered and Issues<a hidden class="anchor" aria-hidden="true" href="#errors-encountered-and-issues">#</a></h2>
+<pre tabindex="0"><code>src/main.c:2:1: note: &#39;uint32_t&#39; is defined in header &#39;&lt;stdint.h&gt;&#39;; this is probably fixable by adding &#39;#include &lt;stdint.h&gt;&#39;
+    1 | #include &#34;stm32f103c8t6.h&#34;
+  +++ |+#include &lt;stdint.h&gt;
+    2 | 
+</code></pre><pre tabindex="0"><code>src/main.c:24:5: error: implicit declaration of function &#39;main&#39; [-Wimplicit-function-declaration]
+   24 |     main();
+      |     ^~~~
+</code></pre><p>It means that the <code>main()</code> is being called before your definition of main itself.</p>
+<h3 id="program-continuing-forever-inside-gdb">Program continuing forever inside gdb<a hidden class="anchor" aria-hidden="true" href="#program-continuing-forever-inside-gdb">#</a></h3>
+<p>If it&rsquo;s blank after you <code>continue</code>, it means that something went wrong, Ctrl+C and inspect:</p>
+<pre tabindex="0"><code>^C
+Program received signal SIGINT, Interrupt.
+0x08000014 in Default_Handler ()
+(gdb) bt
+#0  0x08000014 in Default_Handler ()
+(gdb) info reg
+r0             0x0                 0
+r1             0x0                 0
+r2             0x0                 0
+r3             0x0                 0
+r4             0x0                 0
+r5             0x0                 0
+r6             0x0                 0
+r7             0x20004ffc          536891388
+r8             0x0                 0
+r9             0x0                 0
+r10            0x0                 0
+r11            0x0                 0
+r12            0x0                 0
+sp             0x20004ffc          0x20004ffc
+lr             0xffffffff          -1
+pc             0x8000014           0x8000014 &lt;Default_Handler+4&gt;
+xpsr           0x41000000          1090519040
+fpscr          0x0                 0
+msp            0x20004ffc          536891388
+psp            0x0                 0
+primask        0x0                 0
+control        0x0                 0
+basepri        0x0                 0
+faultmask      0x0                 0
+</code></pre><ol>
+<li>
+<p><strong>PC = <code>0x08000014</code></strong> → This is the <strong>HardFault Handler</strong> (4th vector, 0x14 bytes from flash start)</p>
+</li>
+<li>
+<p><strong>LR = <code>0xFFFFFFFF</code></strong> → Link Register shows <strong>exception return</strong></p>
+</li>
+<li>
+<p><strong>SP = <code>0x20004FFC</code></strong> → Stack pointer is near top of RAM (20KB RAM ends at 0x20005000)</p>
+</li>
+</ol>
+<pre tabindex="0"><code>✦ ❯ arm-none-eabi-objdump -s -j .isr_vector build/blink.elf
+
+build/blink.elf:     file format elf32-littlearm
+
+Contents of section .isr_vector:
+ 8000000 00500020 45000008 11000008 11000008  .P. E...........
+</code></pre><p>Registers seems to be pointing to the wrong addresses.</p>
+<pre tabindex="0"><code>✦ ❯ arm-none-eabi-objdump -d build/blink.elf --start-address=0x08000000 --stop-address=0x08000080
+
+build/blink.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08000010 &lt;Default_Handler&gt;:
+ 8000010:	b480      	push	{r7}
+ 8000012:	af00      	add	r7, sp, #0
+ 8000014:	e7fe      	b.n	8000014 &lt;Default_Handler+0x4&gt;
+	...
+
+08000018 &lt;crude_delay&gt;:
+ 8000018:	b480      	push	{r7}
+ 800001a:	b083      	sub	sp, #12
+ 800001c:	af00      	add	r7, sp, #0
+ 800001e:	2300      	movs	r3, #0
+ 8000020:	607b      	str	r3, [r7, #4]
+ 8000022:	e002      	b.n	800002a &lt;crude_delay+0x12&gt;
+ 8000024:	687b      	ldr	r3, [r7, #4]
+ 8000026:	3301      	adds	r3, #1
+ 8000028:	607b      	str	r3, [r7, #4]
+ 800002a:	687b      	ldr	r3, [r7, #4]
+ 800002c:	4a04      	ldr	r2, [pc, #16]	@ (8000040 &lt;crude_delay+0x28&gt;)
+ 800002e:	4293      	cmp	r3, r2
+ 8000030:	ddf8      	ble.n	8000024 &lt;crude_delay+0xc&gt;
+ 8000032:	bf00      	nop
+ 8000034:	bf00      	nop
+ 8000036:	370c      	adds	r7, #12
+ 8000038:	46bd      	mov	sp, r7
+ 800003a:	bc80      	pop	{r7}
+ 800003c:	4770      	bx	lr
+ 800003e:	bf00      	nop
+ 8000040:	000f423f 	.word	0x000f423f
+
+08000044 &lt;main&gt;:
+ 8000044:	b580      	push	{r7, lr}
+ 8000046:	af00      	add	r7, sp, #0
+ 8000048:	4b0b      	ldr	r3, [pc, #44]	@ (8000078 &lt;main+0x34&gt;)
+ 800004a:	681b      	ldr	r3, [r3, #0]
+ 800004c:	4a0a      	ldr	r2, [pc, #40]	@ (8000078 &lt;main+0x34&gt;)
+ 800004e:	f043 0310 	orr.w	r3, r3, #16
+ 8000052:	6013      	str	r3, [r2, #0]
+ 8000054:	4b09      	ldr	r3, [pc, #36]	@ (800007c &lt;main+0x38&gt;)
+ 8000056:	681b      	ldr	r3, [r3, #0]
+ 8000058:	f423 0370 	bic.w	r3, r3, #15728640	@ 0xf00000
+ 800005c:	4a07      	ldr	r2, [pc, #28]	@ (800007c &lt;main+0x38&gt;)
+ 800005e:	f443 1340 	orr.w	r3, r3, #3145728	@ 0x300000
+ 8000062:	6013      	str	r3, [r2, #0]
+ 8000064:	4b06      	ldr	r3, [pc, #24]	@ (8000080 &lt;main+0x3c&gt;)
+ 8000066:	681b      	ldr	r3, [r3, #0]
+ 8000068:	4a05      	ldr	r2, [pc, #20]	@ (8000080 &lt;main+0x3c&gt;)
+ 800006a:	f483 5300 	eor.w	r3, r3, #8192	@ 0x2000
+ 800006e:	6013      	str	r3, [r2, #0]
+ 8000070:	f7ff ffd2 	bl	8000018 &lt;crude_delay&gt;
+ 8000074:	e7f6      	b.n	8000064 &lt;main+0x20&gt;
+ 8000076:	bf00      	nop
+ 8000078:	40021018 	.word	0x40021018
+ 800007c:	40011004 	.word	0x40011004
+</code></pre><p>This is one of the processes disasembly.</p>
+<h2 id="logs">Logs<a hidden class="anchor" aria-hidden="true" href="#logs">#</a></h2>
+<p>This was made on a similar but simplified version of the blinker.</p>
+<pre tabindex="0"><code>~/Projects/simple_stm32 
+✦ ❯ arm-none-eabi-objdump -s -j .isr_vector build/blink.elf
+
+build/blink.elf:     file format elf32-littlearm
+
+Contents of section .isr_vector:
+ 8000000 00500020 45000008 11000008 11000008  .P. E...........
+
+~/Projects/simple_stm32 
+✦ ❯ arm-none-eabi-nm build/blink.elf | grep -E &#34;(vectors|_start|Default_Handler|main)&#34;
+08000010 T Default_Handler
+0800004e T main
+08000044 T _start
+08000000 R vectors
+
+~/Projects/simple_stm32 
+✦ ❯ arm-none-eabi-objdump -d build/blink.elf --start-address=0x08000000 --stop-address=0x08000030
+
+build/blink.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08000010 &lt;Default_Handler&gt;:
+ 8000010:	b480      	push	{r7}
+ 8000012:	af00      	add	r7, sp, #0
+ 8000014:	e7fe      	b.n	8000014 &lt;Default_Handler+0x4&gt;
+	...
+
+08000018 &lt;crude_delay&gt;:
+ 8000018:	b480      	push	{r7}
+ 800001a:	b083      	sub	sp, #12
+ 800001c:	af00      	add	r7, sp, #0
+ 800001e:	2300      	movs	r3, #0
+ 8000020:	607b      	str	r3, [r7, #4]
+ 8000022:	e002      	b.n	800002a &lt;crude_delay+0x12&gt;
+ 8000024:	687b      	ldr	r3, [r7, #4]
+ 8000026:	3301      	adds	r3, #1
+ 8000028:	607b      	str	r3, [r7, #4]
+ 800002a:	687b      	ldr	r3, [r7, #4]
+ 800002c:	4a04      	ldr	r2, [pc, #16]	@ (8000040 &lt;crude_delay+0x28&gt;)
+ 800002e:	4293      	cmp	r3, r2
+</code></pre><p>The processes is rather normal to my eyes, and as I start the program in gdb, it stuck at <code>Default_Handler()</code> again, and I found out that both process seemed to have never reached <code>main()</code>.</p>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p><em>And the journey continue&hellip;</em></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/forensics/">Forensics</a></li>
+      <li><a href="http://localhost:1313/tags/hardware/">Hardware</a></li>
+      <li><a href="http://localhost:1313/tags/debug/">Debug</a></li>
+      <li><a href="http://localhost:1313/tags/linux/">Linux</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flock137</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

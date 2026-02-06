@@ -3,6 +3,8 @@ languageCode: en-us
 title: Flock137
 theme: PaperMod
 
+timeZone: "Asia/Bangkok"
+
 params:
   defaultTheme: dark
   homeInfoParams:

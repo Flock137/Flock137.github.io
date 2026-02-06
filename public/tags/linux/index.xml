@@ -6,12 +6,21 @@
     <description>Recent content in Linux on Flock137</description>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Feb 2026 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Failed attempt on performing Hardware Forensics (STM32)</title>
+      <link>http://localhost:1313/posts/stm32_failed/</link>
+      <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/stm32_failed/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.&lt;/p&gt;
+&lt;p&gt;As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>How to download music from Youtube with yt-dlp (CLI)</title>
       <link>http://localhost:1313/daily-tips/ytb_music_download/</link>
-      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/daily-tips/ytb_music_download/</guid>
       <description>&lt;h2 id=&#34;downloading-yt-dlp&#34;&gt;Downloading (yt-dlp)&lt;/h2&gt;
 &lt;p&gt;You use this command:&lt;/p&gt;
@@ -24,7 +33,7 @@
     <item>
       <title>How to see differences between files</title>
       <link>http://localhost:1313/daily-tips/diff/</link>
-      <pubDate>Thu, 18 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 18 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/daily-tips/diff/</guid>
       <description>&lt;p&gt;In the case like this:&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;warning: /etc/bluetooth/main.conf installed as /etc/bluetooth/main.conf.pacnew
@@ -53,7 +62,7 @@
     <item>
       <title>How do you make a launcher for an AppImage?</title>
       <link>http://localhost:1313/daily-tips/appimage_launcher_template/</link>
-      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/daily-tips/appimage_launcher_template/</guid>
       <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;For this purpose you actually have &lt;a href=&#34;https://github.com/TheAssassin/AppImageLauncher&#34;&gt;AppImageLauncher&lt;/a&gt; for the convenience,
@@ -77,7 +86,7 @@ StartupNotify=true
     <item>
       <title>How did I repair an (Arch) Linux bootloader twice</title>
       <link>http://localhost:1313/posts/bootloader_failed/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/bootloader_failed/</guid>
       <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;
 &lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.

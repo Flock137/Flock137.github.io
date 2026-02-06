@@ -6,12 +6,12 @@
     <description>Recent content in Tips on Flock137</description>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/tips/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Recover corrupted USB in Linux terminal (required complete data wipe)</title>
       <link>http://localhost:1313/posts/usb_uncorrupted/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/usb_uncorrupted/</guid>
       <description>&lt;h1 id=&#34;step-1&#34;&gt;Step 1&lt;/h1&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;lsblk
@@ -26,7 +26,7 @@ sudo umount /dev/sdX1
     <item>
       <title>Merging multiple singular .ics files into one in Linux</title>
       <link>http://localhost:1313/posts/calendar/</link>
-      <pubDate>Wed, 03 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 03 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/calendar/</guid>
       <description>&lt;p&gt;Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Comhbine all .ics to a new text file
