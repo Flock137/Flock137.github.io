@@ -6,12 +6,21 @@
     <description>Recent content in Posts on Flock137</description>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Feb 2026 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Failed attempt on performing Hardware Forensics (STM32)</title>
+      <link>http://localhost:1313/posts/stm32_failed/</link>
+      <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/stm32_failed/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.&lt;/p&gt;
+&lt;p&gt;As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>ai_gon3_r0ug3 Writeup</title>
       <link>http://localhost:1313/posts/ai_gon3_r0ug3/</link>
-      <pubDate>Mon, 22 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/ai_gon3_r0ug3/</guid>
       <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;This is a Private CTF organized under the collaboration between HackerOne and HackTheBox that focus only on the AI category.&lt;/p&gt;
@@ -21,7 +30,7 @@
     <item>
       <title>Girls-in-CTF Writeup - Forensics &amp; AI</title>
       <link>http://localhost:1313/posts/gctf/</link>
-      <pubDate>Thu, 18 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 18 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/gctf/</guid>
       <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;To encourage and celebrate women/girls in cyber security, &lt;a href=&#34;https://www.rehack.xyz/&#34;&gt;Re:Hack&lt;/a&gt; has organized this girls-only-CTF. As a woman, I really appreciate this effort and it feels incredibly inspiring. This is the first time that myself see so many girls and women gather in one place and all are incredibly passionate about this very technical field. So, I would like to give a very special thank-you to the organizers and all the challenge writers involved to make this sort of event possible.&lt;/p&gt;</description>
@@ -29,7 +38,7 @@
     <item>
       <title>ScriptCTF Writeup - Forensics</title>
       <link>http://localhost:1313/posts/scriptctf/</link>
-      <pubDate>Fri, 12 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 12 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/scriptctf/</guid>
       <description>&lt;h1 id=&#34;pdf-author-connor-chang&#34;&gt;pdf (Author: Connor Chang)&lt;/h1&gt;
 &lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;
@@ -42,7 +51,7 @@
     <item>
       <title>How did I repair an (Arch) Linux bootloader twice</title>
       <link>http://localhost:1313/posts/bootloader_failed/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/bootloader_failed/</guid>
       <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;
 &lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.
@@ -53,7 +62,7 @@ Not to mention, I no longer see my &lt;code&gt;systemd&lt;/code&gt; bootloader s
     <item>
       <title>Recover corrupted USB in Linux terminal (required complete data wipe)</title>
       <link>http://localhost:1313/posts/usb_uncorrupted/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/usb_uncorrupted/</guid>
       <description>&lt;h1 id=&#34;step-1&#34;&gt;Step 1&lt;/h1&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;lsblk
@@ -68,7 +77,7 @@ sudo umount /dev/sdX1
     <item>
       <title>Revive FlareVM Network Connection (VirtualBox)</title>
       <link>http://localhost:1313/posts/flarevm_network/</link>
-      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/flarevm_network/</guid>
       <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;
@@ -83,7 +92,7 @@ sudo umount /dev/sdX1
     <item>
       <title>Merging multiple singular .ics files into one in Linux</title>
       <link>http://localhost:1313/posts/calendar/</link>
-      <pubDate>Wed, 03 Sep 2025 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 03 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/calendar/</guid>
       <description>&lt;p&gt;Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Comhbine all .ics to a new text file

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Debug on Flock137</title>
+    <link>http://localhost:1313/tags/debug/</link>
+    <description>Recent content in Debug on Flock137</description>
+    <generator>Hugo -- 0.154.5</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 06 Feb 2026 00:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/debug/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Failed attempt on performing Hardware Forensics (STM32)</title>
+      <link>http://localhost:1313/posts/stm32_failed/</link>
+      <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/stm32_failed/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.&lt;/p&gt;
+&lt;p&gt;As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
