@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ffmpeg on Flock137</title>
+    <link>http://localhost:1313/tags/ffmpeg/</link>
+    <description>Recent content in Ffmpeg on Flock137</description>
+    <generator>Hugo -- 0.154.5</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/ffmpeg/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to download music from Youtube with yt-dlp (CLI)</title>
+      <link>http://localhost:1313/daily-tips/ytb_music_download/</link>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/daily-tips/ytb_music_download/</guid>
+      <description>&lt;h2 id=&#34;downloading-yt-dlp&#34;&gt;Downloading (yt-dlp)&lt;/h2&gt;
+&lt;p&gt;You use this command:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;yt-dlp -f &amp;#34;bestvideo[height=2160]+bestaudio&amp;#34; -x --audio-format flac &amp;#34;VIDEO_URL&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In this command, I&amp;rsquo;m downloading from a 4K video (2160p), and I like my music to be in the &lt;code&gt;.flac&lt;/code&gt; file. Feel free to change the quality and filetype into whatever you like.&lt;/p&gt;
+&lt;h2 id=&#34;update-metadata-ffmpeg&#34;&gt;Update metadata (ffmpeg)&lt;/h2&gt;
+&lt;p&gt;Since the metadata won&amp;rsquo;t come with the file by default, you may like to add it manually.&lt;/p&gt;
+&lt;p&gt;To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Checking whether media files are (partly) corrupted using ffmpeg</title>
+      <link>http://localhost:1313/daily-tips/check_corrupted_flac/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/daily-tips/check_corrupted_flac/</guid>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;Normally, you wouldn&amp;rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&amp;rsquo;t be able to play and that&amp;rsquo;s it.&lt;/p&gt;
+&lt;p&gt;However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

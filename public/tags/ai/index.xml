@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>AI on Flock137</title>
+    <link>http://localhost:1313/tags/ai/</link>
+    <description>Recent content in AI on Flock137</description>
+    <generator>Hugo -- 0.154.5</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 22 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ai_gon3_r0ug3 Writeup</title>
+      <link>http://localhost:1313/posts/ai_gon3_r0ug3/</link>
+      <pubDate>Mon, 22 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/ai_gon3_r0ug3/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;This is a Private CTF organized under the collaboration between HackerOne and HackTheBox that focus only on the AI category.&lt;/p&gt;
+&lt;h1 id=&#34;re-car-ai&#34;&gt;Re-car AI&lt;/h1&gt;
+&lt;p&gt;You have been tasked with pentesting the largest used car listing website in your area. They have recently implemented an AI chatbot in their listing page to help users with common questions. The website&amp;rsquo;s policy is not to disclose the seller&amp;rsquo;s information unless the user is logged in. Can you find a way to bypass the filters and reveal the seller&amp;rsquo;s phone number by asking the chatbot? Flag format: &lt;code&gt;HTB{xxx-xxxx-xxx}&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Girls-in-CTF Writeup - Forensics &amp; AI</title>
+      <link>http://localhost:1313/posts/gctf/</link>
+      <pubDate>Thu, 18 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/gctf/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;To encourage and celebrate women/girls in cyber security, &lt;a href=&#34;https://www.rehack.xyz/&#34;&gt;Re:Hack&lt;/a&gt; has organized this girls-only-CTF. As a woman, I really appreciate this effort and it feels incredibly inspiring. This is the first time that myself see so many girls and women gather in one place and all are incredibly passionate about this very technical field. So, I would like to give a very special thank-you to the organizers and all the challenge writers involved to make this sort of event possible.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

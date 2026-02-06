@@ -1,6 +1,6 @@
 ---
 title: Failed attempt on performing Hardware Forensics (STM32)
-date: 2026-02-07
+date: 2026-02-06
 draft: false
 showToc: true 
 tags:

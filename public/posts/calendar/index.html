@@ -80,6 +80,11 @@ Step 3: For my case, I also need to:">
                     <span>Blog</span>
                 </a>
             </li>
+            <li>
+                <a href="http://localhost:1313/daily-tips/" title="Daily Tips">
+                    <span>Daily Tips</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
@@ -101,10 +106,10 @@ cat *.ics &gt; temp.txt
 </code></pre><p>Step 2: If you check with <code>cat temp.txt</code> you can see there is this weird string that you need to get rid off: <code>END:VCALENDARBEGIN:VCALENDAR</code>. Use <code>cat temp.txt | grep -v DARBEG &gt; temp1.txt</code></p>
 <p>Step 3: For my case, I also need to:</p>
 <ul>
-<li>Adjust so that METHOD, PUBLISH and VERSION only appeared once</li>
+<li>Adjust so that METHOD, PRODID and VERSION only appeared once</li>
 </ul>
 <pre tabindex="0"><code># Concatenate temp1.txt; -v means &#39;inverse grep&#39;
-cat temp1.txt | grep -v METHOD -v PRODID -v VERSION &gt; temp2.txt 
+cat temp1.txt | grep -v -e METHOD -e PRODID -e VERSION &gt; temp2.txt 
 </code></pre><p>Note: You need to manually put back your METHOD, PUBLISH and VERSION back manually after using the command above. They should be located after <code>BEGIN: VCALENDAR</code> and right before <code>BEGIN:VEVENT</code></p>
 <ul>
 <li>Fix the UID, since they can not be the same. Its syntax should be something like this (rid of the quotes): &ldquo;<a href="mailto:mech-a314@synthesis.com">mech-a314@synthesis.com</a>&rdquo;, &ldquo;MECH&rdquo;, &ldquo;1337&rdquo;, etc. If you see something like &lsquo;^M&rsquo; in your text editor, ignore them</li>
@@ -128,7 +133,7 @@ Please don&rsquo;t delete your individual .ics files, yet. You might need them l
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">Flock137</a></span> · 
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flock137</a></span> · 
 
     <span>
         Powered by

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Daily-Tech-Tips on Flock137</title>
+    <link>http://localhost:1313/tags/daily-tech-tips/</link>
+    <description>Recent content in Daily-Tech-Tips on Flock137</description>
+    <generator>Hugo -- 0.154.5</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/daily-tech-tips/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to download music from Youtube with yt-dlp (CLI)</title>
+      <link>http://localhost:1313/daily-tips/ytb_music_download/</link>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/daily-tips/ytb_music_download/</guid>
+      <description>&lt;h2 id=&#34;downloading-yt-dlp&#34;&gt;Downloading (yt-dlp)&lt;/h2&gt;
+&lt;p&gt;You use this command:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;yt-dlp -f &amp;#34;bestvideo[height=2160]+bestaudio&amp;#34; -x --audio-format flac &amp;#34;VIDEO_URL&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In this command, I&amp;rsquo;m downloading from a 4K video (2160p), and I like my music to be in the &lt;code&gt;.flac&lt;/code&gt; file. Feel free to change the quality and filetype into whatever you like.&lt;/p&gt;
+&lt;h2 id=&#34;update-metadata-ffmpeg&#34;&gt;Update metadata (ffmpeg)&lt;/h2&gt;
+&lt;p&gt;Since the metadata won&amp;rsquo;t come with the file by default, you may like to add it manually.&lt;/p&gt;
+&lt;p&gt;To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to see differences between files</title>
+      <link>http://localhost:1313/daily-tips/diff/</link>
+      <pubDate>Thu, 18 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/daily-tips/diff/</guid>
+      <description>&lt;p&gt;In the case like this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;warning: /etc/bluetooth/main.conf installed as /etc/bluetooth/main.conf.pacnew
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You may like to know what is the difference between these two, concisely. We use the command &lt;code&gt;diff&lt;/code&gt;, a basic utility of Linux&lt;/p&gt;
+&lt;p&gt;An example:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;diff /etc/bluetooth/main.conf /etc/bluetooth/main.conf.pacnew
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;264a265,269
+&amp;gt; # This enables the GATT client functionally, so it can be disabled in system
+&amp;gt; # which can only operate as a peripheral.
+&amp;gt; # Defaults to &amp;#39;true&amp;#39;.
+&amp;gt; #Client = true
+&amp;gt; 
+311,315d315
+&amp;lt; # This enables the GATT client functionally, so it can be disabled in system
+&amp;lt; # which can only operate as a peripheral.
+&amp;lt; # Defaults to &amp;#39;true&amp;#39;.
+&amp;lt; #Client = true
+&amp;lt; 
+362c362
+&amp;lt; #AutoEnable=false
+---
+&amp;gt; #AutoEnable=true
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;&amp;gt;&lt;/code&gt; indicate what appear in the latter file and &lt;code&gt;&amp;lt;&lt;/code&gt; is pointing toward the former file.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Checking whether media files are (partly) corrupted using ffmpeg</title>
+      <link>http://localhost:1313/daily-tips/check_corrupted_flac/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/daily-tips/check_corrupted_flac/</guid>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;Normally, you wouldn&amp;rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&amp;rsquo;t be able to play and that&amp;rsquo;s it.&lt;/p&gt;
+&lt;p&gt;However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How do you make a launcher for an AppImage?</title>
+      <link>http://localhost:1313/daily-tips/appimage_launcher_template/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/daily-tips/appimage_launcher_template/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;For this purpose you actually have &lt;a href=&#34;https://github.com/TheAssassin/AppImageLauncher&#34;&gt;AppImageLauncher&lt;/a&gt; for the convenience,
+or the apps would actually self-generate this for you, but this doesn&amp;rsquo;t always happen.
+However, if you do mind the bloatness of said app (300 MB-ish), or the devs just don&amp;rsquo;t have the launcher ready, then you may consider making the launcher yourself, by hand.&lt;/p&gt;
+&lt;h1 id=&#34;appimage-launcher-template-appnamedesktop&#34;&gt;AppImage Launcher Template (&lt;code&gt;AppName.desktop&lt;/code&gt;)&lt;/h1&gt;
+&lt;p&gt;This is my standard template for almost every AppImage:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Application Name
+GenericName=App Type
+Categories=Utility;
+Comment=Brief description of the application
+Exec=/path/to/application.AppImage
+Icon=/path/to/icon.png
+Terminal=false
+StartupNotify=true
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Explanations (don&amp;rsquo;t copy this part to your file, please):&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

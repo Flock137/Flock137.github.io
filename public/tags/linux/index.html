@@ -77,6 +77,11 @@
                     <span>Blog</span>
                 </a>
             </li>
+            <li>
+                <a href="http://localhost:1313/daily-tips/" title="Daily Tips">
+                    <span>Daily Tips</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
@@ -86,6 +91,54 @@
     Linux
   </h1>
 </header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">How to download music from Youtube with yt-dlp (CLI)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Downloading (yt-dlp) You use this command:
+yt-dlp -f &#34;bestvideo[height=2160]&#43;bestaudio&#34; -x --audio-format flac &#34;VIDEO_URL&#34; In this command, I’m downloading from a 4K video (2160p), and I like my music to be in the .flac file. Feel free to change the quality and filetype into whatever you like.
+Update metadata (ffmpeg) Since the metadata won’t come with the file by default, you may like to add it manually.
+To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-19 00:00:00 +0000 UTC'>December 19, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to How to download music from Youtube with yt-dlp (CLI)" href="http://localhost:1313/daily-tips/ytb_music_download/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">How to see differences between files
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>In the case like this:
+warning: /etc/bluetooth/main.conf installed as /etc/bluetooth/main.conf.pacnew You may like to know what is the difference between these two, concisely. We use the command diff, a basic utility of Linux
+An example:
+diff /etc/bluetooth/main.conf /etc/bluetooth/main.conf.pacnew Output:
+264a265,269 &gt; # This enables the GATT client functionally, so it can be disabled in system &gt; # which can only operate as a peripheral. &gt; # Defaults to &#39;true&#39;. &gt; #Client = true &gt; 311,315d315 &lt; # This enables the GATT client functionally, so it can be disabled in system &lt; # which can only operate as a peripheral. &lt; # Defaults to &#39;true&#39;. &lt; #Client = true &lt; 362c362 &lt; #AutoEnable=false --- &gt; #AutoEnable=true &gt; indicate what appear in the latter file and &lt; is pointing toward the former file.
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-18 00:00:00 +0000 UTC'>December 18, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to How to see differences between files" href="http://localhost:1313/daily-tips/diff/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">How do you make a launcher for an AppImage?
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Introduction For this purpose you actually have AppImageLauncher for the convenience, or the apps would actually self-generate this for you, but this doesn’t always happen. However, if you do mind the bloatness of said app (300 MB-ish), or the devs just don’t have the launcher ready, then you may consider making the launcher yourself, by hand.
+AppImage Launcher Template (AppName.desktop) This is my standard template for almost every AppImage:
+[Desktop Entry] Version=1.0 Type=Application Name=Application Name GenericName=App Type Categories=Utility; Comment=Brief description of the application Exec=/path/to/application.AppImage Icon=/path/to/icon.png Terminal=false StartupNotify=true Explanations (don’t copy this part to your file, please):
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-01 00:00:00 +0000 UTC'>December 1, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to How do you make a launcher for an AppImage?" href="http://localhost:1313/daily-tips/appimage_launcher_template/"></a>
+</article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
@@ -103,7 +156,7 @@ Disable bitlocker key To disable bitlocker key (not decrypt the whole drive), so
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">Flock137</a></span> · 
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flock137</a></span> · 
 
     <span>
         Powered by
