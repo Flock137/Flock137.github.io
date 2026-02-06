@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Yt-Dlp on Flock137</title>
+    <link>http://localhost:1313/tags/yt-dlp/</link>
+    <description>Recent content in Yt-Dlp on Flock137</description>
+    <generator>Hugo -- 0.154.5</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/yt-dlp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to download music from Youtube with yt-dlp (CLI)</title>
+      <link>http://localhost:1313/daily-tips/ytb_music_download/</link>
+      <pubDate>Fri, 19 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/daily-tips/ytb_music_download/</guid>
+      <description>&lt;h2 id=&#34;downloading-yt-dlp&#34;&gt;Downloading (yt-dlp)&lt;/h2&gt;
+&lt;p&gt;You use this command:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;yt-dlp -f &amp;#34;bestvideo[height=2160]+bestaudio&amp;#34; -x --audio-format flac &amp;#34;VIDEO_URL&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In this command, I&amp;rsquo;m downloading from a 4K video (2160p), and I like my music to be in the &lt;code&gt;.flac&lt;/code&gt; file. Feel free to change the quality and filetype into whatever you like.&lt;/p&gt;
+&lt;h2 id=&#34;update-metadata-ffmpeg&#34;&gt;Update metadata (ffmpeg)&lt;/h2&gt;
+&lt;p&gt;Since the metadata won&amp;rsquo;t come with the file by default, you may like to add it manually.&lt;/p&gt;
+&lt;p&gt;To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

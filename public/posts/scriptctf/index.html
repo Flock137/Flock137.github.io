@@ -6,13 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
 <title>ScriptCTF Writeup - Forensics | Flock137</title>
-<meta name="keywords" content="Writeup, Forensics, ScriptCTF">
-<meta name="description" content="pdf
+<meta name="keywords" content="Writeup, Forensics, ScriptCTF, CTF">
+<meta name="description" content="pdf (Author: Connor Chang)
 Description: so sad cause no flag in pdf
 The challenge attachment can be found here: https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf
 For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&rsquo;t need to use it. All we have to do is using binwalk
 binwalk -e challenge.pdf 
-In the extracted folder, click on (or cat) the text file, the flag is in there">
+In the extracted folder, click on (or cat) the text file (11B or something similar), the flag is in there
+">
 <meta name="author" content="">
 <link rel="canonical" href="http://localhost:1313/posts/scriptctf/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
@@ -81,6 +82,11 @@ In the extracted folder, click on (or cat) the text file, the flag is in there">
                     <span>Blog</span>
                 </a>
             </li>
+            <li>
+                <a href="http://localhost:1313/daily-tips/" title="Daily Tips">
+                    <span>Daily Tips</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
@@ -91,23 +97,50 @@ In the extracted folder, click on (or cat) the text file, the flag is in there">
     
     <h1 class="post-title entry-hint-parent">
       ScriptCTF Writeup - Forensics
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
     </h1>
     <div class="post-meta"><span title='2025-09-12 00:00:00 +0000 UTC'>September 12, 2025</span>
 
 </div>
-  </header> 
-  <div class="post-content"><h1 id="pdf">pdf<a hidden class="anchor" aria-hidden="true" href="#pdf">#</a></h1>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#pdf-author-connor-chang" aria-label="pdf (Author: Connor Chang)">pdf (Author: Connor Chang)</a></li>
+                <li>
+                    <a href="#diskchal-author-connor-chang" aria-label="diskchal (Author: Connor Chang)">diskchal (Author: Connor Chang)</a></li>
+                <li>
+                    <a href="#just-some-avocado-author-connor-chang" aria-label="Just some Avocado (Author: Connor Chang)">Just some Avocado (Author: Connor Chang)</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="pdf-author-connor-chang">pdf (Author: Connor Chang)<a hidden class="anchor" aria-hidden="true" href="#pdf-author-connor-chang">#</a></h1>
 <p>Description: so sad cause no flag in pdf</p>
 <p>The challenge attachment can be found here: <a href="https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf">https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf</a></p>
 <p>For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&rsquo;t need to use it. All we have to do is using <code>binwalk</code></p>
 <pre tabindex="0"><code>binwalk -e challenge.pdf 
-</code></pre><p>In the extracted folder, click on (or <code>cat</code>) the text file, the flag is in there</p>
+</code></pre><p>In the extracted folder, click on (or <code>cat</code>) the text file (<code>11B</code> or something similar), the flag is in there
+<img alt="alt text" loading="lazy" src="/posts/scriptctf/images/challenge.png"></p>
+<h1 id="diskchal-author-connor-chang">diskchal (Author: Connor Chang)<a hidden class="anchor" aria-hidden="true" href="#diskchal-author-connor-chang">#</a></h1>
+<p>Description: i accidentally vanished my flag, can u find it for me</p>
+<p>Attachment: <a href="https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/diskchal/attachments/stick.img">https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/diskchal/attachments/stick.img</a></p>
+<p>After doing some basic investigation on the image, I was bored and decided to use <code>binwalk</code> according to&hellip; gut feelings. I somehow found the <code>flag.txt</code> and it effectively ended the challenge.
+<img alt="alt text" loading="lazy" src="/posts/scriptctf/images/stick.png"></p>
+<h1 id="just-some-avocado-author-connor-chang">Just some Avocado (Author: Connor Chang)<a hidden class="anchor" aria-hidden="true" href="#just-some-avocado-author-connor-chang">#</a></h1>
+<p>Description: just an innocent little avocado!</p>
+<p>Attachment: <a href="https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/JustSomeAvocado/attachments/avocado.jpg">https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/JustSomeAvocado/attachments/avocado.jpg</a></p>
+<p>By instinct, I do a <code>binwalk -e</code> again and found a zip file with password. Bruteforce it using <code>john</code> or <code>hydra</code> with the wordlist <code>rockyou.txt</code> (you can find it on github).
+Inside the file, there&rsquo;s another zip file which contain our flag and a <code>staticnoise.wav</code>, in which by listening to it, I figure out this is a steganography.</p>
+<p>Open <code>staticnoise.wav</code> in Audacity, click on the <code>...</code> on the left pane, tick on &ldquo;spectrogram&rdquo;
+<img alt="alt text" loading="lazy" src="/posts/scriptctf/images/spectrogram.png"></p>
+<p>And, you got the flag!
+<img alt="alt text" loading="lazy" src="/posts/scriptctf/images/spectro_flag.png"></p>
 
 
   </div>
@@ -117,13 +150,14 @@ In the extracted folder, click on (or cat) the text file, the flag is in there">
       <li><a href="http://localhost:1313/tags/writeup/">Writeup</a></li>
       <li><a href="http://localhost:1313/tags/forensics/">Forensics</a></li>
       <li><a href="http://localhost:1313/tags/scriptctf/">ScriptCTF</a></li>
+      <li><a href="http://localhost:1313/tags/ctf/">CTF</a></li>
     </ul>
   </footer>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">Flock137</a></span> · 
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flock137</a></span> · 
 
     <span>
         Powered by

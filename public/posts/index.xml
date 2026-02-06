@@ -4,21 +4,40 @@
     <title>Posts on Flock137</title>
     <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Flock137</description>
-    <generator>Hugo -- 0.149.1</generator>
+    <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 22 Sep 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ai_gon3_r0ug3 Writeup</title>
+      <link>http://localhost:1313/posts/ai_gon3_r0ug3/</link>
+      <pubDate>Mon, 22 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/ai_gon3_r0ug3/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;This is a Private CTF organized under the collaboration between HackerOne and HackTheBox that focus only on the AI category.&lt;/p&gt;
+&lt;h1 id=&#34;re-car-ai&#34;&gt;Re-car AI&lt;/h1&gt;
+&lt;p&gt;You have been tasked with pentesting the largest used car listing website in your area. They have recently implemented an AI chatbot in their listing page to help users with common questions. The website&amp;rsquo;s policy is not to disclose the seller&amp;rsquo;s information unless the user is logged in. Can you find a way to bypass the filters and reveal the seller&amp;rsquo;s phone number by asking the chatbot? Flag format: &lt;code&gt;HTB{xxx-xxxx-xxx}&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Girls-in-CTF Writeup - Forensics &amp; AI</title>
+      <link>http://localhost:1313/posts/gctf/</link>
+      <pubDate>Thu, 18 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/gctf/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;To encourage and celebrate women/girls in cyber security, &lt;a href=&#34;https://www.rehack.xyz/&#34;&gt;Re:Hack&lt;/a&gt; has organized this girls-only-CTF. As a woman, I really appreciate this effort and it feels incredibly inspiring. This is the first time that myself see so many girls and women gather in one place and all are incredibly passionate about this very technical field. So, I would like to give a very special thank-you to the organizers and all the challenge writers involved to make this sort of event possible.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>ScriptCTF Writeup - Forensics</title>
       <link>http://localhost:1313/posts/scriptctf/</link>
       <pubDate>Fri, 12 Sep 2025 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/posts/scriptctf/</guid>
-      <description>&lt;h1 id=&#34;pdf&#34;&gt;pdf&lt;/h1&gt;
+      <description>&lt;h1 id=&#34;pdf-author-connor-chang&#34;&gt;pdf (Author: Connor Chang)&lt;/h1&gt;
 &lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;
 &lt;p&gt;The challenge attachment can be found here: &lt;a href=&#34;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&#34;&gt;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&amp;rsquo;t need to use it. All we have to do is using &lt;code&gt;binwalk&lt;/code&gt;&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;binwalk -e challenge.pdf 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the extracted folder, click on (or &lt;code&gt;cat&lt;/code&gt;) the text file, the flag is in there&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the extracted folder, click on (or &lt;code&gt;cat&lt;/code&gt;) the text file (&lt;code&gt;11B&lt;/code&gt; or something similar), the flag is in there
+&lt;img alt=&#34;alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/scriptctf/images/challenge.png&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>How did I repair an (Arch) Linux bootloader twice</title>
