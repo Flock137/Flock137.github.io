@@ -1,6 +1,6 @@
 ---
 title: How to recover deleted files on usb or memory card
-date: 2026-21-02
+date: 2026-02-21
 draft: false
 ShowToc: true
 tags: 
