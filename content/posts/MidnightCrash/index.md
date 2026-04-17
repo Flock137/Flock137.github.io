@@ -87,7 +87,7 @@ In here you can see that:
 - The kernel is tainted (got tampered with)
 - This is only a partial dump, and that it might not provide you with full information (irrelevant to this particular case though)
 - **Captured datetime** in UTC +7 (my timezone)
-- Nodename, or **Hostname** `ubuntu-2204
+- Nodename, or **Hostname** `ubuntu-2204`
 - Kernel version (Release section)
 - Architecture used, Memory 
 - Panic occured at which **PID**, with **command executed that lead to the crash**
