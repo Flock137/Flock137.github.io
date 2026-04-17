@@ -1,0 +1,33 @@
+{{ define "main" }}
+<section style="padding: 4rem 0 2rem;">
+  <h1 style="font-size: 2.6rem; font-weight: 800; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+    {{ .Site.Title }}
+  </h1>
+  {{ with .Site.Params.tagline }}
+  <p style="color: var(--text-muted); margin-top: .6rem; font-size: 1.1rem;">{{ . }}</p>
+  {{ end }}
+
+</section>
+
+<h2 style="font-size: 1.1rem; color: var(--text-muted); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 1rem;">Latest Posts</h2>
+<div class="post-grid">
+  {{ range first 6 (where .Site.RegularPages "Type" "posts") }}
+  <article class="post-card">
+    <a href="{{ .RelPermalink }}">
+      {{ $thumb := .Params.thumbnail }}
+      <div class="card-thumb{{ if not $thumb }} no-image{{ end }}">
+        {{ if $thumb }}
+          <img src="{{ $thumb }}" alt="{{ .Title }}" loading="lazy">
+        {{ else }}
+        {{ end }}
+      </div>
+    </a>
+    <div class="card-body">
+      <a class="card-title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ with .Description }}<p class="card-desc">{{ . }}</p>{{ end }}
+      <p class="card-meta">{{ .Date.Format "Jan 2, 2006" }} · {{ .ReadingTime }} min read</p>
+    </div>
+  </article>
+  {{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,9 @@
+{{/* Usage: {{ partial "thumbnail.html" (dict "thumb" .Params.thumbnail "title" .Title "class" "post-thumbnail") }} */}}
+{{ $thumb := .thumb }}
+{{ $title := .title }}
+{{ $class := .class | default "post-thumbnail" }}
+<div class="{{ $class }}{{ if not $thumb }} no-image{{ end }}">
+  {{ if $thumb }}
+    <img src="{{ $thumb }}" alt="{{ $title }}" loading="lazy">
+  {{ end }}
+</div>

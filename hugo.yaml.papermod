@@ -1,0 +1,43 @@
+baseURL: https://flock137.github.io/
+languageCode: en-us
+title: Flock137
+theme: PaperMod
+
+timeZone: "Asia/Bangkok"
+
+params:
+  defaultTheme: dark
+  homeInfoParams:
+    Title: "Hi there \U0001F44B"
+    Content: >-
+      Welcome to my blog site. Thank you for coming.
+  socialIcons:
+    - name: email
+      url: 'mailto:hadinhworks@vinuni.edu.vn'
+    - name: github
+      url: https://github.com/Flock137
+    - name: linkedin
+      url: https://www.linkedin.com/in/ha-dinh-53696429a/
+    - name: X
+      url: https://x.com/Flo_ck137
+    - name: facebook
+      url: https://www.facebook.com/thanh.ha.inh.340510
+
+menu:
+  main:
+  - identifier: home
+    name: Home
+    url: /
+    weight: 10
+  - identifier: posts
+    name: Blog
+    url: /posts/
+    weight: 20
+  - identifier: daily-tech-tips
+    name: Daily Tips 
+    url: /daily-tips/
+    weight: 20
+
+caches:
+  images:
+    dir: :cacheDir/images
