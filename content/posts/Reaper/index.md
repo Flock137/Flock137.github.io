@@ -76,7 +76,7 @@ We have three hosts: 001 (Task 1), 002 (Task 2), and Unknown - whose IP ends wit
 
 Filtering `smb2` and the IP ends with 135 as source IP:
 
-![Wireshark smb2 filter](images/Pasted image 20260413235520.png)
+![Wireshark smb2 filter](images/Pasted%20image%2020260413235520.png)
 
 And at the same time, in event logs: 
 
