@@ -1,5 +1,5 @@
 ---
-title: Sherlock - MidnightCrash writeup
+title: Sherlock - Reaper writeup
 date: 2026-04-17
 draft: false
 showToc: true 
