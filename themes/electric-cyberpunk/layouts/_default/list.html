@@ -1,0 +1,31 @@
+{{ define "main" }}
+<h1 style="padding: 2rem 0 .5rem; font-size: 1.6rem; color: var(--text);">
+  {{ .Title | default "Posts" }}
+</h1>
+<div class="post-grid">
+  {{ range .Paginator.Pages }}
+  <article class="post-card">
+    <a href="{{ .RelPermalink }}">
+      {{ $thumb := .Params.thumbnail }}
+      <div class="card-thumb{{ if not $thumb }} no-image{{ end }}">
+        {{ if $thumb }}
+          <img src="{{ $thumb }}" alt="{{ .Title }}" loading="lazy">
+        {{ else }}
+        {{ end }}
+      </div>
+    </a>
+    <div class="card-body">
+      <a class="card-title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ with .Description }}<p class="card-desc">{{ . }}</p>{{ end }}
+      <p class="card-meta">{{ .Date.Format "Jan 2, 2006" }} · {{ .ReadingTime }} min read</p>
+      {{ with .Params.tags }}
+      <div class="card-tags">
+        {{ range . }}<span class="tag">{{ . }}</span>{{ end }}
+      </div>
+      {{ end }}
+    </div>
+  </article>
+  {{ end }}
+</div>
+{{ template "_internal/pagination.html" . }}
+{{ end }}

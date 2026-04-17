@@ -1,0 +1,29 @@
+{{ define "main" }}
+<div class="post-layout">
+  <!-- Article -->
+  <article>
+    {{ partial "thumbnail.html" (dict "thumb" .Params.thumbnail "title" .Title "class" "post-thumbnail") }}
+
+    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">{{ .Title }}</h1>
+    <div class="post-meta">
+      <span>{{ .Date.Format "January 2, 2006" }}</span>
+      <span>{{ .ReadingTime }} min read</span>
+      {{ with .Params.tags }}
+        {{ range . }}<span class="tag">{{ . }}</span>{{ end }}
+      {{ end }}
+    </div>
+
+    <div class="post-content">
+      {{ .Content }}
+    </div>
+  </article>
+
+  <!-- ToC Sidebar -->
+  {{ if and (.Params.toc | default true) (.TableOfContents) }}
+  <aside class="toc-sidebar">
+    <h3>On this page</h3>
+    <nav>{{ .TableOfContents }}</nav>
+  </aside>
+  {{ end }}
+</div>
+{{ end }}

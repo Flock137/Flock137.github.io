@@ -1,0 +1,16 @@
+name: "Electric Cyberpunk"
+license: "MIT"
+licenselink: "https://opensource.org/licenses/MIT"
+description: "A synthwave-inspired dark/light Hugo theme for technical blogs."
+homepage: "https://github.com/yourname/synthwave-dev"
+tags:
+  - blog
+  - dark
+  - synthwave
+  - technical
+  - toc
+features:
+  - toc
+  - syntax highlighting
+  - light/dark toggle
+min_version: "0.112.0"
