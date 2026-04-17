@@ -1,3 +1,13 @@
+---
+title: Sherlock - MidnightCrash writeup
+date: 2026-04-17
+draft: false
+showToc: true 
+tags:
+  - Forensics
+  - Windows
+---
+
 This is one of the HackTheBox's Sherlock - Reaper.
 
 It's also one of the more terrible and sloppy write-up of mine, I don't recommend you reading this unless there really is no other choice. 
