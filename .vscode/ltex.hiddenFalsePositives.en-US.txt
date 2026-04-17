@@ -1,0 +1,2 @@
+{"rule":"COMP_THAN","sentence":"^\\QThe attacker then authenticates and logs in to the target machine(Wkstn001 using the arthur.kyle account) and then dumps the SAM Hashes from the remote machine.\\E$"}
+{"rule":"COMP_THAN","sentence":"^\\QThe attacker then authenticates and logs in to the target machine(Wkstn001 using the \\E(?:Dummy|Ina|Jimmy-|Dummy-|Maniquí-|Maniquíes-|Dummy\\+|Dummy's\\+)[0-9]+\\Q account) and then dumps the SAM Hashes from the remote machine.\\E$"}
