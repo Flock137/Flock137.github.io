@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Memory on Flock137</title>
+    <link>http://localhost:1313/tags/memory/</link>
+    <description>Recent content in Memory on Flock137</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 21 Feb 2026 00:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/memory/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to recover deleted files on usb or memory card</title>
+      <link>http://localhost:1313/posts/file_recovery/</link>
+      <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/file_recovery/</guid>
+      <description>&lt;h1 id=&#34;tldr&#34;&gt;TLDR&lt;/h1&gt;&#xA;&lt;p&gt;Stop using both the usb and memory card at once. Else, it will be next to impossible to recover anything back, since the data cells got overwritten, instead of just being &amp;ldquo;unlisted&amp;rdquo;.&lt;/p&gt;&#xA;&lt;p&gt;On Window (Linux), you can just install Recuva (extundelete or fatcat) for free and point the app to your usb or memory card, you&amp;rsquo;re welcome. However, I would still prefer a more sure-fire way to preserve my data, hence the blog.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

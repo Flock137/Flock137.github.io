@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assembly on Flock137</title>
+    <link>http://localhost:1313/tags/assembly/</link>
+    <description>Recent content in Assembly on Flock137</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 12 Mar 2026 00:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/assembly/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding ARM dissassembly</title>
+      <link>http://localhost:1313/posts/arm_disasm/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/arm_disasm/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&amp;rsquo;s happening at the hardware level.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-example-stm32-led-blink&#34;&gt;The Example: STM32 LED Blink&lt;/h2&gt;&#xA;&lt;p&gt;We&amp;rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: &lt;a href=&#34;https://github.com/Flock137/stm32_blinky_baremetal&#34;&gt;https://github.com/Flock137/stm32_blinky_baremetal&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

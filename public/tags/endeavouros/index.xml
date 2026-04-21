@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>EndeavourOS on Flock137</title>
+    <link>http://localhost:1313/tags/endeavouros/</link>
+    <description>Recent content in EndeavourOS on Flock137</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/endeavouros/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Setting up a stable Arch-based Penetration Testing environment</title>
+      <link>http://localhost:1313/posts/post_install_script/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/post_install_script/</guid>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;This is actually my thought process of making this script &lt;a href=&#34;https://github.com/Flock137/EOSxBlackArch&#34;&gt;https://github.com/Flock137/EOSxBlackArch&lt;/a&gt;, where I put the BlackArch repo on top of EndeavourOS for a quick Arch pentest environment, since BlackArch is a bit of a hassle for installing quickly.&lt;/p&gt;&#xA;&lt;p&gt;I hope it would help you in the case you wanna make an automation script yourself someday.&lt;/p&gt;&#xA;&lt;h1 id=&#34;first-and-foremost&#34;&gt;First and foremost&lt;/h1&gt;&#xA;&lt;p&gt;Install EndeavourOS. We will port our BlackArch repo into right after the former&amp;rsquo;s installation finish.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

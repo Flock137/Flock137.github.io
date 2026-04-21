@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Arch on Flock137</title>
     <link>http://localhost:1313/tags/arch/</link>
     <description>Recent content in Arch on Flock137</description>
-    <generator>Hugo -- 0.154.5</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0700</lastBuildDate>
+    <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/arch/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Setting up a stable Arch-based Penetration Testing environment</title>
+      <link>http://localhost:1313/posts/post_install_script/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/post_install_script/</guid>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;This is actually my thought process of making this script &lt;a href=&#34;https://github.com/Flock137/EOSxBlackArch&#34;&gt;https://github.com/Flock137/EOSxBlackArch&lt;/a&gt;, where I put the BlackArch repo on top of EndeavourOS for a quick Arch pentest environment, since BlackArch is a bit of a hassle for installing quickly.&lt;/p&gt;&#xA;&lt;p&gt;I hope it would help you in the case you wanna make an automation script yourself someday.&lt;/p&gt;&#xA;&lt;h1 id=&#34;first-and-foremost&#34;&gt;First and foremost&lt;/h1&gt;&#xA;&lt;p&gt;Install EndeavourOS. We will port our BlackArch repo into right after the former&amp;rsquo;s installation finish.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>How did I repair an (Arch) Linux bootloader twice</title>
       <link>http://localhost:1313/posts/bootloader_failed/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/bootloader_failed/</guid>
-      <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;
-&lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.
-Not to mention, I no longer see my &lt;code&gt;systemd&lt;/code&gt; bootloader screen.&lt;/p&gt;
-&lt;h2 id=&#34;disable-bitlocker-key&#34;&gt;Disable bitlocker key&lt;/h2&gt;
-&lt;p&gt;To disable bitlocker key (not decrypt the whole drive), so the windows partition won&amp;rsquo;t ask you bitlocker password over and over again when you dual-boot:&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;&#xA;&lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.&#xA;Not to mention, I no longer see my &lt;code&gt;systemd&lt;/code&gt; bootloader screen.&lt;/p&gt;&#xA;&lt;h2 id=&#34;disable-bitlocker-key&#34;&gt;Disable bitlocker key&lt;/h2&gt;&#xA;&lt;p&gt;To disable bitlocker key (not decrypt the whole drive), so the windows partition won&amp;rsquo;t ask you bitlocker password over and over again when you dual-boot:&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
