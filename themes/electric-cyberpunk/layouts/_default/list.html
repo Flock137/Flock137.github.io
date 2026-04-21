@@ -3,7 +3,7 @@
   {{ .Title | default "Posts" }}
 </h1>
 <div class="post-grid">
-  {{ range .Paginator.Pages }}
+  {{ range where .Paginator.Pages "Kind" "page" }}
   <article class="post-card">
     <a href="{{ .RelPermalink }}">
       {{ $thumb := .Params.thumbnail }}
@@ -27,5 +27,5 @@
   </article>
   {{ end }}
 </div>
-{{ template "_internal/pagination.html" . }}
+{{ partial "pagination.html" . }}
 {{ end }}

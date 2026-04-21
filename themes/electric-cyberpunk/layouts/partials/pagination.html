@@ -1,0 +1,20 @@
+{{ $p := .Paginator }}
+{{ if gt $p.TotalPages 1 }}
+<nav class="pagination">
+  {{ if $p.HasPrev }}
+    <a href="{{ $p.First.URL }}">&laquo;</a>
+    <a href="{{ $p.Prev.URL }}">&lsaquo;</a>
+  {{ end }}
+  {{ range $p.Pagers }}
+    {{ if eq . $p }}
+      <span class="active">{{ .PageNumber }}</span>
+    {{ else }}
+      <a href="{{ .URL }}">{{ .PageNumber }}</a>
+    {{ end }}
+  {{ end }}
+  {{ if $p.HasNext }}
+    <a href="{{ $p.Next.URL }}">&rsaquo;</a>
+    <a href="{{ $p.Last.URL }}">&raquo;</a>
+  {{ end }}
+</nav>
+{{ end }}

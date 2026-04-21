@@ -19,7 +19,7 @@
   </article>
 
   <!-- ToC Sidebar -->
-  {{ if and (.Params.toc | default true) (.TableOfContents) }}
+  {{ if .Params.showToc }}
   <aside class="toc-sidebar">
     <h3>On this page</h3>
     <nav>{{ .TableOfContents }}</nav>
