@@ -1,144 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
-
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<html lang="en" data-theme="dark">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Failed attempt on performing Hardware Forensics (STM32) | Flock137</title>
-<meta name="keywords" content="Forensics, Hardware, Debug, Linux">
-<meta name="description" content="Introduction
-I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.
-As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.">
-<meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/stm32_failed/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/stm32_failed/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
+<meta name="description" content="">
 
-    </style>
-</noscript>
+<link rel="stylesheet" href="/css/main.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="generator" content="Hugo 0.160.1">
+
 </head>
-
-<body class=" dark" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    }
-
-</script>
-
-<header class="header">
-    <nav class="nav">
-        <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="Flock137 (Alt + H)">Flock137</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu">
-            <li>
-                <a href="http://localhost:1313/" title="Home">
-                    <span>Home</span>
-                </a>
-            </li>
-            <li>
-                <a href="http://localhost:1313/posts/" title="Blog">
-                    <span>Blog</span>
-                </a>
-            </li>
-            <li>
-                <a href="http://localhost:1313/daily-tips/" title="Daily Tips">
-                    <span>Daily Tips</span>
-                </a>
-            </li>
-        </ul>
+<body class="site-wrap">
+  <header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="/">Flock137</a>
+    <nav class="site-nav">
+      
+        <a href="/posts/">Blog</a>
+      
+        <a href="/daily-tips/">Daily Tips</a>
+      
+      <button id="theme-toggle" aria-label="Toggle theme">☀️ Light</button>
     </nav>
+  </div>
 </header>
-<main class="main">
 
-<article class="post-single">
-  <header class="post-header">
+  <main class="container">
     
-    <h1 class="post-title entry-hint-parent">
-      Failed attempt on performing Hardware Forensics (STM32)
-    </h1>
-    <div class="post-meta"><span title='2026-02-06 00:00:00 +0700 +07'>February 6, 2026</span>
+<div class="post-layout">
+  
+  <article>
+    
 
-</div>
-  </header> <div class="toc">
-    <details >
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
-        </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#introduction" aria-label="Introduction">Introduction</a></li>
-                <li>
-                    <a href="#prerequisites" aria-label="Prerequisites">Prerequisites</a></li>
-                <li>
-                    <a href="#file-structure" aria-label="File structure">File structure</a></li>
-                <li>
-                    <a href="#executed-steps" aria-label="Executed steps">Executed steps</a></li>
-                <li>
-                    <a href="#gdb" aria-label="GDB">GDB</a></li>
-                <li>
-                    <a href="#errors-encountered-and-issues" aria-label="Errors encountered and Issues">Errors encountered and Issues</a><ul>
-                        
-                <li>
-                    <a href="#program-continuing-forever-inside-gdb" aria-label="Program continuing forever inside gdb">Program continuing forever inside gdb</a></li></ul>
-                </li>
-                <li>
-                    <a href="#logs" aria-label="Logs">Logs</a></li>
-                <li>
-                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a>
-                </li>
-            </ul>
-        </div>
-    </details>
+
+<div class="post-thumbnail no-image">
+  
 </div>
 
-  <div class="post-content"><h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
+
+    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">Failed attempt on performing Hardware Forensics (STM32)</h1>
+    <div class="post-meta">
+      <span>February 6, 2026</span>
+      <span>6 min read</span>
+      
+        <span class="tag">Forensics</span><span class="tag">Hardware</span><span class="tag">Debug</span><span class="tag">Linux</span>
+      
+    </div>
+
+    <div class="post-content">
+      <h2 id="introduction">Introduction</h2>
 <p>I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.</p>
 <p>As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.</p>
-<h2 id="prerequisites">Prerequisites<a hidden class="anchor" aria-hidden="true" href="#prerequisites">#</a></h2>
+<h2 id="prerequisites">Prerequisites</h2>
 <p>For this, you need these packages: <code>arm-none-eabi-gcc</code>, <code>gdb</code> (or <code>gdb-multiarch</code>, it might depend on which distro you use) and <code>qemu-system-arm</code></p>
 <p>Installation command on all Arch and Arch-based systems:</p>
 <pre tabindex="0"><code>sudo pacman -S arm-none-eabi-gcc gdb qemu-system-arm 
 </code></pre><p>For other distros, please search for your equivalent command and packages, as sometimes, it varies.</p>
-<h2 id="file-structure">File structure<a hidden class="anchor" aria-hidden="true" href="#file-structure">#</a></h2>
+<h2 id="file-structure">File structure</h2>
 <pre tabindex="0"><code>❯ tree
 .
 ├── build
@@ -153,7 +74,7 @@ As weird as it is to write about a failed attempt on a blog post, this is writte
 └── stm32f103c8t6.ld
 </code></pre><p>.bin is created later, after successfully compiling the .elf file by typing the command:</p>
 <pre tabindex="0"><code>❯ arm-none-eabi-objcopy -O binary build/blink.elf build/blink.bin
-</code></pre><h2 id="executed-steps">Executed steps<a hidden class="anchor" aria-hidden="true" href="#executed-steps">#</a></h2>
+</code></pre><h2 id="executed-steps">Executed steps</h2>
 <p>Write <code>main.c</code>, header (<code>.h</code>) linker (<code>.ld</code>) and vector table (<code>vector.c</code>) and put into its respective places, which was mentionned above. Then you will start to compile the binary (<code>.elf</code>):</p>
 <pre tabindex="0"><code>arm-none-eabi-gcc \
   -mcpu=cortex-m3 \
@@ -189,7 +110,7 @@ echo &#34;QEMU started. PID: $!&#34;
 </code></pre><p>Right after that, this might appear:</p>
 <pre tabindex="0"><code>✦ ❯ VNC server running on ::1:5900
 </code></pre><p>Now we can start debugging session within gdb.</p>
-<h2 id="gdb">GDB<a hidden class="anchor" aria-hidden="true" href="#gdb">#</a></h2>
+<h2 id="gdb">GDB</h2>
 <p>In a separated terminal:</p>
 <pre tabindex="0"><code>cd ~/stm32_forensics/blink
 gdb build/blink.elf
@@ -198,7 +119,7 @@ gdb build/blink.elf
 (gdb) load  # Load your program
 (gdb) break main
 (gdb) continue  
-</code></pre><h2 id="errors-encountered-and-issues">Errors encountered and Issues<a hidden class="anchor" aria-hidden="true" href="#errors-encountered-and-issues">#</a></h2>
+</code></pre><h2 id="errors-encountered-and-issues">Errors encountered and Issues</h2>
 <pre tabindex="0"><code>src/main.c:2:1: note: &#39;uint32_t&#39; is defined in header &#39;&lt;stdint.h&gt;&#39;; this is probably fixable by adding &#39;#include &lt;stdint.h&gt;&#39;
     1 | #include &#34;stm32f103c8t6.h&#34;
   +++ |+#include &lt;stdint.h&gt;
@@ -207,7 +128,7 @@ gdb build/blink.elf
    24 |     main();
       |     ^~~~
 </code></pre><p>It means that the <code>main()</code> is being called before your definition of main itself.</p>
-<h3 id="program-continuing-forever-inside-gdb">Program continuing forever inside gdb<a hidden class="anchor" aria-hidden="true" href="#program-continuing-forever-inside-gdb">#</a></h3>
+<h3 id="program-continuing-forever-inside-gdb">Program continuing forever inside gdb</h3>
 <p>If it&rsquo;s blank after you <code>continue</code>, it means that something went wrong, Ctrl+C and inspect:</p>
 <pre tabindex="0"><code>^C
 Program received signal SIGINT, Interrupt.
@@ -318,7 +239,7 @@ Disassembly of section .text:
  8000078:	40021018 	.word	0x40021018
  800007c:	40011004 	.word	0x40011004
 </code></pre><p>This is one of the processes disasembly.</p>
-<h2 id="logs">Logs<a hidden class="anchor" aria-hidden="true" href="#logs">#</a></h2>
+<h2 id="logs">Logs</h2>
 <p>This was made on a similar but simplified version of the blinker.</p>
 <pre tabindex="0"><code>~/Projects/simple_stm32 
 ✦ ❯ arm-none-eabi-objdump -s -j .isr_vector build/blink.elf
@@ -363,92 +284,44 @@ Disassembly of section .text:
  800002c:	4a04      	ldr	r2, [pc, #16]	@ (8000040 &lt;crude_delay+0x28&gt;)
  800002e:	4293      	cmp	r3, r2
 </code></pre><p>The processes is rather normal to my eyes, and as I start the program in gdb, it stuck at <code>Default_Handler()</code> again, and I found out that both process seemed to have never reached <code>main()</code>.</p>
-<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<h2 id="conclusion">Conclusion</h2>
 <p><em>And the journey continue&hellip;</em></p>
 
+    </div>
+  </article>
 
+  
+  
+  <aside class="toc-sidebar">
+    <h3>On this page</h3>
+    <nav><nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#file-structure">File structure</a></li>
+    <li><a href="#executed-steps">Executed steps</a></li>
+    <li><a href="#gdb">GDB</a></li>
+    <li><a href="#errors-encountered-and-issues">Errors encountered and Issues</a>
+      <ul>
+        <li><a href="#program-continuing-forever-inside-gdb">Program continuing forever inside gdb</a></li>
+      </ul>
+    </li>
+    <li><a href="#logs">Logs</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav></nav>
+  </aside>
+  
+</div>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2026 Flock137 · Built with <a href="https://gohugo.io">Hugo</a></p>
   </div>
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-      <li><a href="http://localhost:1313/tags/forensics/">Forensics</a></li>
-      <li><a href="http://localhost:1313/tags/hardware/">Hardware</a></li>
-      <li><a href="http://localhost:1313/tags/debug/">Debug</a></li>
-      <li><a href="http://localhost:1313/tags/linux/">Linux</a></li>
-    </ul>
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="http://localhost:1313/">Flock137</a></span> · 
-
-    <span>
-        Powered by
-        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
 </footer>
-<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
-        <path d="M12 6H0l6-6z" />
-    </svg>
-</a>
 
-<script>
-    let menu = document.getElementById('menu')
-    if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var mybutton = document.getElementById("top-link");
-    window.onscroll = function () {
-        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
-            mybutton.style.visibility = "visible";
-            mybutton.style.opacity = "1";
-        } else {
-            mybutton.style.visibility = "hidden";
-            mybutton.style.opacity = "0";
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            document.body.classList.add('dark');
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
+  
+  <script src="/js/theme.min.js" defer></script>
 </body>
-
 </html>

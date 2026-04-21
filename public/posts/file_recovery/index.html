@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to recover deleted files on usb or memory card | Flock137</title>
+<meta name="description" content="">
+
+<link rel="stylesheet" href="/css/main.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="generator" content="Hugo 0.160.1">
+
+</head>
+<body class="site-wrap">
+  <header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="/">Flock137</a>
+    <nav class="site-nav">
+      
+        <a href="/posts/">Blog</a>
+      
+        <a href="/daily-tips/">Daily Tips</a>
+      
+      <button id="theme-toggle" aria-label="Toggle theme">☀️ Light</button>
+    </nav>
+  </div>
+</header>
+
+  <main class="container">
+    
+<div class="post-layout">
+  
+  <article>
+    
+
+
+
+<div class="post-thumbnail no-image">
+  
+</div>
+
+
+    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">How to recover deleted files on usb or memory card</h1>
+    <div class="post-meta">
+      <span>February 21, 2026</span>
+      <span>3 min read</span>
+      
+        <span class="tag">Linux</span><span class="tag">Windows</span><span class="tag">Memory</span><span class="tag">Forensics</span>
+      
+    </div>
+
+    <div class="post-content">
+      <h1 id="tldr">TLDR</h1>
+<p>Stop using both the usb and memory card at once. Else, it will be next to impossible to recover anything back, since the data cells got overwritten, instead of just being &ldquo;unlisted&rdquo;.</p>
+<p>On Window (Linux), you can just install Recuva (extundelete or fatcat) for free and point the app to your usb or memory card, you&rsquo;re welcome. However, I would still prefer a more sure-fire way to preserve my data, hence the blog.</p>
+<h1 id="introduction">Introduction</h1>
+<p>Dear my future-self and future-comers, I hope you won&rsquo;t need this. But, if you do, this guide has your back.</p>
+<p>Godspeed!</p>
+<h1 id="before-we-begin">Before we begin&hellip;</h1>
+<p>Note that, while you are messing with your files in either Linux and Windows, anything deleted on detachable memory will be stored in their respective trash bins.</p>
+<p>On Windows, that will be in your usual trash bin.</p>
+<p>On Linux, however, to make sure people don&rsquo;t mess things up by accident, it will be stored in a hidden folder that look similar to <code>.Trash-1000</code> within that detachable device. In order to see the folder, you need to enable Hidden Files in your Files Manager. And, for deleting it, you can not use the GUI, but instead, open the Terminal within that USB and <code>sudo rm- rf .Trash-1000</code> to delete permanently (Yes, I wish there is a less destructive command, like <code>rm -rd</code>, but it is really the only command you can use&hellip;).
+<em><strong>Please only attempt this when you know exactly what you are doing.</strong></em></p>
+<h1 id="recovery-steps">Recovery steps</h1>
+<p>First, stop using your cards/usb (from now on, I will only mention the usb, but the steps for cards are still identical) at once, to minimize any writing activity on them. Then set permission to read-only.</p>
+<p>Next, we need to image the drive.</p>
+<h2 id="on-linux">On Linux</h2>
+<p>Use ddrescue OR dd (it&rsquo;s on linux by default, but I recommend using ddrescue because it&rsquo;s more straightforward)</p>
+<pre tabindex="0"><code>sudo ddrescue /dev/sdX usb_image.img usb_image.log
+</code></pre><p>Or:</p>
+<pre tabindex="0"><code>sudo dd if=/dev/sdX of=usb_image.img bs=4M status=progress conv=noerror,sync
+</code></pre><p>*change the sdX by your actual drive listed by <code>lsblk</code></p>
+<p>Now, try either on the image file that you just create:</p>
+<ul>
+<li>testdisk: When you want to preserve file names.</li>
+<li>photorec: When testdisk does not work, and you don&rsquo;t mind file names are messed up.</li>
+<li>If you can determine that your disks are either any <code>FAT</code> or any <code>ext</code>, try accordingly: extundelete or fatcat</li>
+</ul>
+<h2 id="windows">Windows</h2>
+<p>Download FTK Imager (proprietary, but free for personal use, you just need to fill in a form) for imaging disk:</p>
+<pre tabindex="0"><code>File -&gt; Create Disk Image -&gt; Physical Drive -&gt; select your USB -&gt; Output as raw (.dd or .img)
+</code></pre><p>After you have the image, use either Autopsy (the proper DFIR way) or Recuva (when you don&rsquo;t really need to know how to use Autopsy)</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>The tutorial did not cover any edge cases&hellip; I really hope you don&rsquo;t have to encounter them.</p>
+<p>Good luck!</p>
+
+    </div>
+  </article>
+
+  
+  
+  <aside class="toc-sidebar">
+    <h3>On this page</h3>
+    <nav><nav id="TableOfContents">
+  <ul>
+    <li><a href="#on-linux">On Linux</a></li>
+    <li><a href="#windows">Windows</a></li>
+  </ul>
+</nav></nav>
+  </aside>
+  
+</div>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2026 Flock137 · Built with <a href="https://gohugo.io">Hugo</a></p>
+  </div>
+</footer>
+
+  
+  <script src="/js/theme.min.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sherlock - MidnightCrash writeup | Flock137</title>
+<meta name="description" content="">
+
+<link rel="stylesheet" href="/css/main.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="generator" content="Hugo 0.160.1">
+
+</head>
+<body class="site-wrap">
+  <header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="/">Flock137</a>
+    <nav class="site-nav">
+      
+        <a href="/posts/">Blog</a>
+      
+        <a href="/daily-tips/">Daily Tips</a>
+      
+      <button id="theme-toggle" aria-label="Toggle theme">☀️ Light</button>
+    </nav>
+  </div>
+</header>
+
+  <main class="container">
+    
+<div class="post-layout">
+  
+  <article>
+    
+
+
+
+<div class="post-thumbnail no-image">
+  
+</div>
+
+
+    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">Sherlock - MidnightCrash writeup</h1>
+    <div class="post-meta">
+      <span>April 17, 2026</span>
+      <span>8 min read</span>
+      
+        <span class="tag">Forensics</span><span class="tag">Linux</span>
+      
+    </div>
+
+    <div class="post-content">
+      <h2 id="forewords">Forewords</h2>
+<p>Ah yes, finally, some Linux forensics tasks. Though, this one should have been on the difficulty level of easy, not medium (in my opinion of course, but don&rsquo;t listen to this linux addict ;))</p>
+<p>The most difficult part of this sherlock, in my opinion, is to figure out which tool would you need to read the kdump file, and henceforth, how to use <code>crash</code>.</p>
+<h2 id="introduction-and-scenario">Introduction and Scenario</h2>
+<blockquote>
+<p>A production server crashed unexpectedly and rebooted. The crash happened at a strange time, and we doubt it was a simple hardware fault. A kernel crash dump was captured. Your mission is to analyze it to find the real cause of the crash and determine if any other suspicious activity was present on the system.</p>
+</blockquote>
+<p>Straightforward enough, the scenario tells us to analyze a kernel crash dump.</p>
+<p>Folder structure:</p>
+<pre tabindex="0"><code>❯ tree
+.
+├── ubuntu22.04-5.15.0-25-generic-202511032103.kdump
+└── vmlinux-dbgsym
+</code></pre><p>We have a kernel crash dump and an uncompressed kernel ELF binary with full debug symbols.</p>
+<h2 id="task-list">Task list</h2>
+<ol>
+<li>What is the hostname of the crashed server?</li>
+<li>What is the assigned IP address of the server at time of crash?</li>
+<li>When did the server crash? (UTC)</li>
+<li>The crash was triggered by a specific process. What was the PID of the active process that caused the panic?</li>
+<li>Which command-line utility was leveraged by the previous process to trigger the crash?</li>
+<li>What was the kernel&rsquo;s fatal panic bug message?</li>
+<li>What is the absolute path of the malicious file that caused the kernel crash?</li>
+<li>What is the name of the function at the top of the kernel&rsquo;s call stack at time of the crash?</li>
+<li>This function belongs to a malicious kernel module. What is the base memory address of this module?</li>
+<li>What is the function name in the malicious kernel module that performs cleanup?</li>
+<li>Before the kernel panic, a suspicious process was running with sudo privileges, What was the process name?</li>
+</ol>
+<h2 id="set-up">Set up</h2>
+<p>You need a package namely <code>crash</code>. In Arch Linux specifically, you install it with <code>sudo pacman -S crash</code>. This binary would help you read the kernel crash dump.</p>
+<p>After having <code>crash</code> ready, use the command:</p>
+<pre tabindex="0"><code>crash vmlinux-dbgsym ubuntu22.04-5.15.0-25-generic-202511032103.kdump
+</code></pre><p>Then you should be thrown into in interactive shell within <code>crash</code>, which should look like this:</p>
+<pre tabindex="0"><code>crash&gt; 
+</code></pre><h2 id="1-hostname-of-crashed-server">1. Hostname of crashed server</h2>
+<p>When <code>crash</code> greets you, it may give you something similar to this:</p>
+<pre tabindex="0"><code>      KERNEL: vmlinux-dbgsym  [TAINTED]         
+    DUMPFILE: ubuntu22.04-5.15.0-25-generic-202511032103.kdump  [PARTIAL DUMP]
+        CPUS: 2
+        DATE: Tue Nov  4 09:03:29 +07 2025
+      UPTIME: 00:38:58
+LOAD AVERAGE: 0.15, 0.08, 0.12
+       TASKS: 548
+    NODENAME: ubuntu-2204
+     RELEASE: 5.15.0-25-generic
+     VERSION: #25-Ubuntu SMP Wed Mar 30 15:54:22 UTC 2022
+     MACHINE: x86_64  (2687 Mhz)
+      MEMORY: 2 GB
+       PANIC: &#34;Oops: 0002 [#1] SMP PTI&#34; (check log for details)
+         PID: 9236
+     COMMAND: &#34;cat&#34;
+        TASK: ffff8e0479346200  [THREAD_INFO: ffff8e0479346200]
+         CPU: 0
+       STATE: TASK_RUNNING (PANIC)
+</code></pre><p>If not, you use the <code>sys</code> command inside the <code>crash</code> interactive shell.</p>
+<p>In here you can see that:</p>
+<ul>
+<li>The kernel is tainted (got tampered with)</li>
+<li>This is only a partial dump, and that it might not provide you with full information (irrelevant to this particular case though)</li>
+<li><strong>Captured datetime</strong> in UTC +7 (my timezone)</li>
+<li>Nodename, or <strong>Hostname</strong> <code>ubuntu-2204</code></li>
+<li>Kernel version (Release section)</li>
+<li>Architecture used, Memory</li>
+<li>Panic occured at which <strong>PID</strong>, with <strong>command executed that lead to the crash</strong></li>
+<li>State of task: Running, lead to the panic</li>
+</ul>
+<h2 id="2-assigned-ip-adress">2. Assigned IP Adress</h2>
+<p>Use the command <code>net</code> in the shell:</p>
+<pre tabindex="0"><code>   NET_DEVICE     NAME       IP ADDRESS(ES)
+ffff8e040258e000  lo         127.0.0.1, ::1
+ffff8e0431754000  ens33      192.168.1.135, fe80::7c3a:396b:d8a6:c8a2
+</code></pre><p>It&rsquo;s the one start with 192.</p>
+<h2 id="3-when-did-server-crash">3. When did server crash</h2>
+<p>Convert the captured datetime in section 1 and convert that into UTC. So that would be:</p>
+<pre tabindex="0"><code>2025-11-04 02:03:29
+</code></pre><h2 id="4-pid-that-causes-the-panic">4. PID that causes the panic</h2>
+<p>Now, you use <code>bt</code>, this command would BackTrace the process that lead to the kernel panic. You should see the PID of 9236 in log from said command.</p>
+<pre tabindex="0"><code>PID: 9236     TASK: ffff8e0479346200  CPU: 0    COMMAND: &#34;cat&#34;
+ #0 [ffff9a64c611fb60] machine_kexec at ffffffff85685e40
+ #1 [ffff9a64c611fbc0] __crash_kexec at ffffffff8578cc22
+ #2 [ffff9a64c611fc90] crash_kexec at ffffffff8578e3a8
+ #3 [ffff9a64c611fca0] oops_end at ffffffff8563fa06
+ #4 [ffff9a64c611fcc8] page_fault_oops at ffffffff85697a0e
+ #5 [ffff9a64c611fd28] do_user_addr_fault at ffffffff856981c9
+ #6 [ffff9a64c611fd80] exc_page_fault at ffffffff86348ec7
+ #7 [ffff9a64c611fdb0] asm_exc_page_fault at ffffffff86400ace
+    [exception RIP: core_helper_read+8]
+    RIP: ffffffffc0a94008  RSP: ffff9a64c611fe60  RFLAGS: 00010246
+    RAX: 0000000000000000  RBX: ffff8e040e909780  RCX: ffff9a64c611fed0
+    RDX: 0000000000020000  RSI: 00007fae8be3d000  RDI: ffff8e04107cb500
+    RBP: ffff9a64c611fe80   R8: 0000000000000001   R9: ffff8e0419f77ab0
+    R10: 0000000000020000  R11: 0000000000000000  R12: 0000000000000000
+    R13: ffff8e04107cb500  R14: ffff9a64c611fed0  R15: 00007fae8be3d000
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #8 [ffff9a64c611fe68] proc_reg_read at ffffffff85a23a4a
+ #9 [ffff9a64c611fe88] vfs_read at ffffffff85970f8f
+#10 [ffff9a64c611fec8] ksys_read at ffffffff85973937
+#11 [ffff9a64c611ff08] __x64_sys_read at ffffffff859739c9
+#12 [ffff9a64c611ff18] do_syscall_64 at ffffffff863451bc
+#13 [ffff9a64c611ff50] entry_SYSCALL_64_after_hwframe at ffffffff8640007c
+    RIP: 00007fae8cd5c852  RSP: 00007fff5f513348  RFLAGS: 00000246
+    RAX: ffffffffffffffda  RBX: 0000000000020000  RCX: 00007fae8cd5c852
+    RDX: 0000000000020000  RSI: 00007fae8be3d000  RDI: 0000000000000003
+    RBP: 00007fae8be3d000   R8: 00007fae8be3c010   R9: 00007fae8be3c010
+    R10: 0000000000000022  R11: 0000000000000246  R12: 0000000000022000
+    R13: 0000000000000003  R14: 0000000000020000  R15: 0000000000020000
+    ORIG_RAX: 0000000000000000  CS: 0033  SS: 002b
+</code></pre><h2 id="5-which-command-caused-the-crash">5. Which command caused the crash?</h2>
+<p>Utilize the same output from the above section, that&rsquo;ll be <code>cat</code></p>
+<h2 id="6-kernel-fatal-panic-bug-message">6. Kernel fatal panic bug message</h2>
+<p>type in <code>log</code> (actually, <code>log</code>, <code>sys</code> and <code>bt</code> should be what you output from crash, first and foremost)</p>
+<p>Now, first, we would like to investigate the &ldquo;Oops&rdquo; incident from the greeting that we saw at section 1 (PANIC line). Notice the word &ldquo;BUG&rdquo;? Yes, that matters, because you would see it a couple of lines above the &ldquo;Oops&rdquo;:</p>
+<pre tabindex="0"><code>[ 2338.667536] BUG: kernel NULL pointer dereference, address: 0000000000000000
+</code></pre><p>That was more straightforward than I thought, as I sort of speculated that we might have to chain a whole series of event to get to that point, but nope, it&rsquo;s a one liner.</p>
+<h2 id="7">7</h2>
+<p>To see that malicious file, remember the PID that we used in the previous section? We need to find what kind of process that caused that and how, so we would type in the shell: <code>files &lt;pid&gt;</code></p>
+<p>And the output would be:</p>
+<pre tabindex="0"><code>PID: 9236     TASK: ffff8e0479346200  CPU: 0    COMMAND: &#34;cat&#34;
+ROOT: /    CWD: /root/module
+ FD       FILE            DENTRY           INODE       TYPE PATH
+  0 ffff8e040c25db00 ffff8e04072300c0 ffff8e0431368780 CHR  /dev/pts/1
+  1 ffff8e040c25db00 ffff8e04072300c0 ffff8e0431368780 CHR  /dev/pts/1
+  2 ffff8e040c25db00 ffff8e04072300c0 ffff8e0431368780 CHR  /dev/pts/1
+  3 ffff8e04107cb500 ffff8e04072d8000 ffff8e0419f77ab0 REG  /proc/jiffies_ext
+</code></pre><p>The last one look very abnormal, so there you go.</p>
+<h2 id="8-name-of-the-function-on-top-of-the-kernel-stack">8. Name of the function on top of the kernel stack</h2>
+<p><em>when it crashed and burn :P</em></p>
+<p>Look at the <code>bt</code> output. See this line?</p>
+<pre tabindex="0"><code>    [exception RIP: core_helper_read+8]
+</code></pre><p>That&rsquo;s the answer.</p>
+<h2 id="9">9.</h2>
+<p>To check the module that the system use, type in <code>mod</code>. You should see a <code>core_helper</code> process, match with our previous find in the last task, the base address should also be found there.</p>
+<h2 id="10-what-had-performed-the-cleanup">10. What had performed the cleanup?</h2>
+<pre tabindex="0"><code>crash&gt; sym -m &lt;module_name&gt;
+</code></pre><p>This should lists all symbols exported by that module. And, yes, it&rsquo;s the one you found in previous task.</p>
+<p>Output:</p>
+<pre tabindex="0"><code>ffffffffc0a94000 MODULE START: core_helper
+ffffffffc0a94000 (t) core_helper_read
+ffffffffc0a94015 (t) core_helper_exit
+ffffffffc0a94015 (T) cleanup_module
+ffffffffc0a95024 (?) _note_9
+ffffffffc0a9503c (?) _note_8
+ffffffffc0a950e0 (?) proc_file_ops
+ffffffffc0a96000 (?) __this_module
+ffffffffc0a98000 MODULE END: core_helper
+</code></pre><p>Well, well, well, don&rsquo;t you look at that juicy cleanup_module?</p>
+<h2 id="11-which-did-sudo">11. which did <code>sudo</code>?</h2>
+<p>Our very last task, and which also is the hardest task, in my humble opinion.</p>
+<p>For this, you would likely first type in <code>ps</code> and see which process abnormally uses the PID 0, but sadly, it&rsquo;s not that simple, as this command did not account for the parents-children relationship, and you only see swapper doing what it&rsquo;s supposed to do.</p>
+<p>After digging a bit in the help page of ps (in the crash shell, you use <code>help ps</code>), I found two very interesting flags that I can use, either the flag <code>-k</code> or <code>-p</code>:</p>
+<ul>
+<li><code>-k</code> will list you a process in timeline order. Which didn&rsquo;t help much.</li>
+<li><code>-p</code> will show you processes, with their child-parent relationship. This is what I used to get the answer.</li>
+<li>(You can&rsquo;t mix and match these flags, sadly)</li>
+</ul>
+<p>And I found this block:</p>
+<pre tabindex="0"><code>PID: 0        TASK: ffffffff8741b440  CPU: 0    COMMAND: &#34;swapper/0&#34;
+ PID: 1        TASK: ffff8e04012dc980  CPU: 1    COMMAND: &#34;systemd&#34;
+  PID: 3778     TASK: ffff8e041067b100  CPU: 1    COMMAND: &#34;systemd&#34;
+   PID: 4486     TASK: ffff8e0410440000  CPU: 1    COMMAND: &#34;gnome-terminal-&#34;
+    PID: 4504     TASK: ffff8e041044b100  CPU: 0    COMMAND: &#34;bash&#34;
+     PID: 4552     TASK: ffff8e0410681880  CPU: 0    COMMAND: &#34;sudo&#34;
+      PID: 4553     TASK: ffff8e040e884980  CPU: 1    COMMAND: &#34;sudo&#34;
+       PID: 4554     TASK: ffff8e040e880000  CPU: 0    COMMAND: &#34;su&#34;
+        PID: 4555     TASK: ffff8e0410680000  CPU: 0    COMMAND: &#34;bash&#34;
+         PID: 8923     TASK: ffff8e04300e1880  CPU: 1    COMMAND: &#34;sudo&#34;
+          PID: 8924     TASK: ffff8e04300e6200  CPU: 0    COMMAND: &#34;sudo&#34;
+           PID: 8925     TASK: ffff8e041046b100  CPU: 0    COMMAND: &#34;httpd-worker&#34;
+</code></pre><p>As a quite experienced linux user, this is, at first glance, looks very fishy. Also, when look at the process using its PID:</p>
+<pre tabindex="0"><code>crash&gt; files 8925
+PID: 8925     TASK: ffff8e041046b100  CPU: 0    COMMAND: &#34;httpd-worker&#34;
+ROOT: /    CWD: /root
+ FD       FILE            DENTRY           INODE       TYPE PATH
+  0 ffff8e040d2c0500 ffff8e040d826780 ffff8e0430529680 CHR  /dev/pts/2
+  1 ffff8e040d2c0500 ffff8e040d826780 ffff8e0430529680 CHR  /dev/pts/2
+  2 ffff8e040d2c0500 ffff8e040d826780 ffff8e0430529680 CHR  /dev/pts/2
+</code></pre><p>Ain&rsquo;t that unusual. Base on the name alone, it has no business being at that location.</p>
+<p>Well, anyway, that should be the answer to the last task.</p>
+<p>Note: <code>httpd-worker</code> is an Apache worker, and its parent should have been something of Apache or http, not child of sudo in user-typed terminal.</p>
+
+    </div>
+  </article>
+
+  
+  
+  <aside class="toc-sidebar">
+    <h3>On this page</h3>
+    <nav><nav id="TableOfContents">
+  <ul>
+    <li><a href="#forewords">Forewords</a></li>
+    <li><a href="#introduction-and-scenario">Introduction and Scenario</a></li>
+    <li><a href="#task-list">Task list</a></li>
+    <li><a href="#set-up">Set up</a></li>
+    <li><a href="#1-hostname-of-crashed-server">1. Hostname of crashed server</a></li>
+    <li><a href="#2-assigned-ip-adress">2. Assigned IP Adress</a></li>
+    <li><a href="#3-when-did-server-crash">3. When did server crash</a></li>
+    <li><a href="#4-pid-that-causes-the-panic">4. PID that causes the panic</a></li>
+    <li><a href="#5-which-command-caused-the-crash">5. Which command caused the crash?</a></li>
+    <li><a href="#6-kernel-fatal-panic-bug-message">6. Kernel fatal panic bug message</a></li>
+    <li><a href="#7">7</a></li>
+    <li><a href="#8-name-of-the-function-on-top-of-the-kernel-stack">8. Name of the function on top of the kernel stack</a></li>
+    <li><a href="#9">9.</a></li>
+    <li><a href="#10-what-had-performed-the-cleanup">10. What had performed the cleanup?</a></li>
+    <li><a href="#11-which-did-sudo">11. which did <code>sudo</code>?</a></li>
+  </ul>
+</nav></nav>
+  </aside>
+  
+</div>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2026 Flock137 · Built with <a href="https://gohugo.io">Hugo</a></p>
+  </div>
+</footer>
+
+  
+  <script src="/js/theme.min.js" defer></script>
+</body>
+</html>

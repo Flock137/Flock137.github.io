@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setting up a stable Arch-based Penetration Testing environment | Flock137</title>
+<meta name="description" content="">
+
+<link rel="stylesheet" href="/css/main.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="generator" content="Hugo 0.160.1">
+
+</head>
+<body class="site-wrap">
+  <header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="/">Flock137</a>
+    <nav class="site-nav">
+      
+        <a href="/posts/">Blog</a>
+      
+        <a href="/daily-tips/">Daily Tips</a>
+      
+      <button id="theme-toggle" aria-label="Toggle theme">☀️ Light</button>
+    </nav>
+  </div>
+</header>
+
+  <main class="container">
+    
+<div class="post-layout">
+  
+  <article>
+    
+
+
+
+<div class="post-thumbnail no-image">
+  
+</div>
+
+
+    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">Setting up a stable Arch-based Penetration Testing environment</h1>
+    <div class="post-meta">
+      <span>December 1, 2025</span>
+      <span>3 min read</span>
+      
+        <span class="tag">EndeavourOS</span><span class="tag">Arch</span><span class="tag">Linux</span><span class="tag">VM</span><span class="tag">Red-Team</span>
+      
+    </div>
+
+    <div class="post-content">
+      <h1 id="intro">Intro</h1>
+<p>This is actually my thought process of making this script <a href="https://github.com/Flock137/EOSxBlackArch">https://github.com/Flock137/EOSxBlackArch</a>, where I put the BlackArch repo on top of EndeavourOS for a quick Arch pentest environment, since BlackArch is a bit of a hassle for installing quickly.</p>
+<p>I hope it would help you in the case you wanna make an automation script yourself someday.</p>
+<h1 id="first-and-foremost">First and foremost</h1>
+<p>Install EndeavourOS. We will port our BlackArch repo into right after the former&rsquo;s installation finish.</p>
+<h1 id="port-the-blackarch-repo">Port the BlackArch repo</h1>
+<p>Please refer to this tutorial for your reference: <a href="https://blackarch.org/downloads.html#install-repo">https://blackarch.org/downloads.html#install-repo</a> (Section: <strong>Installing on top of ArchLinux</strong>).</p>
+<p>The example below should give you a preview on what you need to do this step.</p>
+<pre tabindex="0"><code># Run https://blackarch.org/strap.sh as root and follow the instructions.
+
+curl -O https://blackarch.org/strap.sh
+
+# Verify the SHA1 sum
+
+echo bdbaf7ecd039859160849a46694fe4921371e5b1 strap.sh | sha1sum -c
+
+# Set execute bit
+
+chmod +x strap.sh
+
+# Run strap.sh
+
+sudo ./strap.sh
+
+# Enable multilib following https://wiki.archlinux.org/index.php/Official_repositories#Enabling_multilib and run:
+
+sudo pacman -Syu
+</code></pre><p>After the <code>sudo pacman -Syu</code>, most of the barebone, necessary security tools will be automatically installed for you</p>
+<h2 id="other-useful-commands">Other (useful) commands</h2>
+<pre tabindex="0"><code># To list all of the available tools, run
+
+sudo pacman -Sgg | grep blackarch | cut -d&#39; &#39; -f2 | sort -u
+
+# To install a category of tools, run
+
+sudo pacman -S blackarch-&lt;category&gt;
+
+# To see the blackarch categories, run
+
+sudo pacman -Sg | grep blackarch
+
+# To search for a specific package, run
+
+pacman -Ss &lt;package_name&gt;
+
+# Note - it maybe be necessary to overwrite certain packages when installing blackarch tools. If  
+# you experience &#34;failed to commit transaction&#34; errors, use the --needed and --overwrite switches  
+# For example:
+
+sudo pacman -Syyu --needed --overwrite=&#39;*&#39; &lt;wanted-package&gt;
+</code></pre><h1 id="other-manually-installed-apps">Other manually installed apps</h1>
+<ul>
+<li>cutter</li>
+<li>burpsuite</li>
+<li>ghidra</li>
+<li>impacket-ba (you will call the script up by its name, e.g. <code>rpcdump.py</code>)</li>
+<li>stegsolve</li>
+<li>steghide</li>
+<li>audacity</li>
+<li>bloodhound</li>
+<li>python-uncompyle6</li>
+<li>villain (maybe it got installed already? Gotta make an exception script for this situation. Nevermind, just put the flag <code>--needed</code> after each <code>pacman -S</code>)</li>
+<li>rekall</li>
+<li>autopsy</li>
+<li>vim</li>
+<li>(input more packages that you like to use here)</li>
+</ul>
+<h1 id="custom-zsh-shell">Custom zsh-shell</h1>
+<h2 id="first">First</h2>
+<pre tabindex="0"><code>sudo pacman -S zsh 
+</code></pre><h2 id="install-oh-my-zsh">Install oh-my-zsh</h2>
+<p>Reference: <a href="https://ohmyz.sh/#install">https://ohmyz.sh/#install</a></p>
+<pre tabindex="0"><code>sh -c &#34;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&#34;
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>sh -c &#34;$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)&#34;
+</code></pre><p>After ohmyzsh offer to change shell, type <code>y</code>.
+Manually: Log out and log back in so the change take effect.
+But the script will go on after this and prompt user to log out or reboot at the end.</p>
+<h2 id="install-autosugestions-and-syntax-highlighting">Install autosugestions and syntax highlighting</h2>
+<p>Reference: <a href="https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df">https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df</a></p>
+<ul>
+<li>
+<p>autosuggesions plugin:
+<code>git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions</code></p>
+</li>
+<li>
+<p>zsh-syntax-highlighting plugin <br>
+<code>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting</code></p>
+</li>
+</ul>
+<p>(I don&rsquo;t recommend installing too much plugins, though. It will slow down your terminal startup.)</p>
+<p>Open <code>~/.zshrc</code>:</p>
+<pre tabindex="0"><code>vim ~/.zshrc
+</code></pre><p>Find the line that say: <code>plugin=(git) </code>
+Add your plugins inside the parenthesis, like this:</p>
+<pre tabindex="0"><code>plugin=(git
+		zsh-autosuggestions
+		zsh-syntax-highlighting)
+</code></pre><p>Then exit the terminal for change to take effect</p>
+<h2 id="custom-the-terminal-handle">Custom the terminal handle</h2>
+<p><em>The line that have your name and stuffs like that, y&rsquo;know</em></p>
+<p>I personally use the <a href="https://github.com/heapbytes/heapbytes-zsh">heapbytes</a>, so my script will install this theme, as well.</p>
+<p>Heapbytes theme feature:</p>
+<ul>
+<li>Prints the current working directory</li>
+<li>Prints the tun0 IP if connected to a VPN</li>
+<li>Prints the wlan0 IP if you aren&rsquo;t connected to any VPN. (change the module name in <code>.zsh-theme</code> according to your wifi module)</li>
+<li>Git info</li>
+</ul>
+<p>Install <a href="https://github.com/heapbytes/heapbytes-zsh/raw/refs/heads/main/heapbytes.zsh-theme">https://github.com/heapbytes/heapbytes-zsh/raw/refs/heads/main/heapbytes.zsh-theme</a> to $ZSH_CUSTOM/themes/</p>
+<p>In <code>~/zshrc</code>:</p>
+<pre tabindex="0"><code>ZSH_THEME=&#34;heapbytes&#34;
+</code></pre><p>save and exit terminal for the change to take effect.</p>
+
+    </div>
+  </article>
+
+  
+  
+  <aside class="toc-sidebar">
+    <h3>On this page</h3>
+    <nav><nav id="TableOfContents">
+  <ul>
+    <li><a href="#other-useful-commands">Other (useful) commands</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#first">First</a></li>
+    <li><a href="#install-oh-my-zsh">Install oh-my-zsh</a></li>
+    <li><a href="#install-autosugestions-and-syntax-highlighting">Install autosugestions and syntax highlighting</a></li>
+    <li><a href="#custom-the-terminal-handle">Custom the terminal handle</a></li>
+  </ul>
+</nav></nav>
+  </aside>
+  
+</div>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2026 Flock137 · Built with <a href="https://gohugo.io">Hugo</a></p>
+  </div>
+</footer>
+
+  
+  <script src="/js/theme.min.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sherlock - Reaper writeup | Flock137</title>
+<meta name="description" content="">
+
+<link rel="stylesheet" href="/css/main.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="generator" content="Hugo 0.160.1">
+
+</head>
+<body class="site-wrap">
+  <header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="/">Flock137</a>
+    <nav class="site-nav">
+      
+        <a href="/posts/">Blog</a>
+      
+        <a href="/daily-tips/">Daily Tips</a>
+      
+      <button id="theme-toggle" aria-label="Toggle theme">☀️ Light</button>
+    </nav>
+  </div>
+</header>
+
+  <main class="container">
+    
+<div class="post-layout">
+  
+  <article>
+    
+
+
+
+<div class="post-thumbnail no-image">
+  
+</div>
+
+
+    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">Sherlock - Reaper writeup</h1>
+    <div class="post-meta">
+      <span>April 17, 2026</span>
+      <span>6 min read</span>
+      
+        <span class="tag">Forensics</span><span class="tag">Windows</span>
+      
+    </div>
+
+    <div class="post-content">
+      <p>This is one of the HackTheBox&rsquo;s Sherlock - Reaper.</p>
+<p>It&rsquo;s also one of the more terrible and sloppy write-up of mine, I don&rsquo;t recommend you reading this unless there really is no other choice.</p>
+<h2 id="scenario">Scenario</h2>
+<p>Our SIEM alerted us to a suspicious logon event which needs to be looked at immediately. The alert details were that the IP Address and the Source Workstation name were a mismatch. You are provided a network capture and event logs from the surrounding time around the incident timeframe. Corelate the given evidence and report back to your SOC Manager.</p>
+<h2 id="tasks">Tasks</h2>
+<ol>
+<li>What is the IP Address for Forela-Wkstn001?</li>
+<li>What is the IP Address for Forela-Wkstn002?</li>
+<li>What is the username of the account whose hash was stolen by attacker?</li>
+<li>What is the IP Address of Unknown Device used by the attacker to intercept credentials?</li>
+<li>What was the fileshare navigated by the victim user account?</li>
+<li>What is the source port used to log on to target workstation using the compromised account?</li>
+<li>What is the Logon ID for the malicious session?</li>
+<li>The detection was based on the mismatch of hostname and the assigned IP Address. What is the workstation name and the source IP Address from which the malicious logon occur?</li>
+<li>At what UTC time did the malicious logon happen?</li>
+<li>What is the share Name accessed as part of the authentication process by the malicious tool used by the attacker?</li>
+</ol>
+<h2 id="folder-structure">Folder Structure</h2>
+<pre tabindex="0"><code>Reaper
+	security.evtx
+	ntlmrelay.pcapng
+</code></pre><p>Thus implying I am pretty much looking at an NTLM Relay Attack case.</p>
+<h2 id="ntlm-relay-attack">NTLM Relay Attack</h2>
+<p>Please see this explanation from <a href="https://0xdf.gitlab.io/2024/08/22/htb-sherlock-reaper.html#ntlm-relay-attack">0xdf</a> and <a href="https://youtu.be/He3PWdCQvzo">this video</a>, also. They would explain it better than I would, as Windows ain&rsquo;t my forte.</p>
+<h2 id="ntlm">NTLM</h2>
+<p><img src="images/Pasted%20image%2020260417100456.png" alt="NTLM diagram"></p>
+<p>NTLM uses a challenge-response mechanism:</p>
+<ol>
+<li>Client says &ldquo;I want to authenticate&rdquo;</li>
+<li>Server sends a random <strong>challenge</strong> (nonce)</li>
+<li>Client responds with a hash derived from their password + the challenge</li>
+<li>Server (or a DC) verifies the response</li>
+</ol>
+<h2 id="for-this-case">For this case</h2>
+<p>At this point, the victim has likely typoed some kind of UNC path for the domain controller as <code>\\D\</code> instead of <code>\\DC\</code>, and the attacker has responded to say that it is their IP.</p>
+<p>It was LLMNR poisoning</p>
+<blockquote>
+<p>A common technique is to poison LLMNR. When a host on a Windows domain tries to visit a host by DNS name, it first queries DNS, but if that fails, it tries link-local multicast name resolution (LLMNR).</p>
+</blockquote>
+<h3 id="llmnr">LLMNR</h3>
+<p>LLMNR (Link-Local Multicast Name Resolution) is a Windows protocol that acts as a fallback when DNS resolution fails. If a machine tries to resolve a hostname and the DNS server cannot find it, Windows automatically broadcasts an LLMNR query to every machine on the local network segment asking &ldquo;does anyone know where this host is?&rdquo;</p>
+<p>NBT-NS (NetBIOS Name Service) is an older protocol that serves the same fallback purpose. Both are enabled by default on Windows.</p>
+<p>The problem: any machine on the network can respond to these broadcasts — and Windows will trust the first response it gets.</p>
+<h2 id="overview">Overview</h2>
+<p><em>This section was mainly cited from HackTheBox write-up on this box itself. You can see the reference link at the end of the article</em></p>
+<p>We have three hosts: 001 (Task 1), 002 (Task 2), and Unknown - whose IP ends with 135, along with some random data - which is probably our threat actor.</p>
+<p><img src="images/Pasted%20image%2020260413231522.png" alt="Overview of three hosts"></p>
+<p>Filtering <code>smb2</code> and the IP ends with 135 as source IP:</p>
+<p><img src="images/Pasted%20image%2020260413235520.png" alt="Wireshark smb2 filter"></p>
+<p>And at the same time, in event logs:</p>
+<p><img src="images/Pasted%20image%2020260413084518.png" alt="Event log NTLM relay indicators"></p>
+<p>In this specific event, we have multiple indicators that an NTLM relay attack did occur and authentication was conducted from the attacker&rsquo;s machine using stolen credentials.
+The first indicator we see is that Security ID Says it is NULL SID and we have no Logon ID, LogonGUID is also null.
+In network information, we can see that the source workstation says WKSTN002. In IP address we see 172.17.79.135. (Suspicious!)
+Workstation002 has an IP address of 172.17.79.136, but it shows .135, which was an unknown device.
+Another indicator we see is that the log-on process says it&rsquo;s NTLMSSP, which we confirmed from our network traffic analysis.
+This confirms that the unknown device stole credentials from wkstn002 and used them to log on to wkstn001.</p>
+<p>Therefore, from the logs, we can conclude that:</p>
+<ul>
+<li>Arthur Kyle on Wkstn002 had hashes stolen by the attacker. One way this can happen is if the user had a typo when navigating to file share and the attacker was running responder to intercept traffic in the environment. (We&rsquo;ll discuss this later.)</li>
+<li>The hashes stolen by the attacker were then immediately relayed to the target system, which in our case, is Wkstn001.</li>
+<li>The attacker authenticates and logs in to the target machine(Wkstn001 using the <code>arthur.kyle</code> account) and then dumps the SAM Hashes from the remote machine. This is the default behavior of <a href="https://github.com/fortra/impacket/blob/master/examples/ntlmrelayx.py">ntlmrelayx</a> tool from impacket used for this purpose. After this, they can log on to the machine with the primary user account of that machine whose hash was dumped remotely.</li>
+</ul>
+<h2 id="task-1">Task 1</h2>
+<p>What is the IP Address for Forela-Wkstn001?</p>
+<p><img src="images/Pasted%20image%2020260413174719.png" alt="Wkstn001 IP address"></p>
+<p>Answer: 172.17.79.129</p>
+<h2 id="task-2">Task 2</h2>
+<p>What is the IP Address for Forela-Wkstn002?</p>
+<p><img src="images/Pasted%20image%2020260413174830.png" alt="Wkstn002 IP address"></p>
+<p>Answer: 172.17.79.136</p>
+<h2 id="task-3">Task 3</h2>
+<p>What is the username of the account whose hash was stolen by attacker?</p>
+<p><img src="images/Pasted%20image%2020260413175003.png" alt="Stolen account username"></p>
+<p>Answer: <code>arthur.kyle</code></p>
+<h2 id="task-4">Task 4</h2>
+<p>What is the IP Address of Unknown Device used by the attacker to intercept credentials?</p>
+<p>According to the image above, it&rsquo;s <code>172.17.79.135</code></p>
+<h2 id="task-5">Task 5</h2>
+<p>What was the fileshare navigated by the victim user account?</p>
+<p>Answer: <code>\\DC01\Trip</code>. It&rsquo;s apparently unclear why is this the correct answer (it make more sense when you actually look at the whole thing, but I still do not have a verbal explanation for this)</p>
+<p><img src="images/Pasted%20image%2020260417145404.png" alt="Fileshare navigated by victim"></p>
+<h2 id="task-6">Task 6</h2>
+<p>What is the source port used to log on to target workstation using the compromised account?</p>
+<p>Refer to the image in task 3. It&rsquo;s 40252</p>
+<h2 id="task-7">Task 7</h2>
+<p>What is the Logon ID for the malicious session?</p>
+<p>Refer to the image in task 3. It&rsquo;s 0x64A799</p>
+<h2 id="task-8">Task 8</h2>
+<p>The detection was based on the mismatch of hostname and the assigned IP Address. What is the workstation name and the source IP Address from which the malicious logon occur?</p>
+<p><img src="images/Pasted%20image%2020260413084518.png" alt="Malicious logon event log"></p>
+<p>Answer: FORELA-WKSTN002, 172.17.79.135</p>
+<h2 id="task-9">Task 9</h2>
+<p>At what UTC time did the malicious logon happen?</p>
+<p>Look at the logon event happen right before the share file:</p>
+<p><img src="images/Pasted%20image%2020260413175748.png" alt="Malicious logon timestamp"></p>
+<p>At the section <code>TimeCreated SystemTime</code>, if the field ended with <code>Z</code>, it&rsquo;s UTC time.
+Answer: 2024-07-31 04:55:16</p>
+<h2 id="task-10">Task 10</h2>
+<p>What is the share name accessed as part of the authentication process by the malicious tool used by the attacker?</p>
+<p>Answer: <code>\\*\IPC$</code>. It&rsquo;s in windows event logs. That <code>*</code> was supposed to be an IP <code>172.17.19.129</code>, it&rsquo;s unknown why it was logged that way.</p>
+<h2 id="tips">Tips</h2>
+<p>If you feel stuck, maybe don&rsquo;t read others&rsquo; write-up yet. Try HackTheBox hints first. I made that mistake the first time, as the hints were rather clear-cut, and it does get you to the desired destination.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://www.hackthebox.com/blog/ntlm-relay-attack-detection">https://www.hackthebox.com/blog/ntlm-relay-attack-detection</a></li>
+<li><a href="https://0xdf.gitlab.io/2024/08/22/htb-sherlock-reaper.html">https://0xdf.gitlab.io/2024/08/22/htb-sherlock-reaper.html</a></li>
+</ul>
+
+    </div>
+  </article>
+
+  
+  
+  <aside class="toc-sidebar">
+    <h3>On this page</h3>
+    <nav><nav id="TableOfContents">
+  <ul>
+    <li><a href="#scenario">Scenario</a></li>
+    <li><a href="#tasks">Tasks</a></li>
+    <li><a href="#folder-structure">Folder Structure</a></li>
+    <li><a href="#ntlm-relay-attack">NTLM Relay Attack</a></li>
+    <li><a href="#ntlm">NTLM</a></li>
+    <li><a href="#for-this-case">For this case</a>
+      <ul>
+        <li><a href="#llmnr">LLMNR</a></li>
+      </ul>
+    </li>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#task-1">Task 1</a></li>
+    <li><a href="#task-2">Task 2</a></li>
+    <li><a href="#task-3">Task 3</a></li>
+    <li><a href="#task-4">Task 4</a></li>
+    <li><a href="#task-5">Task 5</a></li>
+    <li><a href="#task-6">Task 6</a></li>
+    <li><a href="#task-7">Task 7</a></li>
+    <li><a href="#task-8">Task 8</a></li>
+    <li><a href="#task-9">Task 9</a></li>
+    <li><a href="#task-10">Task 10</a></li>
+    <li><a href="#tips">Tips</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav></nav>
+  </aside>
+  
+</div>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2026 Flock137 · Built with <a href="https://gohugo.io">Hugo</a></p>
+  </div>
+</footer>
+
+  
+  <script src="/js/theme.min.js" defer></script>
+</body>
+</html>

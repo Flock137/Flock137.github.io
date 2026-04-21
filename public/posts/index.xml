@@ -1,104 +1,117 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Flock137</title>
     <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Flock137</description>
-    <generator>Hugo -- 0.154.5</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 06 Feb 2026 00:00:00 +0700</lastBuildDate>
+    <lastBuildDate>Tue, 21 Apr 2026 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sherlock - Telly writeup</title>
+      <link>http://localhost:1313/posts/telly/</link>
+      <pubDate>Tue, 21 Apr 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/telly/</guid>
+      <description>&lt;p&gt;This post today will be about Telly - a HackTheBox Sherlock about the shiny new vulnerability of Telnet where it grants you sudo from userspace, in a pretty trivial manner.&lt;/p&gt;&#xA;&lt;p&gt;I will do a walkthrough the tasks in Sherlock first, then we will go on how this particular CVE works.&lt;/p&gt;&#xA;&lt;h2 id=&#34;scenario&#34;&gt;Scenario&lt;/h2&gt;&#xA;&lt;p&gt;You are a Junior DFIR Analyst at an MSSP that provides continuous monitoring and DFIR services to SMBs. Your supervisor has tasked you with analyzing network telemetry from a compromised backup server. A DLP solution flagged a possible data exfiltration attempt from this server. According to the IT team, this server wasn&amp;rsquo;t very busy and was sometimes used to store backups.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Sherlock - MidnightCrash writeup</title>
+      <link>http://localhost:1313/posts/midnightcrash/</link>
+      <pubDate>Fri, 17 Apr 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/midnightcrash/</guid>
+      <description>&lt;h2 id=&#34;forewords&#34;&gt;Forewords&lt;/h2&gt;&#xA;&lt;p&gt;Ah yes, finally, some Linux forensics tasks. Though, this one should have been on the difficulty level of easy, not medium (in my opinion of course, but don&amp;rsquo;t listen to this linux addict ;))&lt;/p&gt;&#xA;&lt;p&gt;The most difficult part of this sherlock, in my opinion, is to figure out which tool would you need to read the kdump file, and henceforth, how to use &lt;code&gt;crash&lt;/code&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;introduction-and-scenario&#34;&gt;Introduction and Scenario&lt;/h2&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;A production server crashed unexpectedly and rebooted. The crash happened at a strange time, and we doubt it was a simple hardware fault. A kernel crash dump was captured. Your mission is to analyze it to find the real cause of the crash and determine if any other suspicious activity was present on the system.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Sherlock - Reaper writeup</title>
+      <link>http://localhost:1313/posts/reaper/</link>
+      <pubDate>Fri, 17 Apr 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/reaper/</guid>
+      <description>&lt;p&gt;This is one of the HackTheBox&amp;rsquo;s Sherlock - Reaper.&lt;/p&gt;&#xA;&lt;p&gt;It&amp;rsquo;s also one of the more terrible and sloppy write-up of mine, I don&amp;rsquo;t recommend you reading this unless there really is no other choice.&lt;/p&gt;&#xA;&lt;h2 id=&#34;scenario&#34;&gt;Scenario&lt;/h2&gt;&#xA;&lt;p&gt;Our SIEM alerted us to a suspicious logon event which needs to be looked at immediately. The alert details were that the IP Address and the Source Workstation name were a mismatch. You are provided a network capture and event logs from the surrounding time around the incident timeframe. Corelate the given evidence and report back to your SOC Manager.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Understanding ARM dissassembly</title>
+      <link>http://localhost:1313/posts/arm_disasm/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/arm_disasm/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&amp;rsquo;s happening at the hardware level.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-example-stm32-led-blink&#34;&gt;The Example: STM32 LED Blink&lt;/h2&gt;&#xA;&lt;p&gt;We&amp;rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: &lt;a href=&#34;https://github.com/Flock137/stm32_blinky_baremetal&#34;&gt;https://github.com/Flock137/stm32_blinky_baremetal&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to recover deleted files on usb or memory card</title>
+      <link>http://localhost:1313/posts/file_recovery/</link>
+      <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/file_recovery/</guid>
+      <description>&lt;h1 id=&#34;tldr&#34;&gt;TLDR&lt;/h1&gt;&#xA;&lt;p&gt;Stop using both the usb and memory card at once. Else, it will be next to impossible to recover anything back, since the data cells got overwritten, instead of just being &amp;ldquo;unlisted&amp;rdquo;.&lt;/p&gt;&#xA;&lt;p&gt;On Window (Linux), you can just install Recuva (extundelete or fatcat) for free and point the app to your usb or memory card, you&amp;rsquo;re welcome. However, I would still prefer a more sure-fire way to preserve my data, hence the blog.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Snyk&#39;s Fetch-the-flag Write-up (Forensics)</title>
+      <link>http://localhost:1313/posts/snyk_fetch_the_flag/</link>
+      <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/snyk_fetch_the_flag/</guid>
+      <description>&lt;h1 id=&#34;void-step&#34;&gt;Void Step&lt;/h1&gt;&#xA;&lt;h3 id=&#34;how-many-decoy-hosts-are-randomized-in-this-recon-evasion-technique&#34;&gt;How many decoy hosts are randomized in this recon evasion technique&lt;/h3&gt;&#xA;&lt;p&gt;Answer: 12&lt;/p&gt;&#xA;&lt;p&gt;In Wireshark filter:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;(tcp.flags.syn == 1 &amp;amp;&amp;amp; tcp.flags.ack == 0 ) &amp;amp;&amp;amp; (ip.dst == 192.168.1.27)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Explaination:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Destination IP is found through manual inspection.&lt;/li&gt;&#xA;&lt;li&gt;For faster port scanning, we (or the attacker) perform the half-open scan, where SYN=1, ACK=0 (means: send only, no need response).&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Go to Statistics &amp;gt; Endpoints &amp;gt; IPv4, count the addresses, then minus 1 (the destination address, which we need to exclude).&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Failed attempt on performing Hardware Forensics (STM32)</title>
       <link>http://localhost:1313/posts/stm32_failed/</link>
       <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/stm32_failed/</guid>
-      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.&lt;/p&gt;
-&lt;p&gt;As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.&lt;/p&gt;</description>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.&lt;/p&gt;&#xA;&lt;p&gt;As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Setting up a stable Arch-based Penetration Testing environment</title>
+      <link>http://localhost:1313/posts/post_install_script/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/post_install_script/</guid>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;This is actually my thought process of making this script &lt;a href=&#34;https://github.com/Flock137/EOSxBlackArch&#34;&gt;https://github.com/Flock137/EOSxBlackArch&lt;/a&gt;, where I put the BlackArch repo on top of EndeavourOS for a quick Arch pentest environment, since BlackArch is a bit of a hassle for installing quickly.&lt;/p&gt;&#xA;&lt;p&gt;I hope it would help you in the case you wanna make an automation script yourself someday.&lt;/p&gt;&#xA;&lt;h1 id=&#34;first-and-foremost&#34;&gt;First and foremost&lt;/h1&gt;&#xA;&lt;p&gt;Install EndeavourOS. We will port our BlackArch repo into right after the former&amp;rsquo;s installation finish.&lt;/p&gt;</description>
     </item>
     <item>
       <title>ai_gon3_r0ug3 Writeup</title>
       <link>http://localhost:1313/posts/ai_gon3_r0ug3/</link>
       <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/ai_gon3_r0ug3/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-&lt;p&gt;This is a Private CTF organized under the collaboration between HackerOne and HackTheBox that focus only on the AI category.&lt;/p&gt;
-&lt;h1 id=&#34;re-car-ai&#34;&gt;Re-car AI&lt;/h1&gt;
-&lt;p&gt;You have been tasked with pentesting the largest used car listing website in your area. They have recently implemented an AI chatbot in their listing page to help users with common questions. The website&amp;rsquo;s policy is not to disclose the seller&amp;rsquo;s information unless the user is logged in. Can you find a way to bypass the filters and reveal the seller&amp;rsquo;s phone number by asking the chatbot? Flag format: &lt;code&gt;HTB{xxx-xxxx-xxx}&lt;/code&gt;&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;This is a Private CTF organized under the collaboration between HackerOne and HackTheBox that focus only on the AI category.&lt;/p&gt;&#xA;&lt;h1 id=&#34;re-car-ai&#34;&gt;Re-car AI&lt;/h1&gt;&#xA;&lt;p&gt;You have been tasked with pentesting the largest used car listing website in your area. They have recently implemented an AI chatbot in their listing page to help users with common questions. The website&amp;rsquo;s policy is not to disclose the seller&amp;rsquo;s information unless the user is logged in. Can you find a way to bypass the filters and reveal the seller&amp;rsquo;s phone number by asking the chatbot? Flag format: &lt;code&gt;HTB{xxx-xxxx-xxx}&lt;/code&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>Girls-in-CTF Writeup - Forensics &amp; AI</title>
       <link>http://localhost:1313/posts/gctf/</link>
       <pubDate>Thu, 18 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/gctf/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-&lt;p&gt;To encourage and celebrate women/girls in cyber security, &lt;a href=&#34;https://www.rehack.xyz/&#34;&gt;Re:Hack&lt;/a&gt; has organized this girls-only-CTF. As a woman, I really appreciate this effort and it feels incredibly inspiring. This is the first time that myself see so many girls and women gather in one place and all are incredibly passionate about this very technical field. So, I would like to give a very special thank-you to the organizers and all the challenge writers involved to make this sort of event possible.&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;To encourage and celebrate women/girls in cyber security, &lt;a href=&#34;https://www.rehack.xyz/&#34;&gt;Re:Hack&lt;/a&gt; has organized this girls-only-CTF. As a woman, I really appreciate this effort and it feels incredibly inspiring. This is the first time that myself see so many girls and women gather in one place and all are incredibly passionate about this very technical field. So, I would like to give a very special thank-you to the organizers and all the challenge writers involved to make this sort of event possible.&lt;/p&gt;</description>
     </item>
     <item>
       <title>ScriptCTF Writeup - Forensics</title>
       <link>http://localhost:1313/posts/scriptctf/</link>
       <pubDate>Fri, 12 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/scriptctf/</guid>
-      <description>&lt;h1 id=&#34;pdf-author-connor-chang&#34;&gt;pdf (Author: Connor Chang)&lt;/h1&gt;
-&lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;
-&lt;p&gt;The challenge attachment can be found here: &lt;a href=&#34;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&#34;&gt;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&amp;rsquo;t need to use it. All we have to do is using &lt;code&gt;binwalk&lt;/code&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;binwalk -e challenge.pdf 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the extracted folder, click on (or &lt;code&gt;cat&lt;/code&gt;) the text file (&lt;code&gt;11B&lt;/code&gt; or something similar), the flag is in there
-&lt;img alt=&#34;alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/scriptctf/images/challenge.png&#34;&gt;&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;pdf-author-connor-chang&#34;&gt;pdf (Author: Connor Chang)&lt;/h1&gt;&#xA;&lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;&#xA;&lt;p&gt;The challenge attachment can be found here: &lt;a href=&#34;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&#34;&gt;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&amp;rsquo;t need to use it. All we have to do is using &lt;code&gt;binwalk&lt;/code&gt;&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;binwalk -e challenge.pdf &#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the extracted folder, click on (or &lt;code&gt;cat&lt;/code&gt;) the text file (&lt;code&gt;11B&lt;/code&gt; or something similar), the flag is in there&#xA;&lt;img src=&#34;images/challenge.png&#34; alt=&#34;alt text&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>How did I repair an (Arch) Linux bootloader twice</title>
       <link>http://localhost:1313/posts/bootloader_failed/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/bootloader_failed/</guid>
-      <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;
-&lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.
-Not to mention, I no longer see my &lt;code&gt;systemd&lt;/code&gt; bootloader screen.&lt;/p&gt;
-&lt;h2 id=&#34;disable-bitlocker-key&#34;&gt;Disable bitlocker key&lt;/h2&gt;
-&lt;p&gt;To disable bitlocker key (not decrypt the whole drive), so the windows partition won&amp;rsquo;t ask you bitlocker password over and over again when you dual-boot:&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;&#xA;&lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.&#xA;Not to mention, I no longer see my &lt;code&gt;systemd&lt;/code&gt; bootloader screen.&lt;/p&gt;&#xA;&lt;h2 id=&#34;disable-bitlocker-key&#34;&gt;Disable bitlocker key&lt;/h2&gt;&#xA;&lt;p&gt;To disable bitlocker key (not decrypt the whole drive), so the windows partition won&amp;rsquo;t ask you bitlocker password over and over again when you dual-boot:&lt;/p&gt;</description>
     </item>
     <item>
       <title>Recover corrupted USB in Linux terminal (required complete data wipe)</title>
       <link>http://localhost:1313/posts/usb_uncorrupted/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/usb_uncorrupted/</guid>
-      <description>&lt;h1 id=&#34;step-1&#34;&gt;Step 1&lt;/h1&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;lsblk
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The USB would likely to be something like &lt;code&gt;sda&lt;/code&gt; or &lt;code&gt;sdb&lt;/code&gt; (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.&lt;/p&gt;
-&lt;h1 id=&#34;step-2&#34;&gt;Step 2&lt;/h1&gt;
-&lt;p&gt;If the system mount any of your partition, you need to unmount them first before wiping.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Replace sdX1 with your actual partition identifier (e.g., sdb1)
-sudo umount /dev/sdX1
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;step-3&#34;&gt;Step 3&lt;/h1&gt;
-&lt;p&gt;Use &lt;code&gt;wipefs&lt;/code&gt; command to completely erase all partition tables and filesystem signatures from the drive.&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;step-1&#34;&gt;Step 1&lt;/h1&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;lsblk&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The USB would likely to be something like &lt;code&gt;sda&lt;/code&gt; or &lt;code&gt;sdb&lt;/code&gt; (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.&lt;/p&gt;&#xA;&lt;h1 id=&#34;step-2&#34;&gt;Step 2&lt;/h1&gt;&#xA;&lt;p&gt;If the system mount any of your partition, you need to unmount them first before wiping.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Replace sdX1 with your actual partition identifier (e.g., sdb1)&#xA;sudo umount /dev/sdX1&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;step-3&#34;&gt;Step 3&lt;/h1&gt;&#xA;&lt;p&gt;Use &lt;code&gt;wipefs&lt;/code&gt; command to completely erase all partition tables and filesystem signatures from the drive.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Revive FlareVM Network Connection (VirtualBox)</title>
       <link>http://localhost:1313/posts/flarevm_network/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/flarevm_network/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-&lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;)&lt;/li&gt;
-&lt;li&gt;The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues&lt;/li&gt;
-&lt;li&gt;A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;virtualbox-network-setting-walkthrough&#34;&gt;VirtualBox network setting walkthrough&lt;/h1&gt;
-&lt;p&gt;You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &amp;ldquo;Intel&amp;hellip; Desktop&amp;rdquo;, or if you don&amp;rsquo;t know what to choose, just leave the default option.&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;)&lt;/li&gt;&#xA;&lt;li&gt;The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues&lt;/li&gt;&#xA;&lt;li&gt;A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;virtualbox-network-setting-walkthrough&#34;&gt;VirtualBox network setting walkthrough&lt;/h1&gt;&#xA;&lt;p&gt;You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &amp;ldquo;Intel&amp;hellip; Desktop&amp;rdquo;, or if you don&amp;rsquo;t know what to choose, just leave the default option.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Merging multiple singular .ics files into one in Linux</title>
       <link>http://localhost:1313/posts/calendar/</link>
       <pubDate>Wed, 03 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/calendar/</guid>
-      <description>&lt;p&gt;Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Comhbine all .ics to a new text file
-cat *.ics &amp;gt; temp.txt 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Step 2: If you check with &lt;code&gt;cat temp.txt&lt;/code&gt; you can see there is this weird string that you need to get rid off: &lt;code&gt;END:VCALENDARBEGIN:VCALENDAR&lt;/code&gt;. Use &lt;code&gt;cat temp.txt | grep -v DARBEG &amp;gt; temp1.txt&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;Step 3: For my case, I also need to:&lt;/p&gt;</description>
+      <description>&lt;p&gt;Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Comhbine all .ics to a new text file&#xA;cat *.ics &amp;gt; temp.txt &#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Step 2: If you check with &lt;code&gt;cat temp.txt&lt;/code&gt; you can see there is this weird string that you need to get rid off: &lt;code&gt;END:VCALENDARBEGIN:VCALENDAR&lt;/code&gt;. Use &lt;code&gt;cat temp.txt | grep -v DARBEG &amp;gt; temp1.txt&lt;/code&gt;&lt;/p&gt;&#xA;&lt;p&gt;Step 3: For my case, I also need to:&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

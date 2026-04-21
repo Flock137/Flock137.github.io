@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Wireshark on Flock137</title>
+    <link>http://localhost:1313/tags/wireshark/</link>
+    <description>Recent content in Wireshark on Flock137</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 21 Feb 2026 00:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/wireshark/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Snyk&#39;s Fetch-the-flag Write-up (Forensics)</title>
+      <link>http://localhost:1313/posts/snyk_fetch_the_flag/</link>
+      <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/snyk_fetch_the_flag/</guid>
+      <description>&lt;h1 id=&#34;void-step&#34;&gt;Void Step&lt;/h1&gt;&#xA;&lt;h3 id=&#34;how-many-decoy-hosts-are-randomized-in-this-recon-evasion-technique&#34;&gt;How many decoy hosts are randomized in this recon evasion technique&lt;/h3&gt;&#xA;&lt;p&gt;Answer: 12&lt;/p&gt;&#xA;&lt;p&gt;In Wireshark filter:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;(tcp.flags.syn == 1 &amp;amp;&amp;amp; tcp.flags.ack == 0 ) &amp;amp;&amp;amp; (ip.dst == 192.168.1.27)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Explaination:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Destination IP is found through manual inspection.&lt;/li&gt;&#xA;&lt;li&gt;For faster port scanning, we (or the attacker) perform the half-open scan, where SYN=1, ACK=0 (means: send only, no need response).&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Go to Statistics &amp;gt; Endpoints &amp;gt; IPv4, count the addresses, then minus 1 (the destination address, which we need to exclude).&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Windows on Flock137</title>
     <link>http://localhost:1313/tags/windows/</link>
     <description>Recent content in Windows on Flock137</description>
-    <generator>Hugo -- 0.154.5</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0700</lastBuildDate>
+    <lastBuildDate>Fri, 17 Apr 2026 00:00:00 +0700</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/windows/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sherlock - Reaper writeup</title>
+      <link>http://localhost:1313/posts/reaper/</link>
+      <pubDate>Fri, 17 Apr 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/reaper/</guid>
+      <description>&lt;p&gt;This is one of the HackTheBox&amp;rsquo;s Sherlock - Reaper.&lt;/p&gt;&#xA;&lt;p&gt;It&amp;rsquo;s also one of the more terrible and sloppy write-up of mine, I don&amp;rsquo;t recommend you reading this unless there really is no other choice.&lt;/p&gt;&#xA;&lt;h2 id=&#34;scenario&#34;&gt;Scenario&lt;/h2&gt;&#xA;&lt;p&gt;Our SIEM alerted us to a suspicious logon event which needs to be looked at immediately. The alert details were that the IP Address and the Source Workstation name were a mismatch. You are provided a network capture and event logs from the surrounding time around the incident timeframe. Corelate the given evidence and report back to your SOC Manager.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to recover deleted files on usb or memory card</title>
+      <link>http://localhost:1313/posts/file_recovery/</link>
+      <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/posts/file_recovery/</guid>
+      <description>&lt;h1 id=&#34;tldr&#34;&gt;TLDR&lt;/h1&gt;&#xA;&lt;p&gt;Stop using both the usb and memory card at once. Else, it will be next to impossible to recover anything back, since the data cells got overwritten, instead of just being &amp;ldquo;unlisted&amp;rdquo;.&lt;/p&gt;&#xA;&lt;p&gt;On Window (Linux), you can just install Recuva (extundelete or fatcat) for free and point the app to your usb or memory card, you&amp;rsquo;re welcome. However, I would still prefer a more sure-fire way to preserve my data, hence the blog.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Revive FlareVM Network Connection (VirtualBox)</title>
       <link>http://localhost:1313/posts/flarevm_network/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
       <guid>http://localhost:1313/posts/flarevm_network/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-&lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;)&lt;/li&gt;
-&lt;li&gt;The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues&lt;/li&gt;
-&lt;li&gt;A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;virtualbox-network-setting-walkthrough&#34;&gt;VirtualBox network setting walkthrough&lt;/h1&gt;
-&lt;p&gt;You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &amp;ldquo;Intel&amp;hellip; Desktop&amp;rdquo;, or if you don&amp;rsquo;t know what to choose, just leave the default option.&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;)&lt;/li&gt;&#xA;&lt;li&gt;The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues&lt;/li&gt;&#xA;&lt;li&gt;A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;virtualbox-network-setting-walkthrough&#34;&gt;VirtualBox network setting walkthrough&lt;/h1&gt;&#xA;&lt;p&gt;You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &amp;ldquo;Intel&amp;hellip; Desktop&amp;rdquo;, or if you don&amp;rsquo;t know what to choose, just leave the default option.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

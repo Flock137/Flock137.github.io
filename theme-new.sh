@@ -166,11 +166,22 @@ img { max-width: 100%; height: auto; display: block; border-radius: var(--radius
   gap: 2.5rem;
   align-items: start;
   padding: 2.5rem 0 4rem;
+  min-width: 0;
 }
 
-@media (max-width: 900px) {
+[data-theme="light"] .post-content pre {
+  background: #1a1a35;
+}
+[data-theme="light"] .post-content pre:not(.chroma) code {
+  color: #e0d9f5;
+}
   .post-layout { grid-template-columns: 1fr; }
   .toc-sidebar { display: none; }
+}
+
+@media (max-width: 600px) {
+  .post-content pre { font-size: .78rem; padding: .8rem .9rem; }
+  .post-content table { display: block; overflow-x: auto; }
 }
 
 /* ── ToC Sidebar ── */
@@ -232,12 +243,15 @@ img { max-width: 100%; height: auto; display: block; border-radius: var(--radius
   overflow-x: auto;
   margin: 1.2rem 0;
   box-shadow: var(--shadow);
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 .post-content pre code {
   background: none;
   border: none;
   padding: 0;
-  color: var(--text);
+  color: var(--code-text, var(--text));
   font-size: .87em;
 }
 
@@ -411,19 +425,31 @@ img { max-width: 100%; height: auto; display: block; border-radius: var(--radius
 .pagination {
   display: flex;
   justify-content: center;
-  gap: .5rem;
+  align-items: center;
+  gap: .4rem;
   padding: 1rem 0 3rem;
+  list-style: none;
 }
-.pagination a, .pagination span {
-  padding: .4rem .9rem;
-  border: 1px solid var(--border);
+.pagination a,
+.pagination span {
+  display: inline-block;
+  padding: .35rem .8rem;
   border-radius: var(--radius);
-  font-size: .9rem;
+  font-size: .85rem;
   color: var(--text-muted);
   transition: .2s;
+  line-height: 1.4;
 }
-.pagination a:hover { border-color: var(--accent); color: var(--accent); }
-.pagination .active { border-color: var(--accent); color: var(--accent); background: var(--bg-card); }
+.pagination a:hover { color: var(--accent); }
+.pagination .active a,
+.pagination .active span {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+.pagination li { list-style: none; }
+/* hide Hugo's dot separators */
+.pagination li::marker,
+.pagination li > span:only-child:not([class]) { display: none; }
 
 /* ── Footer ── */
 .site-footer {
@@ -534,6 +560,30 @@ cat > $THEME/layouts/partials/footer/footer.html << 'EOF'
 </footer>
 EOF
 
+# ── layouts/partials/pagination.html ─────────────────────────────────────────
+cat > $THEME/layouts/partials/pagination.html << 'EOF'
+{{ $p := .Paginator }}
+{{ if gt $p.TotalPages 1 }}
+<nav class="pagination">
+  {{ if $p.HasPrev }}
+    <a href="{{ $p.First.URL }}">&laquo;</a>
+    <a href="{{ $p.Prev.URL }}">&lsaquo;</a>
+  {{ end }}
+  {{ range $p.Pagers }}
+    {{ if eq . $p }}
+      <span class="active">{{ .PageNumber }}</span>
+    {{ else }}
+      <a href="{{ .URL }}">{{ .PageNumber }}</a>
+    {{ end }}
+  {{ end }}
+  {{ if $p.HasNext }}
+    <a href="{{ $p.Next.URL }}">&rsaquo;</a>
+    <a href="{{ $p.Last.URL }}">&raquo;</a>
+  {{ end }}
+</nav>
+{{ end }}
+EOF
+
 # ── layouts/partials/thumbnail.html ──────────────────────────────────────────
 cat > $THEME/layouts/partials/thumbnail.html << 'EOF'
 {{/* Usage: {{ partial "thumbnail.html" (dict "thumb" .Params.thumbnail "title" .Title "class" "post-thumbnail") }} */}}
@@ -554,7 +604,7 @@ cat > $THEME/layouts/_default/list.html << 'EOF'
   {{ .Title | default "Posts" }}
 </h1>
 <div class="post-grid">
-  {{ range .Paginator.Pages }}
+  {{ range where .Paginator.Pages "Kind" "page" }}
   <article class="post-card">
     <a href="{{ .RelPermalink }}">
       {{ $thumb := .Params.thumbnail }}
@@ -578,7 +628,7 @@ cat > $THEME/layouts/_default/list.html << 'EOF'
   </article>
   {{ end }}
 </div>
-{{ template "_internal/pagination.html" . }}
+{{ partial "pagination.html" . }}
 {{ end }}
 EOF
 
@@ -605,7 +655,7 @@ cat > $THEME/layouts/_default/single.html << 'EOF'
   </article>
 
   <!-- ToC Sidebar -->
-  {{ if and (.Params.toc | default true) (.TableOfContents) }}
+  {{ if .Params.showToc }}
   <aside class="toc-sidebar">
     <h3>On this page</h3>
     <nav>{{ .TableOfContents }}</nav>
