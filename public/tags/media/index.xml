@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Media on Flock137</title>
     <link>http://localhost:1313/tags/media/</link>
     <description>Recent content in Media on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/media/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/media/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Checking whether media files are (partly) corrupted using ffmpeg</title>
       <link>http://localhost:1313/daily-tips/check_corrupted_flac/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/daily-tips/check_corrupted_flac/</guid>
-      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;Normally, you wouldn&amp;rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&amp;rsquo;t be able to play and that&amp;rsquo;s it.&lt;/p&gt;&#xA;&lt;p&gt;However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).&lt;/p&gt;</description>
+      <description>Intro Normally, you wouldn&amp;rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&amp;rsquo;t be able to play and that&amp;rsquo;s it.
+However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).</description>
+      <content:encoded><![CDATA[<h1 id="intro">Intro</h1>
+<p>Normally, you wouldn&rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&rsquo;t be able to play and that&rsquo;s it.</p>
+<p>However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).</p>
+<p>This is due to partial corruption in your file. Normally, when you play the file in your system, it will be able to automatically &ldquo;fill in the blank&rdquo; of the corruption bits. But in self-hosting or streaming scenarios, these services won&rsquo;t be able to pick that up and recover your file (well, to be fair, it did try, but can&rsquo;t since this is a computing intensive task), hence the reason it doesn&rsquo;t play (and also heats your CPU up whilst trying).</p>
+<h1 id="to-check-whether-there-is-corruption">To check whether there is corruption&hellip;</h1>
+<p>Open up your favourite text editor and store this script below in a file named <code>music_check</code>:</p>
+<pre tabindex="0"><code># Find all FLAC files and test them
+find ~/Music -name &#34;*.flac&#34; -type f | while read -r file; do
+    echo &#34;Testing: $file&#34;
+    if ! ffmpeg -v error -i &#34;$file&#34; -f null - 2&gt;&amp;1 | grep -q &#34;error\|invalid&#34;; then
+        echo &#34;✓ OK&#34;
+    else
+        echo &#34;✗ CORRUPTED: $file&#34;
+    fi
+done
+</code></pre><p>Then, type in the terminal <code>chmod u+x music_check</code> and run it using command <code>./music_check</code>, it will print out for your which files are corrupted.</p>
+<p>After you find out which one is corrupted, I recommend you to just re-download the file instead of fixing the corruption.</p>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

@@ -1,35 +1,48 @@
 baseURL: https://flock137.github.io/
 languageCode: en-us
 title: Flock137
-theme: electric-cyberpunk
-pagination:
-  pagerSize: 9
+theme: PaperModX
 
 timeZone: "Asia/Bangkok"
 
 params:
-  tagline: "Hi there, welcome to my (technical) blog site 👋"
   defaultTheme: dark
+  TocSide: 'left'
+  homeInfoParams:
+    Title: "Hi there \U0001F44B"
+    Content: >-
+      Welcome to my blog site. Thank you for coming.
+  socialIcons:
+    - name: email
+      url: 'mailto:hadinhworks@gmail.com'
+    - name: github
+      url: https://github.com/Flock137
+    - name: linkedin
+      url: https://www.linkedin.com/in/ha-dinh-53696429a/
+    - name: X
+      url: https://x.com/Flo_ck137
+    - name: facebook
+      url: https://www.facebook.com/thanh.ha.inh.340510
 
 menu:
   main:
+  - identifier: home
+    name: Home
+    url: /
+    weight: 10
   - identifier: posts
     name: Blog
     url: /posts/
-    weight: 10
-  - identifier: daily-tips
-    name: Daily Tips
+    weight: 20
+  - identifier: daily-tech-tips
+    name: Daily Tips 
     url: /daily-tips/
     weight: 20
+  - identifier: non-technical
+    name: Non-Tech 
+    url: /non-tech/
+    weight: 20
 
-markup:
-  tableOfContents:
-    startLevel: 2
-    endLevel: 4
-  highlight:
-    style: dracula
-    lineNos: true
-    lineNumbersInTable: false
 
 caches:
   images:

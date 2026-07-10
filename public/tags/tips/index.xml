@@ -1,26 +1,92 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tips on Flock137</title>
     <link>http://localhost:1313/tags/tips/</link>
     <description>Recent content in Tips on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/tips/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 11 Sep 2025 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/tips/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Recover corrupted USB in Linux terminal (required complete data wipe)</title>
       <link>http://localhost:1313/posts/usb_uncorrupted/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/usb_uncorrupted/</guid>
-      <description>&lt;h1 id=&#34;step-1&#34;&gt;Step 1&lt;/h1&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;lsblk&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The USB would likely to be something like &lt;code&gt;sda&lt;/code&gt; or &lt;code&gt;sdb&lt;/code&gt; (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.&lt;/p&gt;&#xA;&lt;h1 id=&#34;step-2&#34;&gt;Step 2&lt;/h1&gt;&#xA;&lt;p&gt;If the system mount any of your partition, you need to unmount them first before wiping.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Replace sdX1 with your actual partition identifier (e.g., sdb1)&#xA;sudo umount /dev/sdX1&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;step-3&#34;&gt;Step 3&lt;/h1&gt;&#xA;&lt;p&gt;Use &lt;code&gt;wipefs&lt;/code&gt; command to completely erase all partition tables and filesystem signatures from the drive.&lt;/p&gt;</description>
+      <description>Step 1 lsblk The USB would likely to be something like sda or sdb (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.
+Step 2 If the system mount any of your partition, you need to unmount them first before wiping.
+# Replace sdX1 with your actual partition identifier (e.g., sdb1) sudo umount /dev/sdX1 Step 3 Use wipefs command to completely erase all partition tables and filesystem signatures from the drive.</description>
+      <content:encoded><![CDATA[<h1 id="step-1">Step 1</h1>
+<pre tabindex="0"><code>lsblk
+</code></pre><p>The USB would likely to be something like <code>sda</code> or <code>sdb</code> (the same name with number is a partition). The easiest way to figure out which is your thumb drive is the size.</p>
+<h1 id="step-2">Step 2</h1>
+<p>If the system mount any of your partition, you need to unmount them first before wiping.</p>
+<pre tabindex="0"><code># Replace sdX1 with your actual partition identifier (e.g., sdb1)
+sudo umount /dev/sdX1
+</code></pre><h1 id="step-3">Step 3</h1>
+<p>Use <code>wipefs</code> command to completely erase all partition tables and filesystem signatures from the drive.</p>
+<pre tabindex="0"><code># REPLACE /dev/sdX WITH THE CORRECT DEVICE FROM STEP 1 (e.g., /dev/sdb)
+sudo wipefs --all /dev/sdX
+</code></pre><h1 id="step-4">Step 4</h1>
+<p>Use <code>fdisk</code> to create new structure for the drive</p>
+<pre tabindex="0"><code># REPLACE /dev/sdX WITH THE CORRECT DEVICE (e.g., /dev/sdb)
+sudo fdisk /dev/sdX
+</code></pre><p>In <code>fdisk</code> prompt:</p>
+<ul>
+<li>Type <code>g</code> and press Enter for GPT partition table (recomended). In the case that you know what you are doing and you need an MBR/DOS table, type <code>o</code></li>
+<li>Type <code>n</code>, press Enter to create new partition
+<ul>
+<li>Partition number: type 1, you only need one partition for the thumb drive</li>
+<li>First sector: Press Enter (default)</li>
+<li>Last sector: Press Enter (default)</li>
+</ul>
+</li>
+<li>Type <code>w</code> to write the partition table and exit. <strong>You can not go back after doing this.</strong></li>
+</ul>
+<p>Step 5: You need to have a file system for your USB to make it usable. Choose from one option: FAT32 or NTFS or ext4. FAT32 is more recommended because it can be use on any operating system, unless you have a specific use case in your mind. You may reformat it later with <code>Gparted</code>, if you change your mind, but make sure you make a back up of your data, if there is.</p>
+<p>After you make your decision, execute one of the below:</p>
+<ul>
+<li>FAT32: <code>sudo mkfs.vfat -n 'USBDRIVE' /dev/sdX1</code></li>
+<li>NTFS: <code>sudo mkfs.ntfs -L 'USBDRIVE' /dev/sdX1</code></li>
+<li>ext4: <code>sudo mkfs.ext4 -L 'USBDRIVE' /dev/sdX1</code></li>
+</ul>
+<p>Step 6: Safe ejection
+Eject the drive and plug back in:</p>
+<pre tabindex="0"><code>sudo eject /dev/sdX
+</code></pre><p>It should now be automatically detected and mounted by your system as a perfectly clean, empty, and healthy USB drive.</p>
+]]></content:encoded>
     </item>
+    
     <item>
       <title>Merging multiple singular .ics files into one in Linux</title>
       <link>http://localhost:1313/posts/calendar/</link>
       <pubDate>Wed, 03 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/calendar/</guid>
-      <description>&lt;p&gt;Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# Comhbine all .ics to a new text file&#xA;cat *.ics &amp;gt; temp.txt &#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Step 2: If you check with &lt;code&gt;cat temp.txt&lt;/code&gt; you can see there is this weird string that you need to get rid off: &lt;code&gt;END:VCALENDARBEGIN:VCALENDAR&lt;/code&gt;. Use &lt;code&gt;cat temp.txt | grep -v DARBEG &amp;gt; temp1.txt&lt;/code&gt;&lt;/p&gt;&#xA;&lt;p&gt;Step 3: For my case, I also need to:&lt;/p&gt;</description>
+      <description>Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.
+# Comhbine all .ics to a new text file cat *.ics &amp;gt; temp.txt Step 2: If you check with cat temp.txt you can see there is this weird string that you need to get rid off: END:VCALENDARBEGIN:VCALENDAR. Use cat temp.txt | grep -v DARBEG &amp;gt; temp1.txt
+Step 3: For my case, I also need to:</description>
+      <content:encoded><![CDATA[<p>Step 1: Gather your individual .ics files in a folder. Open the terminal in the said folder. Type this in your console.</p>
+<pre tabindex="0"><code># Comhbine all .ics to a new text file
+cat *.ics &gt; temp.txt 
+</code></pre><p>Step 2: If you check with <code>cat temp.txt</code> you can see there is this weird string that you need to get rid off: <code>END:VCALENDARBEGIN:VCALENDAR</code>. Use <code>cat temp.txt | grep -v DARBEG &gt; temp1.txt</code></p>
+<p>Step 3: For my case, I also need to:</p>
+<ul>
+<li>Adjust so that METHOD, PRODID and VERSION only appeared once</li>
+</ul>
+<pre tabindex="0"><code># Concatenate temp1.txt; -v means &#39;inverse grep&#39;
+cat temp1.txt | grep -v -e METHOD -e PRODID -e VERSION &gt; temp2.txt 
+</code></pre><p>Note: You need to manually put back your METHOD, PUBLISH and VERSION back manually after using the command above. They should be located after <code>BEGIN: VCALENDAR</code> and right before <code>BEGIN:VEVENT</code></p>
+<ul>
+<li>Fix the UID, since they can not be the same. Its syntax should be something like this (rid of the quotes): &ldquo;<a href="mailto:mech-a314@synthesis.com">mech-a314@synthesis.com</a>&rdquo;, &ldquo;MECH&rdquo;, &ldquo;1337&rdquo;, etc. If you see something like &lsquo;^M&rsquo; in your text editor, ignore them</li>
+</ul>
+<p>Step 4: And finally,</p>
+<pre tabindex="0"><code># Export text to iCalendar file. 
+cat temp2.txt &gt; calendar.ics
+</code></pre><p>Congrats, now all your calendar files are in a file files now.
+Please don&rsquo;t delete your individual .ics files, yet. You might need them later on, they don&rsquo;t take much space.</p>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

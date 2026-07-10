@@ -1,26 +1,910 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Hardware on Flock137</title>
     <link>http://localhost:1313/tags/hardware/</link>
     <description>Recent content in Hardware on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 12 Mar 2026 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/hardware/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 12 Mar 2026 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/hardware/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Understanding ARM dissassembly</title>
       <link>http://localhost:1313/posts/arm_disasm/</link>
       <pubDate>Thu, 12 Mar 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/arm_disasm/</guid>
-      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&amp;rsquo;s happening at the hardware level.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-example-stm32-led-blink&#34;&gt;The Example: STM32 LED Blink&lt;/h2&gt;&#xA;&lt;p&gt;We&amp;rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: &lt;a href=&#34;https://github.com/Flock137/stm32_blinky_baremetal&#34;&gt;https://github.com/Flock137/stm32_blinky_baremetal&lt;/a&gt;&lt;/p&gt;</description>
+      <description>Introduction When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&amp;rsquo;s happening at the hardware level.
+The Example: STM32 LED Blink We&amp;rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: https://github.</description>
+      <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&rsquo;s happening at the hardware level.</p>
+<h2 id="the-example-stm32-led-blink">The Example: STM32 LED Blink</h2>
+<p>We&rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: <a href="https://github.com/Flock137/stm32_blinky_baremetal">https://github.com/Flock137/stm32_blinky_baremetal</a></p>
+<h3 id="original-c-code-mainc">Original C Code (main.c)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define STM32F103xB
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stm32f1xx.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">uint32_t</span> count) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Enable GPIOC clock
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Configure PC13 as output
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">=</span> (GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(<span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);  <span style="color:#75715e">// Toggle
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">delay</span>(<span style="color:#ae81ff">2000000</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="binary-ninja-decompiled-output">Binary Ninja Decompiled Output</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">uint32_t</span> <span style="color:#66d9ef">volatile</span> count) __pure
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>    {
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>        <span style="color:#66d9ef">uint32_t</span> var_c <span style="color:#f92672">=</span> count;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        <span style="color:#66d9ef">uint32_t</span> i;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        {
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800000</span>a            i <span style="color:#f92672">=</span> var_c;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800000</span>e            var_c <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        } <span style="color:#66d9ef">while</span> (i);
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>() __noreturn
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>    {
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>        <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e        <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e            <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffff</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e            <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800004</span>a        <span style="color:#66d9ef">while</span> (true)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800004</span>a            <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x4001100c</span> <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x2000</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Literal pool (constants stored in flash)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000058</span>  <span style="color:#66d9ef">int32_t</span> data_8000058 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40021000</span>  <span style="color:#75715e">// RCC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0800005</span>c  <span style="color:#66d9ef">int32_t</span> data_800005c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40011000</span>  <span style="color:#75715e">// GPIOC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000060</span>  <span style="color:#66d9ef">int32_t</span> data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>    <span style="color:#75715e">// 2000000 decimal
+</span></span></span></code></pre></div><h2 id="understanding-c-operators">Understanding C Operators</h2>
+<h3 id="1-post-decrement---">1. Post-Decrement (<code>--</code>)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
+</span></span></code></pre></div><p><strong>How it works:</strong></p>
+<ul>
+<li>Evaluates the current value</li>
+<li>Then decrements by 1</li>
+<li>Continues while value is non-zero</li>
+</ul>
+<p><strong>Detailed example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>count <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// What happens:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 3 (true) → then decrement to 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 2 (true) → then decrement to 1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 1 (true) → then decrement to 0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 0 (false) → exit loop
+</span></span></span></code></pre></div><p><strong>Comparison with pre-decrement:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> b <span style="color:#f92672">=</span> a<span style="color:#f92672">--</span>;  <span style="color:#75715e">// b = 5, a = 4 (post-decrement: use then decrement)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> <span style="color:#f92672">--</span>x;  <span style="color:#75715e">// y = 4, x = 4 (pre-decrement: decrement then use)
+</span></span></span></code></pre></div><h3 id="2-bitwise-or-assignment-">2. Bitwise OR Assignment (<code>|=</code>)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Equivalent to:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">=</span> RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|</span> RCC_APB2ENR_IOPCEN;
+</span></span></code></pre></div><p><strong>Purpose:</strong> Set specific bits to 1 without affecting other bits</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0"><code>Original value:  0000 0101  (0x05)
+OR with:         0001 0000  (0x10)
+                 ---------
+Result:          0001 0101  (0x15)
+                     ^
+                     Bit 4 is now set, others unchanged
+</code></pre><p><strong>But why?</strong>
+In embedded systems, you often need to enable a feature by setting a specific bit in a control register. Other bits control different features, so you can&rsquo;t just write a new value - you must preserve the existing bits.</p>
+<h3 id="3-bitwise-and-with-not--">3. Bitwise AND with NOT (<code>&amp; ~</code>)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>
+</span></span></code></pre></div><p><strong>Purpose:</strong> Clear specific bits (set them to 0)</p>
+<p><strong>Step by step:</strong></p>
+<pre tabindex="0"><code>0xFF000000 =      1111 1111 0000 0000 0000 0000 0000 0000
+~0xFF000000 =     0000 0000 1111 1111 1111 1111 1111 1111
+                                        (all bits flipped)
+
+Original CRH:     1010 1011 0101 0101 1100 1100 1010 1010
+AND ~0xFF000000:  0000 0000 1111 1111 1111 1111 1111 1111
+                  -----------------------------------------
+Result:           0000 0000 0101 0101 1100 1100 1010 1010
+                  ^^^^^^^^^
+                  Top 8 bits cleared
+</code></pre><h3 id="4-xor-">4. XOR (<code>^=</code>)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);
+</span></span></code></pre></div><p><strong>Purpose:</strong> Toggle bits (0→1, 1→0)</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0"><code>First toggle:
+ODR:           0000 0000 0000 0000 0000 0000 0000 0000
+XOR (1 &lt;&lt; 13): 0000 0000 0000 0000 0010 0000 0000 0000
+               -----------------------------------------
+Result:        0000 0000 0000 0000 0010 0000 0000 0000 (bit 13 = 1)
+
+Second toggle:
+ODR:           0000 0000 0000 0000 0010 0000 0000 0000
+XOR (1 &lt;&lt; 13): 0000 0000 0000 0000 0010 0000 0000 0000
+               -----------------------------------------
+Result:        0000 0000 0000 0000 0000 0000 0000 0000 (bit 13 = 0)
+</code></pre><p><strong>XOR table:</strong></p>
+<pre tabindex="0"><code>0 ^ 0 = 0
+0 ^ 1 = 1
+1 ^ 0 = 1
+1 ^ 1 = 0 
+</code></pre><h3 id="5-left-shift-">5. Left Shift (<code>&lt;&lt;</code>)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>)
+</span></span></code></pre></div><p><strong>Purpose:</strong> Create a bitmask by shifting bits to the left</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0"><code>1 &lt;&lt; 0  = 0000 0000 0000 0001  (0x0001)
+1 &lt;&lt; 1  = 0000 0000 0000 0010  (0x0002)
+1 &lt;&lt; 2  = 0000 0000 0000 0100  (0x0004)
+1 &lt;&lt; 13 = 0010 0000 0000 0000  (0x2000)
+</code></pre><p><strong>Reasoning:</strong>
+Instead of memorizing that bit 13 = 0x2000, you just write <code>(1 &lt;&lt; 13)</code> which is self-documenting.</p>
+<h3 id="6-the-arrow-operator--">6. The Arrow Operator (<code>-&gt;</code>)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR
+</span></span></code></pre></div><p><strong>What it means:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>ptr<span style="color:#f92672">-&gt;</span>member
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Exactly equivalent to:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>ptr).member
+</span></span></code></pre></div><p><strong>How it works in embedded code:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// The peripheral struct definition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CRL;   <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CRH;   <span style="color:#75715e">// offset 0x04
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> IDR;   <span style="color:#75715e">// offset 0x08
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> ODR;   <span style="color:#75715e">// offset 0x0C
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} GPIO_TypeDef;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The pointer definition (from stm32f1xx.h)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#define GPIOC ((GPIO_TypeDef *) 0x40011000)
+</span></span></span></code></pre></div><p><strong>What happens when you write <code>GPIOC-&gt;ODR</code>:</strong></p>
+<ol>
+<li><code>GPIOC</code> is a pointer to address <code>0x40011000</code></li>
+<li><code>-&gt;</code> dereferences it and accesses the struct</li>
+<li><code>ODR</code> is at offset <code>0x0C</code> in the struct</li>
+<li>Final address: <code>0x40011000 + 0x0C = 0x4001100C</code></li>
+</ol>
+<p><strong>Visual representation:</strong></p>
+<pre tabindex="0"><code>Memory Address    Register    Offset
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0x40011000   →   CRL         +0x00
+0x40011004   →   CRH         +0x04
+0x40011008   →   IDR         +0x08
+0x4001100C   →   ODR         +0x0C  ← GPIOC-&gt;ODR points here
+</code></pre><h2 id="memory-mapped-io-the-bridge">Memory-Mapped I/O: The Bridge</h2>
+<p>In ARM microcontrollers, <strong>hardware peripherals are controlled by reading/writing to specific memory addresses</strong>. These aren&rsquo;t RAM locations - they&rsquo;re special addresses that connect directly to hardware.</p>
+<h3 id="example-the-rcc-peripheral">Example: The RCC Peripheral</h3>
+<p><strong>Human-readable C code:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span></code></pre></div><p><strong>How the macro expands:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Step 1: Expand the macros
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#define RCC ((RCC_TypeDef *) 0x40021000)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define RCC_APB2ENR_IOPCEN 0x10
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Step 2: Expand RCC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>((RCC_TypeDef <span style="color:#f92672">*</span>) <span style="color:#ae81ff">0x40021000</span>)<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Step 3: Calculate address
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// RCC base = 0x40021000
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// APB2ENR offset = 0x18 (from struct definition)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Final address = 0x40021018
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Step 4: What the CPU actually sees
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span></code></pre></div><h3 id="memory-map-overview">Memory Map Overview</h3>
+<pre tabindex="0"><code>Address Range        Purpose
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+0x08000000-0x0801FFFF   Flash (128KB) - Your program code
+0x20000000-0x20004FFF   SRAM (20KB) - Variables, stack
+0x40000000-0x40023FFF   Peripherals - Hardware control
+
+Peripherals:
+0x40021000             RCC (Reset and Clock Control)
+0x40011000             GPIOC (GPIO Port C)
+</code></pre><h3 id="how-the-compiler-translates">How the Compiler Translates</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// What you write:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// What the compiler generates (pseudo-code):
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">1.</span> Load address <span style="color:#ae81ff">0x40021018</span> into <span style="color:#66d9ef">register</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2.</span> Read current value from that address
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3.</span> OR it with <span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4.</span> Write the result back to <span style="color:#ae81ff">0x40021018</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// What the disassembler shows you:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span></code></pre></div><h2 id="reading-the-disassembly">Reading the Disassembly</h2>
+<h3 id="understanding-the-address-column">Understanding the Address Column</h3>
+<pre tabindex="0"><code>08000000    void delay(uint32_t volatile count) __pure
+08000000    {
+0800000a        i = var_c;
+0800000e        var_c = i - 1;
+08000012    } while (i);
+</code></pre><p><strong>The left column are memory addresses:</strong></p>
+<ul>
+<li><code>0x08000000</code> - Flash memory address where this function starts</li>
+<li><code>0x0800000a</code> - Address of the instruction that copies var_c to i</li>
+<li><code>0x0800000e</code> - Address of the decrement instruction</li>
+<li><code>0x08000012</code> - Address of the loop check instruction</li>
+</ul>
+<h3 id="the-literal-pool">The Literal Pool</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">08000058</span>  <span style="color:#66d9ef">int32_t</span> data_8000058 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40021000</span>  <span style="color:#75715e">// RCC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0800005</span>c  <span style="color:#66d9ef">int32_t</span> data_800005c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40011000</span>  <span style="color:#75715e">// GPIOC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000060</span>  <span style="color:#66d9ef">int32_t</span> data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>    <span style="color:#75715e">// 2000000 decimal
+</span></span></span></code></pre></div><p><strong>What is this?</strong>
+ARM processors can&rsquo;t load large 32-bit constants directly into registers. Instead, the compiler stores them in Flash and loads them from there.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">delay</span>(<span style="color:#ae81ff">2000000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The CPU needs to load 2000000 (0x1E8480) into a register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// It can&#39;t do this in one instruction, so:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 1. Compiler stores 0x1E8480 at address 0x08000060
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. At runtime, CPU loads from 0x08000060 into register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. Then calls delay() with that value
+</span></span></span></code></pre></div><h3 id="type-casts">Type Casts</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span>
+</span></span></code></pre></div><p><strong>Breaking it down:</strong></p>
+<ul>
+<li><code>0x40021018</code> - A raw memory address</li>
+<li><code>(uint32_t*)</code> - Cast it to a pointer to 32-bit unsigned integer</li>
+<li><code>*</code> - Dereference (access the value at that address)</li>
+</ul>
+<p><strong>Why the cast is needed:</strong>
+In C, you can&rsquo;t dereference a raw number. This tells the compiler &ldquo;treat this number as a pointer to a 32-bit value.&rdquo;</p>
+<h2 id="step-by-step-comparison">Step-by-Step Comparison</h2>
+<h3 id="enabling-the-clock">Enabling the Clock</h3>
+<p><strong>C Code (main.c:10):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span></code></pre></div><p><strong>Disassembly (line 33):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span></code></pre></div><p><strong>Matching process:</strong></p>
+<ol>
+<li>
+<p><strong>Find RCC base address:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define RCC ((RCC_TypeDef *) 0x40021000)
+</span></span></span></code></pre></div><p>Look at the literal pool: <code>data_8000058 = 0x40021000</code></p>
+</li>
+<li>
+<p><strong>Find APB2ENR offset:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CR;      <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CFGR;    <span style="color:#75715e">// offset 0x04
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CIR;     <span style="color:#75715e">// offset 0x08
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> APB2RSTR;<span style="color:#75715e">// offset 0x0C
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> APB1RSTR;<span style="color:#75715e">// offset 0x10
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> AHBENR;  <span style="color:#75715e">// offset 0x14
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> APB2ENR; <span style="color:#75715e">// offset 0x18 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} RCC_TypeDef;
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Calculate final address:</strong></p>
+<pre tabindex="0"><code>0x40021000 (RCC base)
++ 0x18 (APB2ENR offset)
+= 0x40021018 
+</code></pre></li>
+<li>
+<p><strong>Find the bit value:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define RCC_APB2ENR_IOPCEN 0x10
+</span></span></span></code></pre></div><p>This is bit 4 (2^4 = 16 = 0x10)</p>
+</li>
+</ol>
+<h3 id="example-2-configuring-the-gpio-pin">Example 2: Configuring the GPIO Pin</h3>
+<p><strong>C Code (main.c:13):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">=</span> (GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
+</span></span></code></pre></div><p><strong>Disassembly (lines 34-36):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffff</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
+</span></span></code></pre></div><p><strong>Matching process:</strong></p>
+<ol>
+<li>
+<p><strong>Find GPIOC base:</strong></p>
+<pre tabindex="0"><code>Literal pool: data_800005c = 0x40011000 
+</code></pre></li>
+<li>
+<p><strong>Find CRH offset:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CRL;  <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CRH;  <span style="color:#75715e">// offset 0x04 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} GPIO_TypeDef;
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Calculate address:</strong></p>
+<pre tabindex="0"><code>0x40011000 + 0x04 = 0x40011004
+</code></pre></li>
+<li>
+<p><strong>Compare the operations:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Source:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Disassembly:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffff</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Note: ~0xFF000000 = 0x00FFFFFF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//       0xffffff = 0x00FFFFFF
+</span></span></span></code></pre></div></li>
+</ol>
+<p>Note that the compiler has optimized the <code>~0xFF000000</code> by computing the NOT operation at compile time.</p>
+<h3 id="example-3-toggling-the-led">Example 3: Toggling the LED</h3>
+<p><strong>C Code (main.c:16):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);
+</span></span></code></pre></div><p><strong>Disassembly (line 39):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x4001100c</span> <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x2000</span>;
+</span></span></code></pre></div><p><strong>Matching process:</strong></p>
+<ol>
+<li>
+<p><strong>Find ODR offset:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CRL;  <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CRH;  <span style="color:#75715e">// offset 0x04
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> IDR;  <span style="color:#75715e">// offset 0x08
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> ODR;  <span style="color:#75715e">// offset 0x0C 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} GPIO_TypeDef;
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Calculate address:</strong></p>
+<pre tabindex="0"><code>0x40011000 + 0x0C = 0x4001100C 
+</code></pre></li>
+<li>
+<p><strong>Calculate the bit value:</strong></p>
+<pre tabindex="0"><code>1 &lt;&lt; 13 = 1 shifted left 13 positions
+       = 0x2000 
+</code></pre></li>
+</ol>
+<p><strong>Binary verification:</strong></p>
+<pre tabindex="0"><code>1       = 0000 0000 0000 0001
+1 &lt;&lt; 13 = 0010 0000 0000 0000
+        = 0x2000 
+</code></pre><h3 id="example-4-the-delay-function">Example 4: The Delay Function</h3>
+<p><strong>C Code (main.c:4-6):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">uint32_t</span> count) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Disassembly (lines 16-27):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">uint32_t</span> <span style="color:#66d9ef">volatile</span> count) __pure
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> var_c <span style="color:#f92672">=</span> count;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> i;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>        i <span style="color:#f92672">=</span> var_c;
+</span></span><span style="display:flex;"><span>        var_c <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">while</span> (i);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>You can see that the compiler has transformed the loop structure:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Original:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Becomes:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>    i <span style="color:#f92672">=</span> count;
+</span></span><span style="display:flex;"><span>    count <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">while</span> (i);
+</span></span></code></pre></div><p>This is because ARM processors can check conditions very efficiently at the end of a loop. This is a common compiler optimization, so they are technically the same thing.</p>
+<h2 id="key-patterns-to-recognize">Key Patterns to Recognize</h2>
+<h3 id="pattern-1-read-modify-write">Pattern 1: Read-Modify-Write</h3>
+<p><strong>Purpose:</strong> Change specific bits without affecting others</p>
+<p><strong>Template:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">=</span> (<span style="color:#66d9ef">register</span> <span style="color:#f92672">&amp;</span> mask) <span style="color:#f92672">|</span> value;
+</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">=</span> (GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
+</span></span></code></pre></div><p><strong>What it does:</strong></p>
+<ol>
+<li>Read current value</li>
+<li>Clear bits you want to change (AND with mask)</li>
+<li>Set new bits (OR with value)</li>
+<li>Write back</li>
+</ol>
+<p><strong>Why not just write the value directly?</strong>
+Because other bits in the register might control other pins or features. It is required to preserve them.</p>
+<h3 id="pattern-2-bit-set-or">Pattern 2: Bit Set (OR)</h3>
+<p><strong>Purpose:</strong> Enable a feature by setting a bit to 1</p>
+<p><strong>Template:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">|=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number);
+</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Same as:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">4</span>);
+</span></span></code></pre></div><p><strong>Why use OR?</strong>
+It only sets bits to 1, never clears them. Other enabled features stay enabled.</p>
+<h3 id="pattern-3-bit-clear-and-not">Pattern 3: Bit Clear (<code>AND</code> <code>NOT</code>)</h3>
+<p><strong>Purpose:</strong> Disable a feature by setting a bit to 0</p>
+<p><strong>Template:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number);
+</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);  <span style="color:#75715e">// Turn off LED
+</span></span></span></code></pre></div><p><strong>Why?</strong>
+The <code>NOT</code> inverts the bit mask, <code>AND</code> clears only those bits.</p>
+<h3 id="pattern-4-bit-toggle-xor">Pattern 4: Bit Toggle (XOR)</h3>
+<p><strong>Purpose:</strong> Flip a bit (0 -&gt; 1 or 1 -&gt; 0)</p>
+<p><strong>Template:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number);
+</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);  <span style="color:#75715e">// Toggle LED
+</span></span></span></code></pre></div><p><strong>Why XOR?</strong>
+It automatically flips the bit state without needing to know the current state.</p>
+<h3 id="pattern-5-bit-check-and">Pattern 5: Bit Check (AND)</h3>
+<p><strong>Purpose:</strong> Test if a specific bit is set</p>
+<p><strong>Template:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">register</span> <span style="color:#f92672">&amp;</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number)) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Bit is set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p><strong>Example:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (GPIOC<span style="color:#f92672">-&gt;</span>IDR <span style="color:#f92672">&amp;</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>)) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Pin 13 is high
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><h3 id="summary-table">Summary Table</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Operator</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set bit</td>
+<td><code>|=</code></td>
+<td>Turn on a feature</td>
+<td><code>reg |= (1 &lt;&lt; 4)</code></td>
+</tr>
+<tr>
+<td>Clear bit</td>
+<td><code>&amp;= ~</code></td>
+<td>Turn off a feature</td>
+<td><code>reg &amp;= ~(1 &lt;&lt; 4)</code></td>
+</tr>
+<tr>
+<td>Toggle bit</td>
+<td><code>^=</code></td>
+<td>Flip a bit</td>
+<td><code>reg ^= (1 &lt;&lt; 4)</code></td>
+</tr>
+<tr>
+<td>Check bit</td>
+<td><code>&amp;</code></td>
+<td>Test if bit is set</td>
+<td><code>if (reg &amp; (1 &lt;&lt; 4))</code></td>
+</tr>
+<tr>
+<td>Read-Modify-Write</td>
+<td><code>&amp; ~</code> then <code>|</code></td>
+<td>Change some bits</td>
+<td><code>reg = (reg &amp; ~mask) | val</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="practical-tips">Practical Tips</h2>
+<h3 id="1-use-a-reference-manual">1. Use a Reference Manual</h3>
+<p>It&rsquo;s highly recommended that you use them, since searching or using AI tool might not help that much.
+For example, with STM32F103xx Black Pill, it has 3 related manuals/references. You can view them here: <a href="https://github.com/Flock137/STM32_manual">https://github.com/Flock137/STM32_manual</a></p>
+<h3 id="2-calculate-addresses-manually">2. Calculate Addresses Manually</h3>
+<p>When you see an address in disassembly, work backwards:</p>
+<pre tabindex="0"><code>Address: 0x4001100C
+
+Step 1: What&#39;s the base?
+0x40011000 → That&#39;s GPIOC
+
+Step 2: What&#39;s the offset?
+0x4001100C - 0x40011000 = 0x0C
+
+Step 3: What register is at 0x0C?
+typedef struct {
+    uint32_t CRL;  // +0x00
+    uint32_t CRH;  // +0x04
+    uint32_t IDR;  // +0x08
+    uint32_t ODR;  // +0x0C  \\Here!
+} GPIO_TypeDef;
+
+Answer: GPIOC-&gt;ODR
+</code></pre><h3 id="3-convert-between-number-formats">3. Convert Between Number Formats</h3>
+<p><strong>Hex to Binary:</strong></p>
+<pre tabindex="0"><code>0x2000 = ?
+
+Break into nibbles (4 bits each):
+2    0    0    0
+0010 0000 0000 0000
+
+So 0x2000 = bit 13 is set (as in 13th position starting from the right)
+</code></pre><p><strong>Quick hex-to-binary chart:</strong></p>
+<pre tabindex="0"><code>Hex  Binary
+0    0000
+1    0001
+2    0010
+3    0011
+4    0100
+5    0101
+6    0110
+7    0111
+8    1000
+9    1001
+A    1010
+B    1011
+C    1100
+D    1101
+E    1110
+F    1111
+</code></pre><h3 id="4-recognize-magic-numbers">4. Recognize Magic Numbers</h3>
+<p><strong>Common values in STM32:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x10</td>
+<td>Bit 4 set</td>
+</tr>
+<tr>
+<td>0x2000</td>
+<td>Bit 13 set (1 &laquo; 13)</td>
+</tr>
+<tr>
+<td>0x33</td>
+<td>GPIO output 50MHz, push-pull</td>
+</tr>
+<tr>
+<td>0x44</td>
+<td>GPIO input, floating</td>
+</tr>
+<tr>
+<td>0x88</td>
+<td>GPIO input, pull-up/down</td>
+</tr>
+<tr>
+<td>0xFF000000</td>
+<td>Top 8 bits mask</td>
+</tr>
+<tr>
+<td>0x00FFFFFF</td>
+<td>Bottom 24 bits mask</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-look-for-patterns-in-the-literal-pool">5. Look for Patterns in the Literal Pool</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">08000058</span>  <span style="color:#66d9ef">int32_t</span> data_8000058 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40021000</span>  <span style="color:#75715e">// RCC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0800005</span>c  <span style="color:#66d9ef">int32_t</span> data_800005c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40011000</span>  <span style="color:#75715e">// GPIOC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000060</span>  <span style="color:#66d9ef">int32_t</span> data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>    <span style="color:#75715e">// delay count
+</span></span></span></code></pre></div><p><strong>How to use this:</strong></p>
+<ul>
+<li>Addresses starting with 0x4002xxxx → APB2 peripherals (RCC, AFIO)</li>
+<li>Addresses starting with 0x4001xxxx → APB1/APB2 GPIO ports</li>
+<li>Large hex numbers that aren&rsquo;t addresses → often delay counts or data</li>
+</ul>
+<h3 id="6-notes-on-compiler-optimizations">6. Notes on Compiler Optimizations</h3>
+<p><strong>The compiler may:</strong></p>
+<ul>
+<li>Change loop types (while → do-while)</li>
+<li>Pre-calculate constants (~0xFF000000 → 0x00FFFFFF)</li>
+<li>Reorder operations for efficiency</li>
+<li>Inline small functions</li>
+<li>Remove unused code</li>
+</ul>
+<p><strong>But it will never:</strong></p>
+<ul>
+<li>Change the final hardware behavior</li>
+<li>Skip volatile accesses</li>
+<li>Reorder memory operations incorrectly</li>
+</ul>
+<h3 id="7-trace-data-flow">7. Trace Data Flow</h3>
+<p>Follow a value through the code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Source:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">delay</span>(<span style="color:#ae81ff">2000000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Literal pool shows:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>  <span style="color:#75715e">// 2000000 in hex
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Assembly would:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">1.</span> Load <span style="color:#ae81ff">0x1e8480</span> from address <span style="color:#ae81ff">0x08000060</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2.</span> Store in <span style="color:#66d9ef">register</span> (e.g., r0)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3.</span> Call delay function
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4.</span> <span style="color:#a6e22e">delay</span>() decrements until <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><h2 id="common-pitfalls">Common Pitfalls</h2>
+<h3 id="pitfall-1-forgetting-the-pointer-cast">Pitfall 1: Forgetting the Pointer Cast</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Wrong:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span><span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;  <span style="color:#75715e">// Error: can&#39;t dereference an integer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Right:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span></code></pre></div><h3 id="pitfall-2-wrong-bit-calculations">Pitfall 2: Wrong Bit Calculations</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// You see:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>reg <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x2000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Don&#39;t assume it&#39;s bit 8 (0x2000 = 8192)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Calculate properly:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0x2000</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0010</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#f92672">=</span> bit <span style="color:#ae81ff">13</span>
+</span></span></code></pre></div><h3 id="pitfall-3-endian-type-confusion">Pitfall 3: Endian type Confusion</h3>
+<p>ARM Cortex-M is <strong>little-endian</strong>, but for bit operations on 32-bit registers, you usually don&rsquo;t need to worry about this. It matters more for multi-bytes data structures.</p>
+<h3 id="pitfall-4-volatile-keyword">Pitfall 4: Volatile Keyword</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">uint32_t</span> count;
+</span></span></code></pre></div><p><strong>Meaning:</strong></p>
+<ul>
+<li>Tells compiler &ldquo;this value might change unexpectedly&rdquo;</li>
+<li>Prevents optimization that might skip reading the variable</li>
+<li>Essential for hardware registers and interrupt-shared variables</li>
+</ul>
+<p><strong>In disassembly:</strong>
+You&rsquo;ll see actual memory reads/writes even if they seem redundant.</p>
+<h2 id="quick-reference-card">Quick Reference Card</h2>
+<h3 id="operator-cheat-sheet">Operator Cheat Sheet</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">|=</span>     Set bits      reg <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span>   Clear bits    reg <span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">^=</span>     Toggle bits   reg <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&amp;</span>      Test bits     <span style="color:#66d9ef">if</span> (reg <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x10</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;&lt;</span>     Shift left    <span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x2000</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span>     Shift right   <span style="color:#ae81ff">0x2000</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">13</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><h3 id="common-stm32-addresses">Common STM32 Addresses</h3>
+<pre tabindex="0"><code>0x40021000  RCC (clocks)
+0x40010800  GPIOA
+0x40010C00  GPIOB
+0x40011000  GPIOC
+0x08000000  Flash start
+0x20000000  SRAM start
+</code></pre><hr>
+<p><em>Last updated: 2026-03-12</em></p>
+<p><em>For corrections or additions, please make pull request</em></p>
+]]></content:encoded>
     </item>
+    
     <item>
       <title>Failed attempt on performing Hardware Forensics (STM32)</title>
       <link>http://localhost:1313/posts/stm32_failed/</link>
       <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/stm32_failed/</guid>
-      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.&lt;/p&gt;&#xA;&lt;p&gt;As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.&lt;/p&gt;</description>
+      <description>Introduction I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.
+As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references.</description>
+      <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>I chose to start my hardware hacking journey with an attempt to live debugging a piece of hardware. As I am waiting for the necessary parts I need to arrive, I did some emulations of the STM32, so I might have the binary ready to flash the binary into the hardware by the times the parts arrive.</p>
+<p>As weird as it is to write about a failed attempt on a blog post, this is written to at least temporary record what I did, for potential future references. The code for this attempt would not be released, as I definitely do not want to embarrase myself.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>For this, you need these packages: <code>arm-none-eabi-gcc</code>, <code>gdb</code> (or <code>gdb-multiarch</code>, it might depend on which distro you use) and <code>qemu-system-arm</code></p>
+<p>Installation command on all Arch and Arch-based systems:</p>
+<pre tabindex="0"><code>sudo pacman -S arm-none-eabi-gcc gdb qemu-system-arm 
+</code></pre><p>For other distros, please search for your equivalent command and packages, as sometimes, it varies.</p>
+<h2 id="file-structure">File structure</h2>
+<pre tabindex="0"><code>❯ tree
+.
+├── build
+│   ├── blink.bin
+│   ├── blink.elf
+│   └── blink.map
+├── inc
+│   └── stm32f103c8t6.h
+├── src
+│   ├── main.c
+│   └── vectors.c
+└── stm32f103c8t6.ld
+</code></pre><p>.bin is created later, after successfully compiling the .elf file by typing the command:</p>
+<pre tabindex="0"><code>❯ arm-none-eabi-objcopy -O binary build/blink.elf build/blink.bin
+</code></pre><h2 id="executed-steps">Executed steps</h2>
+<p>Write <code>main.c</code>, header (<code>.h</code>) linker (<code>.ld</code>) and vector table (<code>vector.c</code>) and put into its respective places, which was mentionned above. Then you will start to compile the binary (<code>.elf</code>):</p>
+<pre tabindex="0"><code>arm-none-eabi-gcc \
+  -mcpu=cortex-m3 \
+  -mthumb \
+  -mfloat-abi=soft \
+  -nostdlib \
+  -ffreestanding \
+  -Isrc -Iinc \
+  -T stm32f103c8t6.ld \
+  -Wl,-Map=build/blink.map \
+  -Wl,--gc-sections \
+  -Wl,--print-memory-usage \
+  src/vectors.c src/main.c \
+  -o build/blink.elf
+</code></pre><p>Output:</p>
+<pre tabindex="0"><code>/usr/lib/gcc/arm-none-eabi/14.2.0/../../../../arm-none-eabi/bin/ld: warning: build/blink.elf has a LOAD segment with RWX permissions
+Memory region         Used Size  Region Size  %age Used
+           FLASH:         132 B        64 KB      0.20%
+             RAM:          1 KB        20 KB      5.00%
+</code></pre><p>Then make the <code>.bin</code> file, you make this to flash the task into the hardware itself:</p>
+<pre tabindex="0"><code>❯ arm-none-eabi-objcopy -O binary build/blink.elf build/blink.bin
+</code></pre><p>Output:</p>
+<pre tabindex="0"><code>qemu-system-arm -M netduinoplus2 -kernel build/blink.bin -S -s &amp;
+echo &#34;QEMU started. PID: $!&#34;
+[1] 40761
+QEMU started. PID: 40761
+</code></pre><p>After obtaining the .bin file for flashing, do this:</p>
+<pre tabindex="0"><code>cd ~/stm32_forensics/blink
+
+# Terminal 1: Launch QEMU (stops CPU, waits for debugger)
+qemu-system-arm -M netduinoplus2 -kernel build/blink.bin -S -s &amp;
+echo &#34;QEMU started. PID: $!&#34;
+</code></pre><p>Right after that, this might appear:</p>
+<pre tabindex="0"><code>✦ ❯ VNC server running on ::1:5900
+</code></pre><p>Now we can start debugging session within gdb.</p>
+<h2 id="gdb">GDB</h2>
+<p>In a separated terminal:</p>
+<pre tabindex="0"><code>cd ~/stm32_forensics/blink
+gdb build/blink.elf
+</code></pre><pre tabindex="0"><code># Inside GDB:
+(gdb) target remote localhost:1234
+(gdb) load  # Load your program
+(gdb) break main
+(gdb) continue  
+</code></pre><h2 id="errors-encountered-and-issues">Errors encountered and Issues</h2>
+<pre tabindex="0"><code>src/main.c:2:1: note: &#39;uint32_t&#39; is defined in header &#39;&lt;stdint.h&gt;&#39;; this is probably fixable by adding &#39;#include &lt;stdint.h&gt;&#39;
+    1 | #include &#34;stm32f103c8t6.h&#34;
+  +++ |+#include &lt;stdint.h&gt;
+    2 | 
+</code></pre><pre tabindex="0"><code>src/main.c:24:5: error: implicit declaration of function &#39;main&#39; [-Wimplicit-function-declaration]
+   24 |     main();
+      |     ^~~~
+</code></pre><p>It means that the <code>main()</code> is being called before your definition of main itself.</p>
+<h3 id="program-continuing-forever-inside-gdb">Program continuing forever inside gdb</h3>
+<p>If it&rsquo;s blank after you <code>continue</code>, it means that something went wrong, Ctrl+C and inspect:</p>
+<pre tabindex="0"><code>^C
+Program received signal SIGINT, Interrupt.
+0x08000014 in Default_Handler ()
+(gdb) bt
+#0  0x08000014 in Default_Handler ()
+(gdb) info reg
+r0             0x0                 0
+r1             0x0                 0
+r2             0x0                 0
+r3             0x0                 0
+r4             0x0                 0
+r5             0x0                 0
+r6             0x0                 0
+r7             0x20004ffc          536891388
+r8             0x0                 0
+r9             0x0                 0
+r10            0x0                 0
+r11            0x0                 0
+r12            0x0                 0
+sp             0x20004ffc          0x20004ffc
+lr             0xffffffff          -1
+pc             0x8000014           0x8000014 &lt;Default_Handler+4&gt;
+xpsr           0x41000000          1090519040
+fpscr          0x0                 0
+msp            0x20004ffc          536891388
+psp            0x0                 0
+primask        0x0                 0
+control        0x0                 0
+basepri        0x0                 0
+faultmask      0x0                 0
+</code></pre><ol>
+<li>
+<p><strong>PC = <code>0x08000014</code></strong> → This is the <strong>HardFault Handler</strong> (4th vector, 0x14 bytes from flash start)</p>
+</li>
+<li>
+<p><strong>LR = <code>0xFFFFFFFF</code></strong> → Link Register shows <strong>exception return</strong></p>
+</li>
+<li>
+<p><strong>SP = <code>0x20004FFC</code></strong> → Stack pointer is near top of RAM (20KB RAM ends at 0x20005000)</p>
+</li>
+</ol>
+<pre tabindex="0"><code>✦ ❯ arm-none-eabi-objdump -s -j .isr_vector build/blink.elf
+
+build/blink.elf:     file format elf32-littlearm
+
+Contents of section .isr_vector:
+ 8000000 00500020 45000008 11000008 11000008  .P. E...........
+</code></pre><p>Registers seems to be pointing to the wrong addresses.</p>
+<pre tabindex="0"><code>✦ ❯ arm-none-eabi-objdump -d build/blink.elf --start-address=0x08000000 --stop-address=0x08000080
+
+build/blink.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08000010 &lt;Default_Handler&gt;:
+ 8000010:	b480      	push	{r7}
+ 8000012:	af00      	add	r7, sp, #0
+ 8000014:	e7fe      	b.n	8000014 &lt;Default_Handler+0x4&gt;
+	...
+
+08000018 &lt;crude_delay&gt;:
+ 8000018:	b480      	push	{r7}
+ 800001a:	b083      	sub	sp, #12
+ 800001c:	af00      	add	r7, sp, #0
+ 800001e:	2300      	movs	r3, #0
+ 8000020:	607b      	str	r3, [r7, #4]
+ 8000022:	e002      	b.n	800002a &lt;crude_delay+0x12&gt;
+ 8000024:	687b      	ldr	r3, [r7, #4]
+ 8000026:	3301      	adds	r3, #1
+ 8000028:	607b      	str	r3, [r7, #4]
+ 800002a:	687b      	ldr	r3, [r7, #4]
+ 800002c:	4a04      	ldr	r2, [pc, #16]	@ (8000040 &lt;crude_delay+0x28&gt;)
+ 800002e:	4293      	cmp	r3, r2
+ 8000030:	ddf8      	ble.n	8000024 &lt;crude_delay+0xc&gt;
+ 8000032:	bf00      	nop
+ 8000034:	bf00      	nop
+ 8000036:	370c      	adds	r7, #12
+ 8000038:	46bd      	mov	sp, r7
+ 800003a:	bc80      	pop	{r7}
+ 800003c:	4770      	bx	lr
+ 800003e:	bf00      	nop
+ 8000040:	000f423f 	.word	0x000f423f
+
+08000044 &lt;main&gt;:
+ 8000044:	b580      	push	{r7, lr}
+ 8000046:	af00      	add	r7, sp, #0
+ 8000048:	4b0b      	ldr	r3, [pc, #44]	@ (8000078 &lt;main+0x34&gt;)
+ 800004a:	681b      	ldr	r3, [r3, #0]
+ 800004c:	4a0a      	ldr	r2, [pc, #40]	@ (8000078 &lt;main+0x34&gt;)
+ 800004e:	f043 0310 	orr.w	r3, r3, #16
+ 8000052:	6013      	str	r3, [r2, #0]
+ 8000054:	4b09      	ldr	r3, [pc, #36]	@ (800007c &lt;main+0x38&gt;)
+ 8000056:	681b      	ldr	r3, [r3, #0]
+ 8000058:	f423 0370 	bic.w	r3, r3, #15728640	@ 0xf00000
+ 800005c:	4a07      	ldr	r2, [pc, #28]	@ (800007c &lt;main+0x38&gt;)
+ 800005e:	f443 1340 	orr.w	r3, r3, #3145728	@ 0x300000
+ 8000062:	6013      	str	r3, [r2, #0]
+ 8000064:	4b06      	ldr	r3, [pc, #24]	@ (8000080 &lt;main+0x3c&gt;)
+ 8000066:	681b      	ldr	r3, [r3, #0]
+ 8000068:	4a05      	ldr	r2, [pc, #20]	@ (8000080 &lt;main+0x3c&gt;)
+ 800006a:	f483 5300 	eor.w	r3, r3, #8192	@ 0x2000
+ 800006e:	6013      	str	r3, [r2, #0]
+ 8000070:	f7ff ffd2 	bl	8000018 &lt;crude_delay&gt;
+ 8000074:	e7f6      	b.n	8000064 &lt;main+0x20&gt;
+ 8000076:	bf00      	nop
+ 8000078:	40021018 	.word	0x40021018
+ 800007c:	40011004 	.word	0x40011004
+</code></pre><p>This is one of the processes disasembly.</p>
+<h2 id="logs">Logs</h2>
+<p>This was made on a similar but simplified version of the blinker.</p>
+<pre tabindex="0"><code>~/Projects/simple_stm32 
+✦ ❯ arm-none-eabi-objdump -s -j .isr_vector build/blink.elf
+
+build/blink.elf:     file format elf32-littlearm
+
+Contents of section .isr_vector:
+ 8000000 00500020 45000008 11000008 11000008  .P. E...........
+
+~/Projects/simple_stm32 
+✦ ❯ arm-none-eabi-nm build/blink.elf | grep -E &#34;(vectors|_start|Default_Handler|main)&#34;
+08000010 T Default_Handler
+0800004e T main
+08000044 T _start
+08000000 R vectors
+
+~/Projects/simple_stm32 
+✦ ❯ arm-none-eabi-objdump -d build/blink.elf --start-address=0x08000000 --stop-address=0x08000030
+
+build/blink.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08000010 &lt;Default_Handler&gt;:
+ 8000010:	b480      	push	{r7}
+ 8000012:	af00      	add	r7, sp, #0
+ 8000014:	e7fe      	b.n	8000014 &lt;Default_Handler+0x4&gt;
+	...
+
+08000018 &lt;crude_delay&gt;:
+ 8000018:	b480      	push	{r7}
+ 800001a:	b083      	sub	sp, #12
+ 800001c:	af00      	add	r7, sp, #0
+ 800001e:	2300      	movs	r3, #0
+ 8000020:	607b      	str	r3, [r7, #4]
+ 8000022:	e002      	b.n	800002a &lt;crude_delay+0x12&gt;
+ 8000024:	687b      	ldr	r3, [r7, #4]
+ 8000026:	3301      	adds	r3, #1
+ 8000028:	607b      	str	r3, [r7, #4]
+ 800002a:	687b      	ldr	r3, [r7, #4]
+ 800002c:	4a04      	ldr	r2, [pc, #16]	@ (8000040 &lt;crude_delay+0x28&gt;)
+ 800002e:	4293      	cmp	r3, r2
+</code></pre><p>The processes is rather normal to my eyes, and as I start the program in gdb, it stuck at <code>Default_Handler()</code> again, and I found out that both process seemed to have never reached <code>main()</code>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p><em>And the journey continue&hellip;</em></p>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

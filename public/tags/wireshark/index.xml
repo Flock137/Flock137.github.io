@@ -1,19 +1,73 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Wireshark on Flock137</title>
     <link>http://localhost:1313/tags/wireshark/</link>
     <description>Recent content in Wireshark on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 21 Feb 2026 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/wireshark/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 21 Feb 2026 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/wireshark/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Snyk&#39;s Fetch-the-flag Write-up (Forensics)</title>
       <link>http://localhost:1313/posts/snyk_fetch_the_flag/</link>
       <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/snyk_fetch_the_flag/</guid>
-      <description>&lt;h1 id=&#34;void-step&#34;&gt;Void Step&lt;/h1&gt;&#xA;&lt;h3 id=&#34;how-many-decoy-hosts-are-randomized-in-this-recon-evasion-technique&#34;&gt;How many decoy hosts are randomized in this recon evasion technique&lt;/h3&gt;&#xA;&lt;p&gt;Answer: 12&lt;/p&gt;&#xA;&lt;p&gt;In Wireshark filter:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;(tcp.flags.syn == 1 &amp;amp;&amp;amp; tcp.flags.ack == 0 ) &amp;amp;&amp;amp; (ip.dst == 192.168.1.27)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Explaination:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Destination IP is found through manual inspection.&lt;/li&gt;&#xA;&lt;li&gt;For faster port scanning, we (or the attacker) perform the half-open scan, where SYN=1, ACK=0 (means: send only, no need response).&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Go to Statistics &amp;gt; Endpoints &amp;gt; IPv4, count the addresses, then minus 1 (the destination address, which we need to exclude).&lt;/p&gt;</description>
+      <description>Void Step How many decoy hosts are randomized in this recon evasion technique Answer: 12
+In Wireshark filter:
+(tcp.flags.syn == 1 &amp;amp;&amp;amp; tcp.flags.ack == 0 ) &amp;amp;&amp;amp; (ip.dst == 192.168.1.27) Explaination:
+Destination IP is found through manual inspection. For faster port scanning, we (or the attacker) perform the half-open scan, where SYN=1, ACK=0 (means: send only, no need response). Go to Statistics &amp;gt; Endpoints &amp;gt; IPv4, count the addresses, then minus 1 (the destination address, which we need to exclude).</description>
+      <content:encoded><![CDATA[<h1 id="void-step">Void Step</h1>
+<h3 id="how-many-decoy-hosts-are-randomized-in-this-recon-evasion-technique">How many decoy hosts are randomized in this recon evasion technique</h3>
+<p>Answer: 12</p>
+<p>In Wireshark filter:</p>
+<pre tabindex="0"><code>(tcp.flags.syn == 1 &amp;&amp; tcp.flags.ack == 0 ) &amp;&amp; (ip.dst == 192.168.1.27)
+</code></pre><p>Explaination:</p>
+<ul>
+<li>Destination IP is found through manual inspection.</li>
+<li>For faster port scanning, we (or the attacker) perform the half-open scan, where SYN=1, ACK=0 (means: send only, no need response).</li>
+</ul>
+<p>Go to Statistics &gt; Endpoints &gt; IPv4, count the addresses, then minus 1 (the destination address, which we need to exclude).</p>
+<p><img loading="lazy" src="/posts/snyk_fetch_the_flag/images/voidstep_ipv4_filter.png" type="" alt="images"  /></p>
+<h3 id="what-is-the-real-attacker-ip-address">What is the real attacker IP address?</h3>
+<p>Answer: 192.168.1.23</p>
+<p>The rest is either the destination ip or decoys. It seems like traffic from a person because it seems stands out compare to other traffics, through manual inspection.</p>
+<h3 id="how-many-open-ports-did-the-attacker-find">How many open ports did the attacker find?</h3>
+<p>Add <code>&amp;&amp; (ip.addr==192.168.1.23)</code> to previous filter in the first question.</p>
+<p>There are 4. Look at these collumns:</p>
+<table>
+<thead>
+<tr>
+<th>Bits/s A-&gt;B</th>
+<th>Bits/s B-&gt;A</th>
+</tr>
+</thead>
+</table>
+<p>If they have numbers inside, that&rsquo;s your open ports.</p>
+<p>Ports open: 22, 5000, 8000, 6789</p>
+<p>Filter used: <code>(tcp.dstport == 22 || tcp.dstport == 5000 || tcp.dstport == 8000 || tcp.dstport == 6789)</code></p>
+<h3 id="what-web-enumeration-tool-did-attacker-use">What web enumeration tool did attacker use?</h3>
+<p>Filter:</p>
+<pre tabindex="0"><code>(ip.addr==192.168.1.23) &amp;&amp; http.request &amp;&amp; (ip.dst == 192.168.1.27)
+</code></pre><p><img loading="lazy" src="/posts/snyk_fetch_the_flag/images/SNYK-gobuster.png" type="" alt=""  /></p>
+<p>It was GoBuster.</p>
+<h3 id="whats-the-first-endpoint-discovered-by-the-attacker">What&rsquo;s the first endpoint discovered by the attacker?</h3>
+<p>Answer: /About</p>
+<p>Found by manual inspection.</p>
+<p>Filter used:</p>
+<pre tabindex="0"><code>(ip.addr==192.168.1.23) &amp;&amp; http.request.method==GET &amp;&amp; (ip.dst == 192.168.1.27)
+</code></pre><h3 id="first-file-extension-test-during-enumeration">First file extension test during enumeration</h3>
+<p>Answer: .html from .bash_history.html</p>
+<p>Found by manual inspection of chronological events. The first file appeared was <code>.bash_history.html</code></p>
+<h3 id="full-vulnerable-request-parameter-used-in-the-attack">Full vulnerable request parameter used in the attack</h3>
+<p>Answer: <code>file</code></p>
+<pre tabindex="0"><code>http://192.168.1.27:5000/read?file=%2Fhome%2Fzoro%2F.ssh%2Fauthorized_keys
+</code></pre><h3 id="what-is-the-username-discovered-by-the-attacker">What is the username discovered by the attacker?</h3>
+<p>Answer:zoro. As above shown.</p>
+<h3 id="what-time-did-the-attacker-start-bruteforcing-for-ssh">What time did the attacker start bruteforcing for ssh?</h3>
+<p>Tried all the reasonable ones, but none are correct. Chances are the destination port was not 22.</p>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

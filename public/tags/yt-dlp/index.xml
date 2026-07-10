@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Yt-Dlp on Flock137</title>
     <link>http://localhost:1313/tags/yt-dlp/</link>
     <description>Recent content in Yt-Dlp on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/yt-dlp/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/yt-dlp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How to download music from Youtube with yt-dlp (CLI)</title>
       <link>http://localhost:1313/daily-tips/ytb_music_download/</link>
       <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/daily-tips/ytb_music_download/</guid>
-      <description>&lt;h2 id=&#34;downloading-yt-dlp&#34;&gt;Downloading (yt-dlp)&lt;/h2&gt;&#xA;&lt;p&gt;You use this command:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;yt-dlp -f &amp;#34;bestvideo[height=2160]+bestaudio&amp;#34; -x --audio-format flac &amp;#34;VIDEO_URL&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In this command, I&amp;rsquo;m downloading from a 4K video (2160p), and I like my music to be in the &lt;code&gt;.flac&lt;/code&gt; file. Feel free to change the quality and filetype into whatever you like.&lt;/p&gt;&#xA;&lt;h2 id=&#34;update-metadata-ffmpeg&#34;&gt;Update metadata (ffmpeg)&lt;/h2&gt;&#xA;&lt;p&gt;Since the metadata won&amp;rsquo;t come with the file by default, you may like to add it manually.&lt;/p&gt;&#xA;&lt;p&gt;To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:&lt;/p&gt;</description>
+      <description>Downloading (yt-dlp) You use this command:
+yt-dlp -f &amp;#34;bestvideo[height=2160]+bestaudio&amp;#34; -x --audio-format flac &amp;#34;VIDEO_URL&amp;#34; In this command, I&amp;rsquo;m downloading from a 4K video (2160p), and I like my music to be in the .flac file. Feel free to change the quality and filetype into whatever you like.
+Update metadata (ffmpeg) Since the metadata won&amp;rsquo;t come with the file by default, you may like to add it manually.
+To do this, yt-dlp should also work.</description>
+      <content:encoded><![CDATA[<h2 id="downloading-yt-dlp">Downloading (yt-dlp)</h2>
+<p>You use this command:</p>
+<pre tabindex="0"><code>yt-dlp -f &#34;bestvideo[height=2160]+bestaudio&#34; -x --audio-format flac &#34;VIDEO_URL&#34;
+</code></pre><p>In this command, I&rsquo;m downloading from a 4K video (2160p), and I like my music to be in the <code>.flac</code> file. Feel free to change the quality and filetype into whatever you like.</p>
+<h2 id="update-metadata-ffmpeg">Update metadata (ffmpeg)</h2>
+<p>Since the metadata won&rsquo;t come with the file by default, you may like to add it manually.</p>
+<p>To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:</p>
+<pre tabindex="0"><code>ffmpeg -i &#34;input.flac&#34; \
+    -metadata title=&#34;Song Title&#34; \
+    -metadata artist=&#34;Artist Name&#34; \
+    -metadata album=&#34;Album Name&#34; \
+    -metadata date=&#34;2024&#34; \ 
+    -metadata genre=&#34;Pop&#34; \ 
+    -codec copy &#34;output.flac&#34;
+</code></pre>]]></content:encoded>
     </item>
+    
   </channel>
 </rss>
