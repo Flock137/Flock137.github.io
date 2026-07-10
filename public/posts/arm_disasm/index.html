@@ -1,111 +1,409 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Understanding ARM dissassembly | Flock137</title>
-<meta name="description" content="">
+<html lang="en" dir="auto">
 
-<link rel="stylesheet" href="/css/main.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<meta name="generator" content="Hugo 0.160.1">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Understanding ARM dissassembly | Flock137</title>
+<meta name="keywords" content="Assembly, Hardware, Linux, stm32, ARM">
+<meta name="description" content="Introduction When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&rsquo;s happening at the hardware level.
+The Example: STM32 LED Blink We&rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: https://github.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/arm_disasm/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.min.7da7716a1f2d0725f74c6ae7f8d6adafc43aabe2b366b65bfbf433448e2a2001.css" integrity="sha256-fadxah8tByX3TGrn&#43;Natr8Q6q&#43;KzZrZb&#43;/QzRI4qIAE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/arm_disasm/">
+
+<meta name="twitter:title" content="Understanding ARM dissassembly | Flock137" />
+<meta name="twitter:description" content="Introduction When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&rsquo;s happening at the hardware level.
+The Example: STM32 LED Blink We&rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: https://github." />
+<meta property="og:title" content="Understanding ARM dissassembly | Flock137" />
+<meta property="og:description" content="Introduction When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&rsquo;s happening at the hardware level.
+The Example: STM32 LED Blink We&rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: https://github." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/arm_disasm/" />
+<meta property="article:section" content="posts" />
+  <meta property="article:published_time" content="2026-03-12T00:00:00&#43;07:00" />
+  <meta property="article:modified_time" content="2026-03-12T00:00:00&#43;07:00" />
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Understanding ARM dissassembly",
+      "item": "http://localhost:1313/posts/arm_disasm/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Understanding ARM dissassembly | Flock137",
+  "name": "Understanding ARM dissassembly",
+  "description": "Introduction When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what\u0026rsquo;s happening at the hardware level.\nThe Example: STM32 LED Blink We\u0026rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: https://github.",
+  "keywords": [
+    "Assembly", "Hardware", "Linux", "stm32", "ARM"
+  ],
+  "wordCount" : "2561",
+  "inLanguage": "en",
+  "datePublished": "2026-03-12T00:00:00+07:00",
+  "dateModified": "2026-03-12T00:00:00+07:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/arm_disasm/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Flock137",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
 
 </head>
-<body class="site-wrap">
-  <header class="site-header">
-  <div class="container">
-    <a class="site-logo" href="/">Flock137</a>
-    <nav class="site-nav">
-      
-        <a href="/posts/">Blog</a>
-      
-        <a href="/daily-tips/">Daily Tips</a>
-      
-      <button id="theme-toggle" aria-label="Toggle theme">☀️ Light</button>
+
+<body class=" dark type-posts kind-page layout-" id="top"><script data-no-instant>
+function switchTheme(theme) {
+  switch (theme) {
+    case 'light':
+      document.body.classList.remove('dark');
+      break;
+    case 'dark':
+      document.body.classList.add('dark');
+      break;
+    
+    default:
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+      }
+  }
+}
+
+function isDarkTheme() {
+  return document.body.className.includes("dark");
+}
+
+function getPrefTheme() {
+  return localStorage.getItem("pref-theme");
+}
+
+function setPrefTheme(theme) {
+  switchTheme(theme)
+  localStorage.setItem("pref-theme", theme);
+}
+
+const toggleThemeCallbacks = {}
+toggleThemeCallbacks['main'] = (isDark) => {
+  
+  if (isDark) {
+    setPrefTheme('light');
+  } else {
+    setPrefTheme('dark');
+  }
+}
+
+
+
+
+window.addEventListener('toggle-theme', function() {
+  
+  const isDark = isDarkTheme()
+  for (const key in toggleThemeCallbacks) {
+    toggleThemeCallbacks[key](isDark)
+  }
+});
+
+
+function toggleThemeListener() {
+  
+  window.dispatchEvent(new CustomEvent('toggle-theme'));
+}
+
+</script>
+<script>
+  
+  (function() {
+    const defaultTheme = 'dark';
+    const prefTheme = getPrefTheme();
+    const theme = prefTheme ? prefTheme : defaultTheme;
+
+    switchTheme(theme);
+  })();
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flock137 (Alt + H)">Flock137</a>
+            <span class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </span>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home" class="active"
+                >Home
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="Blog" class="active"
+                >Blog
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/daily-tips/" title="Daily Tips"
+                >Daily Tips
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/non-tech/" title="Non-Tech"
+                >Non-Tech
+                </a>
+            </li>
+        </ul>
     </nav>
-  </div>
 </header>
+<main class="main post">
 
-  <main class="container">
-    
-<div class="post-layout">
-  
-  <article>
-    
+<article class="post-single">
+  <header class="post-header">
+    <h1 class="post-title">Understanding ARM dissassembly</h1>
+    <div class="post-meta"><span class="meta-item">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar" style="user-select: text;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" style="user-select: text;"></rect><line x1="16" y1="2" x2="16" y2="6" style="user-select: text;"></line><line x1="8" y1="2" x2="8" y2="6" style="user-select: text;"></line><line x1="3" y1="10" x2="21" y2="10" style="user-select: text;"></line></svg>
+  <span>March 12, 2026</span></span><span class="meta-item">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon" style="user-select: text;"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" style="user-select: text;"></path><line x1="7" y1="7" x2="7" y2="7" style="user-select: text;"></line></svg>
+  <span class="post-tags"><a href="http://localhost:1313/tags/assembly/">Assembly</a><a href="http://localhost:1313/tags/hardware/">Hardware</a><a href="http://localhost:1313/tags/linux/">Linux</a><a href="http://localhost:1313/tags/stm32/">Stm32</a><a href="http://localhost:1313/tags/arm/">ARM</a></span></span>
 
-
-
-<div class="post-thumbnail no-image">
-  
-</div>
-
-
-    <h1 style="font-size: 2rem; line-height: 1.2; margin-bottom: .8rem;">Understanding ARM dissassembly</h1>
-    <div class="post-meta">
-      <span>March 12, 2026</span>
-      <span>13 min read</span>
       
-        <span class="tag">Assembly</span><span class="tag">Hardware</span><span class="tag">Linux</span><span class="tag">stm32</span><span class="tag">ARM</span>
       
     </div>
+  </header> <div class="toc side left">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
 
-    <div class="post-content">
-      <h2 id="introduction">Introduction</h2>
+        <div class="inner"><ul>
+                <li>
+                    <a href="#introduction" aria-label="Introduction">Introduction</a></li>
+                <li>
+                    <a href="#the-example-stm32-led-blink" aria-label="The Example: STM32 LED Blink">The Example: STM32 LED Blink</a><ul>
+                        
+                <li>
+                    <a href="#original-c-code-mainc" aria-label="Original C Code (main.c)">Original C Code (main.c)</a></li>
+                <li>
+                    <a href="#binary-ninja-decompiled-output" aria-label="Binary Ninja Decompiled Output">Binary Ninja Decompiled Output</a></li></ul>
+                </li>
+                <li>
+                    <a href="#understanding-c-operators" aria-label="Understanding C Operators">Understanding C Operators</a><ul>
+                        
+                <li>
+                    <a href="#1-post-decrement---" aria-label="1. Post-Decrement (--)">1. Post-Decrement (<code>--</code>)</a></li>
+                <li>
+                    <a href="#2-bitwise-or-assignment-" aria-label="2. Bitwise OR Assignment (|=)">2. Bitwise OR Assignment (<code>|=</code>)</a></li>
+                <li>
+                    <a href="#3-bitwise-and-with-not--" aria-label="3. Bitwise AND with NOT (&amp;amp; ~)">3. Bitwise AND with NOT (<code>&amp; ~</code>)</a></li>
+                <li>
+                    <a href="#4-xor-" aria-label="4. XOR (^=)">4. XOR (<code>^=</code>)</a></li>
+                <li>
+                    <a href="#5-left-shift-" aria-label="5. Left Shift (&amp;lt;&amp;lt;)">5. Left Shift (<code>&lt;&lt;</code>)</a></li>
+                <li>
+                    <a href="#6-the-arrow-operator--" aria-label="6. The Arrow Operator (-&amp;gt;)">6. The Arrow Operator (<code>-&gt;</code>)</a></li></ul>
+                </li>
+                <li>
+                    <a href="#memory-mapped-io-the-bridge" aria-label="Memory-Mapped I/O: The Bridge">Memory-Mapped I/O: The Bridge</a><ul>
+                        
+                <li>
+                    <a href="#example-the-rcc-peripheral" aria-label="Example: The RCC Peripheral">Example: The RCC Peripheral</a></li>
+                <li>
+                    <a href="#memory-map-overview" aria-label="Memory Map Overview">Memory Map Overview</a></li>
+                <li>
+                    <a href="#how-the-compiler-translates" aria-label="How the Compiler Translates">How the Compiler Translates</a></li></ul>
+                </li>
+                <li>
+                    <a href="#reading-the-disassembly" aria-label="Reading the Disassembly">Reading the Disassembly</a><ul>
+                        
+                <li>
+                    <a href="#understanding-the-address-column" aria-label="Understanding the Address Column">Understanding the Address Column</a></li>
+                <li>
+                    <a href="#the-literal-pool" aria-label="The Literal Pool">The Literal Pool</a></li>
+                <li>
+                    <a href="#type-casts" aria-label="Type Casts">Type Casts</a></li></ul>
+                </li>
+                <li>
+                    <a href="#step-by-step-comparison" aria-label="Step-by-Step Comparison">Step-by-Step Comparison</a><ul>
+                        
+                <li>
+                    <a href="#enabling-the-clock" aria-label="Enabling the Clock">Enabling the Clock</a></li>
+                <li>
+                    <a href="#example-2-configuring-the-gpio-pin" aria-label="Example 2: Configuring the GPIO Pin">Example 2: Configuring the GPIO Pin</a></li>
+                <li>
+                    <a href="#example-3-toggling-the-led" aria-label="Example 3: Toggling the LED">Example 3: Toggling the LED</a></li>
+                <li>
+                    <a href="#example-4-the-delay-function" aria-label="Example 4: The Delay Function">Example 4: The Delay Function</a></li></ul>
+                </li>
+                <li>
+                    <a href="#key-patterns-to-recognize" aria-label="Key Patterns to Recognize">Key Patterns to Recognize</a><ul>
+                        
+                <li>
+                    <a href="#pattern-1-read-modify-write" aria-label="Pattern 1: Read-Modify-Write">Pattern 1: Read-Modify-Write</a></li>
+                <li>
+                    <a href="#pattern-2-bit-set-or" aria-label="Pattern 2: Bit Set (OR)">Pattern 2: Bit Set (OR)</a></li>
+                <li>
+                    <a href="#pattern-3-bit-clear-and-not" aria-label="Pattern 3: Bit Clear (AND NOT)">Pattern 3: Bit Clear (<code>AND</code> <code>NOT</code>)</a></li>
+                <li>
+                    <a href="#pattern-4-bit-toggle-xor" aria-label="Pattern 4: Bit Toggle (XOR)">Pattern 4: Bit Toggle (XOR)</a></li>
+                <li>
+                    <a href="#pattern-5-bit-check-and" aria-label="Pattern 5: Bit Check (AND)">Pattern 5: Bit Check (AND)</a></li>
+                <li>
+                    <a href="#summary-table" aria-label="Summary Table">Summary Table</a></li></ul>
+                </li>
+                <li>
+                    <a href="#practical-tips" aria-label="Practical Tips">Practical Tips</a><ul>
+                        
+                <li>
+                    <a href="#1-use-a-reference-manual" aria-label="1. Use a Reference Manual">1. Use a Reference Manual</a></li>
+                <li>
+                    <a href="#2-calculate-addresses-manually" aria-label="2. Calculate Addresses Manually">2. Calculate Addresses Manually</a></li>
+                <li>
+                    <a href="#3-convert-between-number-formats" aria-label="3. Convert Between Number Formats">3. Convert Between Number Formats</a></li>
+                <li>
+                    <a href="#4-recognize-magic-numbers" aria-label="4. Recognize Magic Numbers">4. Recognize Magic Numbers</a></li>
+                <li>
+                    <a href="#5-look-for-patterns-in-the-literal-pool" aria-label="5. Look for Patterns in the Literal Pool">5. Look for Patterns in the Literal Pool</a></li>
+                <li>
+                    <a href="#6-notes-on-compiler-optimizations" aria-label="6. Notes on Compiler Optimizations">6. Notes on Compiler Optimizations</a></li>
+                <li>
+                    <a href="#7-trace-data-flow" aria-label="7. Trace Data Flow">7. Trace Data Flow</a></li></ul>
+                </li>
+                <li>
+                    <a href="#common-pitfalls" aria-label="Common Pitfalls">Common Pitfalls</a><ul>
+                        
+                <li>
+                    <a href="#pitfall-1-forgetting-the-pointer-cast" aria-label="Pitfall 1: Forgetting the Pointer Cast">Pitfall 1: Forgetting the Pointer Cast</a></li>
+                <li>
+                    <a href="#pitfall-2-wrong-bit-calculations" aria-label="Pitfall 2: Wrong Bit Calculations">Pitfall 2: Wrong Bit Calculations</a></li>
+                <li>
+                    <a href="#pitfall-3-endian-type-confusion" aria-label="Pitfall 3: Endian type Confusion">Pitfall 3: Endian type Confusion</a></li>
+                <li>
+                    <a href="#pitfall-4-volatile-keyword" aria-label="Pitfall 4: Volatile Keyword">Pitfall 4: Volatile Keyword</a></li></ul>
+                </li>
+                <li>
+                    <a href="#quick-reference-card" aria-label="Quick Reference Card">Quick Reference Card</a><ul>
+                        
+                <li>
+                    <a href="#operator-cheat-sheet" aria-label="Operator Cheat Sheet">Operator Cheat Sheet</a></li>
+                <li>
+                    <a href="#common-stm32-addresses" aria-label="Common STM32 Addresses">Common STM32 Addresses</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">¶</a></h2>
 <p>When you compile C code for an ARM microcontroller, the compiler translates your high-level code into machine instructions. Reverse engineering tools like Binary Ninja, Ghidra, radare2, etc. can decompile those instructions back into pseudo-C code. This guide shows you how to read that decompiled output and understand what&rsquo;s happening at the hardware level.</p>
-<h2 id="the-example-stm32-led-blink">The Example: STM32 LED Blink</h2>
+<h2 id="the-example-stm32-led-blink">The Example: STM32 LED Blink<a hidden class="anchor" aria-hidden="true" href="#the-example-stm32-led-blink">¶</a></h2>
 <p>We&rsquo;ll use a simple LED blink program for an STM32F103xx (ARM Cortex-M3) microcontroller, that I have published in another repo: <a href="https://github.com/Flock137/stm32_blinky_baremetal">https://github.com/Flock137/stm32_blinky_baremetal</a></p>
-<h3 id="original-c-code-mainc">Original C Code (main.c)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#ff79c6">#define STM32F103xB
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&#34;stm32f1xx.h&#34;</span><span style="color:#ff79c6">
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">delay</span>(<span style="color:#ff79c6">volatile</span> <span style="color:#8be9fd">uint32_t</span> count) {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    <span style="color:#ff79c6">while</span>(count<span style="color:#ff79c6">--</span>);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>}
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">void</span>) {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    <span style="color:#6272a4">// Enable GPIOC clock
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>    RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> RCC_APB2ENR_IOPCEN;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>    <span style="color:#6272a4">// Configure PC13 as output
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>    GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">=</span> (GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">0xFF000000</span>) <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x33000000</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>    <span style="color:#ff79c6">while</span>(<span style="color:#bd93f9">1</span>) {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>        GPIOC<span style="color:#ff79c6">-&gt;</span>ODR <span style="color:#ff79c6">^=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span>);  <span style="color:#6272a4">// Toggle
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>        <span style="color:#50fa7b">delay</span>(<span style="color:#bd93f9">2000000</span>);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>    }
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>}
-</span></span></code></pre></div><h3 id="binary-ninja-decompiled-output">Binary Ninja Decompiled Output</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#bd93f9">08000000</span>    <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">delay</span>(<span style="color:#8be9fd">uint32_t</span> <span style="color:#ff79c6">volatile</span> count) __pure
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#bd93f9">08000000</span>    {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#bd93f9">08000000</span>        <span style="color:#8be9fd">uint32_t</span> var_c <span style="color:#ff79c6">=</span> count;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#bd93f9">08000012</span>        <span style="color:#8be9fd">uint32_t</span> i;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#bd93f9">08000012</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span><span style="color:#bd93f9">08000012</span>        <span style="color:#ff79c6">do</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span><span style="color:#bd93f9">08000012</span>        {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span><span style="color:#bd93f9">0800000</span>a            i <span style="color:#ff79c6">=</span> var_c;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#bd93f9">0800000</span>e            var_c <span style="color:#ff79c6">=</span> i <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#bd93f9">08000012</span>        } <span style="color:#ff79c6">while</span> (i);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span><span style="color:#bd93f9">08000000</span>    }
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span><span style="color:#bd93f9">08000020</span>    <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">main</span>() __noreturn
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span><span style="color:#bd93f9">08000020</span>    {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span><span style="color:#bd93f9">08000020</span>        <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40021018</span> <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span><span style="color:#bd93f9">0800003</span>e        <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40011004</span> <span style="color:#ff79c6">=</span> (
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span><span style="color:#bd93f9">0800003</span>e            <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40011004</span> <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xffffff</span>)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span><span style="color:#bd93f9">0800003</span>e            <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x33000000</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span><span style="color:#bd93f9">0800003</span>e
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span><span style="color:#bd93f9">0800004</span>a        <span style="color:#ff79c6">while</span> (<span style="color:#8be9fd;font-style:italic">true</span>)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span><span style="color:#bd93f9">0800004</span>a            <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x4001100c</span> <span style="color:#ff79c6">^=</span> <span style="color:#bd93f9">0x2000</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span><span style="color:#bd93f9">08000020</span>    }
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span><span style="color:#6272a4">// Literal pool (constants stored in flash)
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span><span style="color:#bd93f9">08000058</span>  <span style="color:#8be9fd">int32_t</span> data_8000058 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40021000</span>  <span style="color:#6272a4">// RCC base
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span><span style="color:#bd93f9">0800005</span>c  <span style="color:#8be9fd">int32_t</span> data_800005c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40011000</span>  <span style="color:#6272a4">// GPIOC base
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span><span style="color:#bd93f9">08000060</span>  <span style="color:#8be9fd">int32_t</span> data_8000060 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1e8480</span>    <span style="color:#6272a4">// 2000000 decimal
-</span></span></span></code></pre></div><h2 id="understanding-c-operators">Understanding C Operators</h2>
-<h3 id="1-post-decrement---">1. Post-Decrement (<code>--</code>)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">while</span>(count<span style="color:#ff79c6">--</span>);
+<h3 id="original-c-code-mainc">Original C Code (main.c)<a hidden class="anchor" aria-hidden="true" href="#original-c-code-mainc">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define STM32F103xB
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stm32f1xx.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">uint32_t</span> count) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Enable GPIOC clock
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Configure PC13 as output
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">=</span> (GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(<span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);  <span style="color:#75715e">// Toggle
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">delay</span>(<span style="color:#ae81ff">2000000</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="binary-ninja-decompiled-output">Binary Ninja Decompiled Output<a hidden class="anchor" aria-hidden="true" href="#binary-ninja-decompiled-output">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">uint32_t</span> <span style="color:#66d9ef">volatile</span> count) __pure
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>    {
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>        <span style="color:#66d9ef">uint32_t</span> var_c <span style="color:#f92672">=</span> count;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        <span style="color:#66d9ef">uint32_t</span> i;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        {
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800000</span>a            i <span style="color:#f92672">=</span> var_c;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800000</span>e            var_c <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000012</span>        } <span style="color:#66d9ef">while</span> (i);
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000000</span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>() __noreturn
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>    {
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>        <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e        <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e            <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffff</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e            <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800003</span>e
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800004</span>a        <span style="color:#66d9ef">while</span> (true)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0800004</span>a            <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x4001100c</span> <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x2000</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">08000020</span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Literal pool (constants stored in flash)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000058</span>  <span style="color:#66d9ef">int32_t</span> data_8000058 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40021000</span>  <span style="color:#75715e">// RCC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0800005</span>c  <span style="color:#66d9ef">int32_t</span> data_800005c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40011000</span>  <span style="color:#75715e">// GPIOC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000060</span>  <span style="color:#66d9ef">int32_t</span> data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>    <span style="color:#75715e">// 2000000 decimal
+</span></span></span></code></pre></div><h2 id="understanding-c-operators">Understanding C Operators<a hidden class="anchor" aria-hidden="true" href="#understanding-c-operators">¶</a></h2>
+<h3 id="1-post-decrement---">1. Post-Decrement (<code>--</code>)<a hidden class="anchor" aria-hidden="true" href="#1-post-decrement---">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
 </span></span></code></pre></div><p><strong>How it works:</strong></p>
 <ul>
 <li>Evaluates the current value</li>
@@ -113,24 +411,24 @@
 <li>Continues while value is non-zero</li>
 </ul>
 <p><strong>Detailed example:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>count <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#ff79c6">while</span>(count<span style="color:#ff79c6">--</span>);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#6272a4">// What happens:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#6272a4">// Check: count is 3 (true) → then decrement to 2
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#6272a4">// Check: count is 2 (true) → then decrement to 1
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span><span style="color:#6272a4">// Check: count is 1 (true) → then decrement to 0
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span><span style="color:#6272a4">// Check: count is 0 (false) → exit loop
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>count <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// What happens:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 3 (true) → then decrement to 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 2 (true) → then decrement to 1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 1 (true) → then decrement to 0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Check: count is 0 (false) → exit loop
 </span></span></span></code></pre></div><p><strong>Comparison with pre-decrement:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#8be9fd">int</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">5</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd">int</span> b <span style="color:#ff79c6">=</span> a<span style="color:#ff79c6">--</span>;  <span style="color:#6272a4">// b = 5, a = 4 (post-decrement: use then decrement)
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#8be9fd">int</span> x <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">5</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#8be9fd">int</span> y <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">--</span>x;  <span style="color:#6272a4">// y = 4, x = 4 (pre-decrement: decrement then use)
-</span></span></span></code></pre></div><h3 id="2-bitwise-or-assignment-">2. Bitwise OR Assignment (<code>|=</code>)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> RCC_APB2ENR_IOPCEN;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#6272a4">// Equivalent to:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">=</span> RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|</span> RCC_APB2ENR_IOPCEN;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> b <span style="color:#f92672">=</span> a<span style="color:#f92672">--</span>;  <span style="color:#75715e">// b = 5, a = 4 (post-decrement: use then decrement)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> <span style="color:#f92672">--</span>x;  <span style="color:#75715e">// y = 4, x = 4 (pre-decrement: decrement then use)
+</span></span></span></code></pre></div><h3 id="2-bitwise-or-assignment-">2. Bitwise OR Assignment (<code>|=</code>)<a hidden class="anchor" aria-hidden="true" href="#2-bitwise-or-assignment-">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Equivalent to:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">=</span> RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|</span> RCC_APB2ENR_IOPCEN;
 </span></span></code></pre></div><p><strong>Purpose:</strong> Set specific bits to 1 without affecting other bits</p>
 <p><strong>Example:</strong></p>
 <pre tabindex="0"><code>Original value:  0000 0101  (0x05)
@@ -141,8 +439,8 @@ Result:          0001 0101  (0x15)
                      Bit 4 is now set, others unchanged
 </code></pre><p><strong>But why?</strong>
 In embedded systems, you often need to enable a feature by setting a specific bit in a control register. Other bits control different features, so you can&rsquo;t just write a new value - you must preserve the existing bits.</p>
-<h3 id="3-bitwise-and-with-not--">3. Bitwise AND with NOT (<code>&amp; ~</code>)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">0xFF000000</span>
+<h3 id="3-bitwise-and-with-not--">3. Bitwise AND with NOT (<code>&amp; ~</code>)<a hidden class="anchor" aria-hidden="true" href="#3-bitwise-and-with-not--">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>
 </span></span></code></pre></div><p><strong>Purpose:</strong> Clear specific bits (set them to 0)</p>
 <p><strong>Step by step:</strong></p>
 <pre tabindex="0"><code>0xFF000000 =      1111 1111 0000 0000 0000 0000 0000 0000
@@ -155,8 +453,8 @@ AND ~0xFF000000:  0000 0000 1111 1111 1111 1111 1111 1111
 Result:           0000 0000 0101 0101 1100 1100 1010 1010
                   ^^^^^^^^^
                   Top 8 bits cleared
-</code></pre><h3 id="4-xor-">4. XOR (<code>^=</code>)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>ODR <span style="color:#ff79c6">^=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span>);
+</code></pre><h3 id="4-xor-">4. XOR (<code>^=</code>)<a hidden class="anchor" aria-hidden="true" href="#4-xor-">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);
 </span></span></code></pre></div><p><strong>Purpose:</strong> Toggle bits (0→1, 1→0)</p>
 <p><strong>Example:</strong></p>
 <pre tabindex="0"><code>First toggle:
@@ -175,8 +473,8 @@ Result:        0000 0000 0000 0000 0000 0000 0000 0000 (bit 13 = 0)
 0 ^ 1 = 1
 1 ^ 0 = 1
 1 ^ 1 = 0 
-</code></pre><h3 id="5-left-shift-">5. Left Shift (<code>&lt;&lt;</code>)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>(<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span>)
+</code></pre><h3 id="5-left-shift-">5. Left Shift (<code>&lt;&lt;</code>)<a hidden class="anchor" aria-hidden="true" href="#5-left-shift-">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>)
 </span></span></code></pre></div><p><strong>Purpose:</strong> Create a bitmask by shifting bits to the left</p>
 <p><strong>Example:</strong></p>
 <pre tabindex="0"><code>1 &lt;&lt; 0  = 0000 0000 0000 0001  (0x0001)
@@ -185,23 +483,23 @@ Result:        0000 0000 0000 0000 0000 0000 0000 0000 (bit 13 = 0)
 1 &lt;&lt; 13 = 0010 0000 0000 0000  (0x2000)
 </code></pre><p><strong>Reasoning:</strong>
 Instead of memorizing that bit 13 = 0x2000, you just write <code>(1 &lt;&lt; 13)</code> which is self-documenting.</p>
-<h3 id="6-the-arrow-operator--">6. The Arrow Operator (<code>-&gt;</code>)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>ODR
+<h3 id="6-the-arrow-operator--">6. The Arrow Operator (<code>-&gt;</code>)<a hidden class="anchor" aria-hidden="true" href="#6-the-arrow-operator--">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR
 </span></span></code></pre></div><p><strong>What it means:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>ptr<span style="color:#ff79c6">-&gt;</span>member
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#6272a4">// Exactly equivalent to:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>(<span style="color:#ff79c6">*</span>ptr).member
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>ptr<span style="color:#f92672">-&gt;</span>member
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Exactly equivalent to:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>ptr).member
 </span></span></code></pre></div><p><strong>How it works in embedded code:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#6272a4">// The peripheral struct definition
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    <span style="color:#8be9fd">uint32_t</span> CRL;   <span style="color:#6272a4">// offset 0x00
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    <span style="color:#8be9fd">uint32_t</span> CRH;   <span style="color:#6272a4">// offset 0x04
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    <span style="color:#8be9fd">uint32_t</span> IDR;   <span style="color:#6272a4">// offset 0x08
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#8be9fd">uint32_t</span> ODR;   <span style="color:#6272a4">// offset 0x0C
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>} GPIO_TypeDef;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#6272a4">// The pointer definition (from stm32f1xx.h)
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#ff79c6">#define GPIOC ((GPIO_TypeDef *) 0x40011000)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// The peripheral struct definition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CRL;   <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CRH;   <span style="color:#75715e">// offset 0x04
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> IDR;   <span style="color:#75715e">// offset 0x08
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> ODR;   <span style="color:#75715e">// offset 0x0C
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} GPIO_TypeDef;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The pointer definition (from stm32f1xx.h)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#define GPIOC ((GPIO_TypeDef *) 0x40011000)
 </span></span></span></code></pre></div><p><strong>What happens when you write <code>GPIOC-&gt;ODR</code>:</strong></p>
 <ol>
 <li><code>GPIOC</code> is a pointer to address <code>0x40011000</code></li>
@@ -216,27 +514,27 @@ Instead of memorizing that bit 13 = 0x2000, you just write <code>(1 &lt;&lt; 13)
 0x40011004   →   CRH         +0x04
 0x40011008   →   IDR         +0x08
 0x4001100C   →   ODR         +0x0C  ← GPIOC-&gt;ODR points here
-</code></pre><h2 id="memory-mapped-io-the-bridge">Memory-Mapped I/O: The Bridge</h2>
+</code></pre><h2 id="memory-mapped-io-the-bridge">Memory-Mapped I/O: The Bridge<a hidden class="anchor" aria-hidden="true" href="#memory-mapped-io-the-bridge">¶</a></h2>
 <p>In ARM microcontrollers, <strong>hardware peripherals are controlled by reading/writing to specific memory addresses</strong>. These aren&rsquo;t RAM locations - they&rsquo;re special addresses that connect directly to hardware.</p>
-<h3 id="example-the-rcc-peripheral">Example: The RCC Peripheral</h3>
+<h3 id="example-the-rcc-peripheral">Example: The RCC Peripheral<a hidden class="anchor" aria-hidden="true" href="#example-the-rcc-peripheral">¶</a></h3>
 <p><strong>Human-readable C code:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> RCC_APB2ENR_IOPCEN;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
 </span></span></code></pre></div><p><strong>How the macro expands:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#6272a4">// Step 1: Expand the macros
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#ff79c6">#define RCC ((RCC_TypeDef *) 0x40021000)
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#ff79c6">#define RCC_APB2ENR_IOPCEN 0x10
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#6272a4">// Step 2: Expand RCC
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>((RCC_TypeDef <span style="color:#ff79c6">*</span>) <span style="color:#bd93f9">0x40021000</span>)<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span><span style="color:#6272a4">// Step 3: Calculate address
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#6272a4">// RCC base = 0x40021000
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#6272a4">// APB2ENR offset = 0x18 (from struct definition)
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span><span style="color:#6272a4">// Final address = 0x40021018
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span><span style="color:#6272a4">// Step 4: What the CPU actually sees
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40021018</span> <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>;
-</span></span></code></pre></div><h3 id="memory-map-overview">Memory Map Overview</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Step 1: Expand the macros
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#define RCC ((RCC_TypeDef *) 0x40021000)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define RCC_APB2ENR_IOPCEN 0x10
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Step 2: Expand RCC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>((RCC_TypeDef <span style="color:#f92672">*</span>) <span style="color:#ae81ff">0x40021000</span>)<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Step 3: Calculate address
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// RCC base = 0x40021000
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// APB2ENR offset = 0x18 (from struct definition)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Final address = 0x40021018
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Step 4: What the CPU actually sees
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span></code></pre></div><h3 id="memory-map-overview">Memory Map Overview<a hidden class="anchor" aria-hidden="true" href="#memory-map-overview">¶</a></h3>
 <pre tabindex="0"><code>Address Range        Purpose
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 0x08000000-0x0801FFFF   Flash (128KB) - Your program code
@@ -246,20 +544,20 @@ Instead of memorizing that bit 13 = 0x2000, you just write <code>(1 &lt;&lt; 13)
 Peripherals:
 0x40021000             RCC (Reset and Clock Control)
 0x40011000             GPIOC (GPIO Port C)
-</code></pre><h3 id="how-the-compiler-translates">How the Compiler Translates</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#6272a4">// What you write:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> RCC_APB2ENR_IOPCEN;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#6272a4">// What the compiler generates (pseudo-code):
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#bd93f9">1.</span> Load address <span style="color:#bd93f9">0x40021018</span> into <span style="color:#ff79c6">register</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span><span style="color:#bd93f9">2.</span> Read current value from that address
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span><span style="color:#bd93f9">3.</span> OR it with <span style="color:#bd93f9">0x10</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span><span style="color:#bd93f9">4.</span> Write the result back to <span style="color:#bd93f9">0x40021018</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#6272a4">// What the disassembler shows you:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40021018</span> <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>;
-</span></span></code></pre></div><h2 id="reading-the-disassembly">Reading the Disassembly</h2>
-<h3 id="understanding-the-address-column">Understanding the Address Column</h3>
+</code></pre><h3 id="how-the-compiler-translates">How the Compiler Translates<a hidden class="anchor" aria-hidden="true" href="#how-the-compiler-translates">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// What you write:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// What the compiler generates (pseudo-code):
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">1.</span> Load address <span style="color:#ae81ff">0x40021018</span> into <span style="color:#66d9ef">register</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2.</span> Read current value from that address
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3.</span> OR it with <span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4.</span> Write the result back to <span style="color:#ae81ff">0x40021018</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// What the disassembler shows you:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span></code></pre></div><h2 id="reading-the-disassembly">Reading the Disassembly<a hidden class="anchor" aria-hidden="true" href="#reading-the-disassembly">¶</a></h2>
+<h3 id="understanding-the-address-column">Understanding the Address Column<a hidden class="anchor" aria-hidden="true" href="#understanding-the-address-column">¶</a></h3>
 <pre tabindex="0"><code>08000000    void delay(uint32_t volatile count) __pure
 08000000    {
 0800000a        i = var_c;
@@ -272,22 +570,22 @@ Peripherals:
 <li><code>0x0800000e</code> - Address of the decrement instruction</li>
 <li><code>0x08000012</code> - Address of the loop check instruction</li>
 </ul>
-<h3 id="the-literal-pool">The Literal Pool</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#bd93f9">08000058</span>  <span style="color:#8be9fd">int32_t</span> data_8000058 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40021000</span>  <span style="color:#6272a4">// RCC base
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#bd93f9">0800005</span>c  <span style="color:#8be9fd">int32_t</span> data_800005c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40011000</span>  <span style="color:#6272a4">// GPIOC base
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#bd93f9">08000060</span>  <span style="color:#8be9fd">int32_t</span> data_8000060 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1e8480</span>    <span style="color:#6272a4">// 2000000 decimal
+<h3 id="the-literal-pool">The Literal Pool<a hidden class="anchor" aria-hidden="true" href="#the-literal-pool">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">08000058</span>  <span style="color:#66d9ef">int32_t</span> data_8000058 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40021000</span>  <span style="color:#75715e">// RCC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0800005</span>c  <span style="color:#66d9ef">int32_t</span> data_800005c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40011000</span>  <span style="color:#75715e">// GPIOC base
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000060</span>  <span style="color:#66d9ef">int32_t</span> data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>    <span style="color:#75715e">// 2000000 decimal
 </span></span></span></code></pre></div><p><strong>What is this?</strong>
 ARM processors can&rsquo;t load large 32-bit constants directly into registers. Instead, the compiler stores them in Flash and loads them from there.</p>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#50fa7b">delay</span>(<span style="color:#bd93f9">2000000</span>);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#6272a4">// The CPU needs to load 2000000 (0x1E8480) into a register
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#6272a4">// It can&#39;t do this in one instruction, so:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#6272a4">// 1. Compiler stores 0x1E8480 at address 0x08000060
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#6272a4">// 2. At runtime, CPU loads from 0x08000060 into register
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span><span style="color:#6272a4">// 3. Then calls delay() with that value
-</span></span></span></code></pre></div><h3 id="type-casts">Type Casts</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40021018</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">delay</span>(<span style="color:#ae81ff">2000000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The CPU needs to load 2000000 (0x1E8480) into a register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// It can&#39;t do this in one instruction, so:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 1. Compiler stores 0x1E8480 at address 0x08000060
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. At runtime, CPU loads from 0x08000060 into register
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. Then calls delay() with that value
+</span></span></span></code></pre></div><h3 id="type-casts">Type Casts<a hidden class="anchor" aria-hidden="true" href="#type-casts">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span>
 </span></span></code></pre></div><p><strong>Breaking it down:</strong></p>
 <ul>
 <li><code>0x40021018</code> - A raw memory address</li>
@@ -296,30 +594,30 @@ ARM processors can&rsquo;t load large 32-bit constants directly into registers. 
 </ul>
 <p><strong>Why the cast is needed:</strong>
 In C, you can&rsquo;t dereference a raw number. This tells the compiler &ldquo;treat this number as a pointer to a 32-bit value.&rdquo;</p>
-<h2 id="step-by-step-comparison">Step-by-Step Comparison</h2>
-<h3 id="enabling-the-clock">Enabling the Clock</h3>
+<h2 id="step-by-step-comparison">Step-by-Step Comparison<a hidden class="anchor" aria-hidden="true" href="#step-by-step-comparison">¶</a></h2>
+<h3 id="enabling-the-clock">Enabling the Clock<a hidden class="anchor" aria-hidden="true" href="#enabling-the-clock">¶</a></h3>
 <p><strong>C Code (main.c:10):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> RCC_APB2ENR_IOPCEN;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
 </span></span></code></pre></div><p><strong>Disassembly (line 33):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40021018</span> <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
 </span></span></code></pre></div><p><strong>Matching process:</strong></p>
 <ol>
 <li>
 <p><strong>Find RCC base address:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">#define RCC ((RCC_TypeDef *) 0x40021000)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define RCC ((RCC_TypeDef *) 0x40021000)
 </span></span></span></code></pre></div><p>Look at the literal pool: <code>data_8000058 = 0x40021000</code></p>
 </li>
 <li>
 <p><strong>Find APB2ENR offset:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#8be9fd">uint32_t</span> CR;      <span style="color:#6272a4">// offset 0x00
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#8be9fd">uint32_t</span> CFGR;    <span style="color:#6272a4">// offset 0x04
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>    <span style="color:#8be9fd">uint32_t</span> CIR;     <span style="color:#6272a4">// offset 0x08
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>    <span style="color:#8be9fd">uint32_t</span> APB2RSTR;<span style="color:#6272a4">// offset 0x0C
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>    <span style="color:#8be9fd">uint32_t</span> APB1RSTR;<span style="color:#6272a4">// offset 0x10
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>    <span style="color:#8be9fd">uint32_t</span> AHBENR;  <span style="color:#6272a4">// offset 0x14
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>    <span style="color:#8be9fd">uint32_t</span> APB2ENR; <span style="color:#6272a4">// offset 0x18 
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9</span><span>} RCC_TypeDef;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CR;      <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CFGR;    <span style="color:#75715e">// offset 0x04
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CIR;     <span style="color:#75715e">// offset 0x08
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> APB2RSTR;<span style="color:#75715e">// offset 0x0C
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> APB1RSTR;<span style="color:#75715e">// offset 0x10
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> AHBENR;  <span style="color:#75715e">// offset 0x14
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> APB2ENR; <span style="color:#75715e">// offset 0x18 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} RCC_TypeDef;
 </span></span></code></pre></div></li>
 <li>
 <p><strong>Calculate final address:</strong></p>
@@ -329,17 +627,17 @@ In C, you can&rsquo;t dereference a raw number. This tells the compiler &ldquo;t
 </code></pre></li>
 <li>
 <p><strong>Find the bit value:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">#define RCC_APB2ENR_IOPCEN 0x10
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#define RCC_APB2ENR_IOPCEN 0x10
 </span></span></span></code></pre></div><p>This is bit 4 (2^4 = 16 = 0x10)</p>
 </li>
 </ol>
-<h3 id="example-2-configuring-the-gpio-pin">Example 2: Configuring the GPIO Pin</h3>
+<h3 id="example-2-configuring-the-gpio-pin">Example 2: Configuring the GPIO Pin<a hidden class="anchor" aria-hidden="true" href="#example-2-configuring-the-gpio-pin">¶</a></h3>
 <p><strong>C Code (main.c:13):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">=</span> (GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">0xFF000000</span>) <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x33000000</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">=</span> (GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
 </span></span></code></pre></div><p><strong>Disassembly (lines 34-36):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40011004</span> <span style="color:#ff79c6">=</span> (
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40011004</span> <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xffffff</span>)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x33000000</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffff</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
 </span></span></code></pre></div><p><strong>Matching process:</strong></p>
 <ol>
 <li>
@@ -348,10 +646,10 @@ In C, you can&rsquo;t dereference a raw number. This tells the compiler &ldquo;t
 </code></pre></li>
 <li>
 <p><strong>Find CRH offset:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#8be9fd">uint32_t</span> CRL;  <span style="color:#6272a4">// offset 0x00
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#8be9fd">uint32_t</span> CRH;  <span style="color:#6272a4">// offset 0x04 
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>} GPIO_TypeDef;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CRL;  <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CRH;  <span style="color:#75715e">// offset 0x04 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} GPIO_TypeDef;
 </span></span></code></pre></div></li>
 <li>
 <p><strong>Calculate address:</strong></p>
@@ -359,32 +657,32 @@ In C, you can&rsquo;t dereference a raw number. This tells the compiler &ldquo;t
 </code></pre></li>
 <li>
 <p><strong>Compare the operations:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#6272a4">// Source:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>(GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">0xFF000000</span>) <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x33000000</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#6272a4">// Disassembly:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>(<span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40011004</span> <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xffffff</span>) <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x33000000</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span><span style="color:#6272a4">// Note: ~0xFF000000 = 0x00FFFFFF
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span><span style="color:#6272a4">//       0xffffff = 0x00FFFFFF
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Source:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Disassembly:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(<span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40011004</span> <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffff</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Note: ~0xFF000000 = 0x00FFFFFF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//       0xffffff = 0x00FFFFFF
 </span></span></span></code></pre></div></li>
 </ol>
 <p>Note that the compiler has optimized the <code>~0xFF000000</code> by computing the NOT operation at compile time.</p>
-<h3 id="example-3-toggling-the-led">Example 3: Toggling the LED</h3>
+<h3 id="example-3-toggling-the-led">Example 3: Toggling the LED<a hidden class="anchor" aria-hidden="true" href="#example-3-toggling-the-led">¶</a></h3>
 <p><strong>C Code (main.c:16):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>ODR <span style="color:#ff79c6">^=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);
 </span></span></code></pre></div><p><strong>Disassembly (line 39):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x4001100c</span> <span style="color:#ff79c6">^=</span> <span style="color:#bd93f9">0x2000</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x4001100c</span> <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x2000</span>;
 </span></span></code></pre></div><p><strong>Matching process:</strong></p>
 <ol>
 <li>
 <p><strong>Find ODR offset:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#8be9fd">uint32_t</span> CRL;  <span style="color:#6272a4">// offset 0x00
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#8be9fd">uint32_t</span> CRH;  <span style="color:#6272a4">// offset 0x04
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>    <span style="color:#8be9fd">uint32_t</span> IDR;  <span style="color:#6272a4">// offset 0x08
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>    <span style="color:#8be9fd">uint32_t</span> ODR;  <span style="color:#6272a4">// offset 0x0C 
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>} GPIO_TypeDef;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> CRL;  <span style="color:#75715e">// offset 0x00
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> CRH;  <span style="color:#75715e">// offset 0x04
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> IDR;  <span style="color:#75715e">// offset 0x08
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">uint32_t</span> ODR;  <span style="color:#75715e">// offset 0x0C 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} GPIO_TypeDef;
 </span></span></code></pre></div></li>
 <li>
 <p><strong>Calculate address:</strong></p>
@@ -400,39 +698,39 @@ In C, you can&rsquo;t dereference a raw number. This tells the compiler &ldquo;t
 <pre tabindex="0"><code>1       = 0000 0000 0000 0001
 1 &lt;&lt; 13 = 0010 0000 0000 0000
         = 0x2000 
-</code></pre><h3 id="example-4-the-delay-function">Example 4: The Delay Function</h3>
+</code></pre><h3 id="example-4-the-delay-function">Example 4: The Delay Function<a hidden class="anchor" aria-hidden="true" href="#example-4-the-delay-function">¶</a></h3>
 <p><strong>C Code (main.c:4-6):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">delay</span>(<span style="color:#ff79c6">volatile</span> <span style="color:#8be9fd">uint32_t</span> count) {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">while</span>(count<span style="color:#ff79c6">--</span>);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">uint32_t</span> count) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>);
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p><strong>Disassembly (lines 16-27):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">delay</span>(<span style="color:#8be9fd">uint32_t</span> <span style="color:#ff79c6">volatile</span> count) __pure
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>{
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    <span style="color:#8be9fd">uint32_t</span> var_c <span style="color:#ff79c6">=</span> count;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>    <span style="color:#8be9fd">uint32_t</span> i;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#ff79c6">do</span> {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        i <span style="color:#ff79c6">=</span> var_c;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        var_c <span style="color:#ff79c6">=</span> i <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    } <span style="color:#ff79c6">while</span> (i);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">delay</span>(<span style="color:#66d9ef">uint32_t</span> <span style="color:#66d9ef">volatile</span> count) __pure
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> var_c <span style="color:#f92672">=</span> count;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">uint32_t</span> i;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>        i <span style="color:#f92672">=</span> var_c;
+</span></span><span style="display:flex;"><span>        var_c <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">while</span> (i);
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>You can see that the compiler has transformed the loop structure:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#6272a4">// Original:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#ff79c6">while</span>(count<span style="color:#ff79c6">--</span>)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#6272a4">// Becomes:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#ff79c6">do</span> {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>    i <span style="color:#ff79c6">=</span> count;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>    count <span style="color:#ff79c6">=</span> i <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>} <span style="color:#ff79c6">while</span> (i);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Original:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">while</span>(count<span style="color:#f92672">--</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Becomes:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>    i <span style="color:#f92672">=</span> count;
+</span></span><span style="display:flex;"><span>    count <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">while</span> (i);
 </span></span></code></pre></div><p>This is because ARM processors can check conditions very efficiently at the end of a loop. This is a common compiler optimization, so they are technically the same thing.</p>
-<h2 id="key-patterns-to-recognize">Key Patterns to Recognize</h2>
-<h3 id="pattern-1-read-modify-write">Pattern 1: Read-Modify-Write</h3>
+<h2 id="key-patterns-to-recognize">Key Patterns to Recognize<a hidden class="anchor" aria-hidden="true" href="#key-patterns-to-recognize">¶</a></h2>
+<h3 id="pattern-1-read-modify-write">Pattern 1: Read-Modify-Write<a hidden class="anchor" aria-hidden="true" href="#pattern-1-read-modify-write">¶</a></h3>
 <p><strong>Purpose:</strong> Change specific bits without affecting others</p>
 <p><strong>Template:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">register</span> <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">register</span> <span style="color:#ff79c6">&amp;</span> mask) <span style="color:#ff79c6">|</span> value;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">=</span> (<span style="color:#66d9ef">register</span> <span style="color:#f92672">&amp;</span> mask) <span style="color:#f92672">|</span> value;
 </span></span></code></pre></div><p><strong>Example:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">=</span> (GPIOC<span style="color:#ff79c6">-&gt;</span>CRH <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">0xFF000000</span>) <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x33000000</span>;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">=</span> (GPIOC<span style="color:#f92672">-&gt;</span>CRH <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0xFF000000</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x33000000</span>;
 </span></span></code></pre></div><p><strong>What it does:</strong></p>
 <ol>
 <li>Read current value</li>
@@ -442,90 +740,90 @@ In C, you can&rsquo;t dereference a raw number. This tells the compiler &ldquo;t
 </ol>
 <p><strong>Why not just write the value directly?</strong>
 Because other bits in the register might control other pins or features. It is required to preserve them.</p>
-<h3 id="pattern-2-bit-set-or">Pattern 2: Bit Set (OR)</h3>
+<h3 id="pattern-2-bit-set-or">Pattern 2: Bit Set (OR)<a hidden class="anchor" aria-hidden="true" href="#pattern-2-bit-set-or">¶</a></h3>
 <p><strong>Purpose:</strong> Enable a feature by setting a bit to 1</p>
 <p><strong>Template:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">register</span> <span style="color:#ff79c6">|=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> bit_number);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">|=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number);
 </span></span></code></pre></div><p><strong>Example:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> RCC_APB2ENR_IOPCEN;
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#6272a4">// Same as:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>RCC<span style="color:#ff79c6">-&gt;</span>APB2ENR <span style="color:#ff79c6">|=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">4</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> RCC_APB2ENR_IOPCEN;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Same as:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>RCC<span style="color:#f92672">-&gt;</span>APB2ENR <span style="color:#f92672">|=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">4</span>);
 </span></span></code></pre></div><p><strong>Why use OR?</strong>
 It only sets bits to 1, never clears them. Other enabled features stay enabled.</p>
-<h3 id="pattern-3-bit-clear-and-not">Pattern 3: Bit Clear (<code>AND</code> <code>NOT</code>)</h3>
+<h3 id="pattern-3-bit-clear-and-not">Pattern 3: Bit Clear (<code>AND</code> <code>NOT</code>)<a hidden class="anchor" aria-hidden="true" href="#pattern-3-bit-clear-and-not">¶</a></h3>
 <p><strong>Purpose:</strong> Disable a feature by setting a bit to 0</p>
 <p><strong>Template:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">register</span> <span style="color:#ff79c6">&amp;=</span> <span style="color:#ff79c6">~</span>(<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> bit_number);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number);
 </span></span></code></pre></div><p><strong>Example:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>ODR <span style="color:#ff79c6">&amp;=</span> <span style="color:#ff79c6">~</span>(<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span>);  <span style="color:#6272a4">// Turn off LED
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);  <span style="color:#75715e">// Turn off LED
 </span></span></span></code></pre></div><p><strong>Why?</strong>
 The <code>NOT</code> inverts the bit mask, <code>AND</code> clears only those bits.</p>
-<h3 id="pattern-4-bit-toggle-xor">Pattern 4: Bit Toggle (XOR)</h3>
+<h3 id="pattern-4-bit-toggle-xor">Pattern 4: Bit Toggle (XOR)<a hidden class="anchor" aria-hidden="true" href="#pattern-4-bit-toggle-xor">¶</a></h3>
 <p><strong>Purpose:</strong> Flip a bit (0 -&gt; 1 or 1 -&gt; 0)</p>
 <p><strong>Template:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">register</span> <span style="color:#ff79c6">^=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> bit_number);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">register</span> <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number);
 </span></span></code></pre></div><p><strong>Example:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>GPIOC<span style="color:#ff79c6">-&gt;</span>ODR <span style="color:#ff79c6">^=</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span>);  <span style="color:#6272a4">// Toggle LED
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GPIOC<span style="color:#f92672">-&gt;</span>ODR <span style="color:#f92672">^=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>);  <span style="color:#75715e">// Toggle LED
 </span></span></span></code></pre></div><p><strong>Why XOR?</strong>
 It automatically flips the bit state without needing to know the current state.</p>
-<h3 id="pattern-5-bit-check-and">Pattern 5: Bit Check (AND)</h3>
+<h3 id="pattern-5-bit-check-and">Pattern 5: Bit Check (AND)<a hidden class="anchor" aria-hidden="true" href="#pattern-5-bit-check-and">¶</a></h3>
 <p><strong>Purpose:</strong> Test if a specific bit is set</p>
 <p><strong>Template:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">register</span> <span style="color:#ff79c6">&amp;</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> bit_number)) {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#6272a4">// Bit is set
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">register</span> <span style="color:#f92672">&amp;</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> bit_number)) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Bit is set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span></code></pre></div><p><strong>Example:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">if</span> (GPIOC<span style="color:#ff79c6">-&gt;</span>IDR <span style="color:#ff79c6">&amp;</span> (<span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span>)) {
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#6272a4">// Pin 13 is high
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>}
-</span></span></code></pre></div><h3 id="summary-table">Summary Table</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (GPIOC<span style="color:#f92672">-&gt;</span>IDR <span style="color:#f92672">&amp;</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span>)) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Pin 13 is high
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><h3 id="summary-table">Summary Table<a hidden class="anchor" aria-hidden="true" href="#summary-table">¶</a></h3>
 <table>
-  <thead>
-      <tr>
-          <th>Operation</th>
-          <th>Operator</th>
-          <th>Purpose</th>
-          <th>Example</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Set bit</td>
-          <td><code>|=</code></td>
-          <td>Turn on a feature</td>
-          <td><code>reg |= (1 &lt;&lt; 4)</code></td>
-      </tr>
-      <tr>
-          <td>Clear bit</td>
-          <td><code>&amp;= ~</code></td>
-          <td>Turn off a feature</td>
-          <td><code>reg &amp;= ~(1 &lt;&lt; 4)</code></td>
-      </tr>
-      <tr>
-          <td>Toggle bit</td>
-          <td><code>^=</code></td>
-          <td>Flip a bit</td>
-          <td><code>reg ^= (1 &lt;&lt; 4)</code></td>
-      </tr>
-      <tr>
-          <td>Check bit</td>
-          <td><code>&amp;</code></td>
-          <td>Test if bit is set</td>
-          <td><code>if (reg &amp; (1 &lt;&lt; 4))</code></td>
-      </tr>
-      <tr>
-          <td>Read-Modify-Write</td>
-          <td><code>&amp; ~</code> then <code>|</code></td>
-          <td>Change some bits</td>
-          <td><code>reg = (reg &amp; ~mask) | val</code></td>
-      </tr>
-  </tbody>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Operator</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set bit</td>
+<td><code>|=</code></td>
+<td>Turn on a feature</td>
+<td><code>reg |= (1 &lt;&lt; 4)</code></td>
+</tr>
+<tr>
+<td>Clear bit</td>
+<td><code>&amp;= ~</code></td>
+<td>Turn off a feature</td>
+<td><code>reg &amp;= ~(1 &lt;&lt; 4)</code></td>
+</tr>
+<tr>
+<td>Toggle bit</td>
+<td><code>^=</code></td>
+<td>Flip a bit</td>
+<td><code>reg ^= (1 &lt;&lt; 4)</code></td>
+</tr>
+<tr>
+<td>Check bit</td>
+<td><code>&amp;</code></td>
+<td>Test if bit is set</td>
+<td><code>if (reg &amp; (1 &lt;&lt; 4))</code></td>
+</tr>
+<tr>
+<td>Read-Modify-Write</td>
+<td><code>&amp; ~</code> then <code>|</code></td>
+<td>Change some bits</td>
+<td><code>reg = (reg &amp; ~mask) | val</code></td>
+</tr>
+</tbody>
 </table>
-<h2 id="practical-tips">Practical Tips</h2>
-<h3 id="1-use-a-reference-manual">1. Use a Reference Manual</h3>
+<h2 id="practical-tips">Practical Tips<a hidden class="anchor" aria-hidden="true" href="#practical-tips">¶</a></h2>
+<h3 id="1-use-a-reference-manual">1. Use a Reference Manual<a hidden class="anchor" aria-hidden="true" href="#1-use-a-reference-manual">¶</a></h3>
 <p>It&rsquo;s highly recommended that you use them, since searching or using AI tool might not help that much.
 For example, with STM32F103xx Black Pill, it has 3 related manuals/references. You can view them here: <a href="https://github.com/Flock137/STM32_manual">https://github.com/Flock137/STM32_manual</a></p>
-<h3 id="2-calculate-addresses-manually">2. Calculate Addresses Manually</h3>
+<h3 id="2-calculate-addresses-manually">2. Calculate Addresses Manually<a hidden class="anchor" aria-hidden="true" href="#2-calculate-addresses-manually">¶</a></h3>
 <p>When you see an address in disassembly, work backwards:</p>
 <pre tabindex="0"><code>Address: 0x4001100C
 
@@ -544,7 +842,7 @@ typedef struct {
 } GPIO_TypeDef;
 
 Answer: GPIOC-&gt;ODR
-</code></pre><h3 id="3-convert-between-number-formats">3. Convert Between Number Formats</h3>
+</code></pre><h3 id="3-convert-between-number-formats">3. Convert Between Number Formats<a hidden class="anchor" aria-hidden="true" href="#3-convert-between-number-formats">¶</a></h3>
 <p><strong>Hex to Binary:</strong></p>
 <pre tabindex="0"><code>0x2000 = ?
 
@@ -571,57 +869,57 @@ C    1100
 D    1101
 E    1110
 F    1111
-</code></pre><h3 id="4-recognize-magic-numbers">4. Recognize Magic Numbers</h3>
+</code></pre><h3 id="4-recognize-magic-numbers">4. Recognize Magic Numbers<a hidden class="anchor" aria-hidden="true" href="#4-recognize-magic-numbers">¶</a></h3>
 <p><strong>Common values in STM32:</strong></p>
 <table>
-  <thead>
-      <tr>
-          <th>Value</th>
-          <th>Meaning</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>0x10</td>
-          <td>Bit 4 set</td>
-      </tr>
-      <tr>
-          <td>0x2000</td>
-          <td>Bit 13 set (1 &laquo; 13)</td>
-      </tr>
-      <tr>
-          <td>0x33</td>
-          <td>GPIO output 50MHz, push-pull</td>
-      </tr>
-      <tr>
-          <td>0x44</td>
-          <td>GPIO input, floating</td>
-      </tr>
-      <tr>
-          <td>0x88</td>
-          <td>GPIO input, pull-up/down</td>
-      </tr>
-      <tr>
-          <td>0xFF000000</td>
-          <td>Top 8 bits mask</td>
-      </tr>
-      <tr>
-          <td>0x00FFFFFF</td>
-          <td>Bottom 24 bits mask</td>
-      </tr>
-  </tbody>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x10</td>
+<td>Bit 4 set</td>
+</tr>
+<tr>
+<td>0x2000</td>
+<td>Bit 13 set (1 &laquo; 13)</td>
+</tr>
+<tr>
+<td>0x33</td>
+<td>GPIO output 50MHz, push-pull</td>
+</tr>
+<tr>
+<td>0x44</td>
+<td>GPIO input, floating</td>
+</tr>
+<tr>
+<td>0x88</td>
+<td>GPIO input, pull-up/down</td>
+</tr>
+<tr>
+<td>0xFF000000</td>
+<td>Top 8 bits mask</td>
+</tr>
+<tr>
+<td>0x00FFFFFF</td>
+<td>Bottom 24 bits mask</td>
+</tr>
+</tbody>
 </table>
-<h3 id="5-look-for-patterns-in-the-literal-pool">5. Look for Patterns in the Literal Pool</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#bd93f9">08000058</span>  <span style="color:#8be9fd">int32_t</span> data_8000058 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40021000</span>  <span style="color:#6272a4">// RCC
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#bd93f9">0800005</span>c  <span style="color:#8be9fd">int32_t</span> data_800005c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40011000</span>  <span style="color:#6272a4">// GPIOC
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#bd93f9">08000060</span>  <span style="color:#8be9fd">int32_t</span> data_8000060 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1e8480</span>    <span style="color:#6272a4">// delay count
+<h3 id="5-look-for-patterns-in-the-literal-pool">5. Look for Patterns in the Literal Pool<a hidden class="anchor" aria-hidden="true" href="#5-look-for-patterns-in-the-literal-pool">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">08000058</span>  <span style="color:#66d9ef">int32_t</span> data_8000058 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40021000</span>  <span style="color:#75715e">// RCC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0800005</span>c  <span style="color:#66d9ef">int32_t</span> data_800005c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x40011000</span>  <span style="color:#75715e">// GPIOC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">08000060</span>  <span style="color:#66d9ef">int32_t</span> data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>    <span style="color:#75715e">// delay count
 </span></span></span></code></pre></div><p><strong>How to use this:</strong></p>
 <ul>
 <li>Addresses starting with 0x4002xxxx → APB2 peripherals (RCC, AFIO)</li>
 <li>Addresses starting with 0x4001xxxx → APB1/APB2 GPIO ports</li>
 <li>Large hex numbers that aren&rsquo;t addresses → often delay counts or data</li>
 </ul>
-<h3 id="6-notes-on-compiler-optimizations">6. Notes on Compiler Optimizations</h3>
+<h3 id="6-notes-on-compiler-optimizations">6. Notes on Compiler Optimizations<a hidden class="anchor" aria-hidden="true" href="#6-notes-on-compiler-optimizations">¶</a></h3>
 <p><strong>The compiler may:</strong></p>
 <ul>
 <li>Change loop types (while → do-while)</li>
@@ -636,37 +934,37 @@ F    1111
 <li>Skip volatile accesses</li>
 <li>Reorder memory operations incorrectly</li>
 </ul>
-<h3 id="7-trace-data-flow">7. Trace Data Flow</h3>
+<h3 id="7-trace-data-flow">7. Trace Data Flow<a hidden class="anchor" aria-hidden="true" href="#7-trace-data-flow">¶</a></h3>
 <p>Follow a value through the code:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#6272a4">// Source:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#50fa7b">delay</span>(<span style="color:#bd93f9">2000000</span>);
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#6272a4">// Literal pool shows:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>data_8000060 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1e8480</span>  <span style="color:#6272a4">// 2000000 in hex
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span><span style="color:#6272a4">// Assembly would:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span><span style="color:#bd93f9">1.</span> Load <span style="color:#bd93f9">0x1e8480</span> from address <span style="color:#bd93f9">0x08000060</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#bd93f9">2.</span> Store in <span style="color:#ff79c6">register</span> (e.g., r0)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#bd93f9">3.</span> Call delay function
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span><span style="color:#bd93f9">4.</span> <span style="color:#50fa7b">delay</span>() decrements until <span style="color:#bd93f9">0</span>
-</span></span></code></pre></div><h2 id="common-pitfalls">Common Pitfalls</h2>
-<h3 id="pitfall-1-forgetting-the-pointer-cast">Pitfall 1: Forgetting the Pointer Cast</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#6272a4">// Wrong:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x40021018</span> <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>;  <span style="color:#6272a4">// Error: can&#39;t dereference an integer
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#6272a4">// Right:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">uint32_t</span><span style="color:#ff79c6">*</span>)<span style="color:#bd93f9">0x40021018</span> <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>;
-</span></span></code></pre></div><h3 id="pitfall-2-wrong-bit-calculations">Pitfall 2: Wrong Bit Calculations</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#6272a4">// You see:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>reg <span style="color:#ff79c6">^=</span> <span style="color:#bd93f9">0x2000</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#6272a4">// Don&#39;t assume it&#39;s bit 8 (0x2000 = 8192)
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#6272a4">// Calculate properly:
-</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#bd93f9">0x2000</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0010</span> <span style="color:#bd93f9">0000</span> <span style="color:#bd93f9">0000</span> <span style="color:#bd93f9">0000</span> <span style="color:#ff79c6">=</span> bit <span style="color:#bd93f9">13</span>
-</span></span></code></pre></div><h3 id="pitfall-3-endian-type-confusion">Pitfall 3: Endian type Confusion</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Source:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">delay</span>(<span style="color:#ae81ff">2000000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Literal pool shows:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>data_8000060 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1e8480</span>  <span style="color:#75715e">// 2000000 in hex
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Assembly would:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">1.</span> Load <span style="color:#ae81ff">0x1e8480</span> from address <span style="color:#ae81ff">0x08000060</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2.</span> Store in <span style="color:#66d9ef">register</span> (e.g., r0)
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3.</span> Call delay function
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">4.</span> <span style="color:#a6e22e">delay</span>() decrements until <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><h2 id="common-pitfalls">Common Pitfalls<a hidden class="anchor" aria-hidden="true" href="#common-pitfalls">¶</a></h2>
+<h3 id="pitfall-1-forgetting-the-pointer-cast">Pitfall 1: Forgetting the Pointer Cast<a hidden class="anchor" aria-hidden="true" href="#pitfall-1-forgetting-the-pointer-cast">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Wrong:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span><span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;  <span style="color:#75715e">// Error: can&#39;t dereference an integer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Right:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">*</span>)<span style="color:#ae81ff">0x40021018</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>;
+</span></span></code></pre></div><h3 id="pitfall-2-wrong-bit-calculations">Pitfall 2: Wrong Bit Calculations<a hidden class="anchor" aria-hidden="true" href="#pitfall-2-wrong-bit-calculations">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// You see:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>reg <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x2000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Don&#39;t assume it&#39;s bit 8 (0x2000 = 8192)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Calculate properly:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#ae81ff">0x2000</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0010</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#f92672">=</span> bit <span style="color:#ae81ff">13</span>
+</span></span></code></pre></div><h3 id="pitfall-3-endian-type-confusion">Pitfall 3: Endian type Confusion<a hidden class="anchor" aria-hidden="true" href="#pitfall-3-endian-type-confusion">¶</a></h3>
 <p>ARM Cortex-M is <strong>little-endian</strong>, but for bit operations on 32-bit registers, you usually don&rsquo;t need to worry about this. It matters more for multi-bytes data structures.</p>
-<h3 id="pitfall-4-volatile-keyword">Pitfall 4: Volatile Keyword</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">volatile</span> <span style="color:#8be9fd">uint32_t</span> count;
+<h3 id="pitfall-4-volatile-keyword">Pitfall 4: Volatile Keyword<a hidden class="anchor" aria-hidden="true" href="#pitfall-4-volatile-keyword">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">uint32_t</span> count;
 </span></span></code></pre></div><p><strong>Meaning:</strong></p>
 <ul>
 <li>Tells compiler &ldquo;this value might change unexpectedly&rdquo;</li>
@@ -675,15 +973,15 @@ F    1111
 </ul>
 <p><strong>In disassembly:</strong>
 You&rsquo;ll see actual memory reads/writes even if they seem redundant.</p>
-<h2 id="quick-reference-card">Quick Reference Card</h2>
-<h3 id="operator-cheat-sheet">Operator Cheat Sheet</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">|=</span>     Set bits      reg <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x10</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#ff79c6">&amp;=</span> <span style="color:#ff79c6">~</span>   Clear bits    reg <span style="color:#ff79c6">&amp;=</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">0x10</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#ff79c6">^=</span>     Toggle bits   reg <span style="color:#ff79c6">^=</span> <span style="color:#bd93f9">0x10</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#ff79c6">&amp;</span>      Test bits     <span style="color:#ff79c6">if</span> (reg <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x10</span>)
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#ff79c6">&lt;&lt;</span>     Shift left    <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">13</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x2000</span>
-</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#ff79c6">&gt;&gt;</span>     Shift right   <span style="color:#bd93f9">0x2000</span> <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">13</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>
-</span></span></code></pre></div><h3 id="common-stm32-addresses">Common STM32 Addresses</h3>
+<h2 id="quick-reference-card">Quick Reference Card<a hidden class="anchor" aria-hidden="true" href="#quick-reference-card">¶</a></h2>
+<h3 id="operator-cheat-sheet">Operator Cheat Sheet<a hidden class="anchor" aria-hidden="true" href="#operator-cheat-sheet">¶</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#f92672">|=</span>     Set bits      reg <span style="color:#f92672">|=</span> <span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span>   Clear bits    reg <span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">^=</span>     Toggle bits   reg <span style="color:#f92672">^=</span> <span style="color:#ae81ff">0x10</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&amp;</span>      Test bits     <span style="color:#66d9ef">if</span> (reg <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x10</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;&lt;</span>     Shift left    <span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">13</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x2000</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span>     Shift right   <span style="color:#ae81ff">0x2000</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">13</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><h3 id="common-stm32-addresses">Common STM32 Addresses<a hidden class="anchor" aria-hidden="true" href="#common-stm32-addresses">¶</a></h3>
 <pre tabindex="0"><code>0x40021000  RCC (clocks)
 0x40010800  GPIOA
 0x40010C00  GPIOB
@@ -694,103 +992,180 @@ You&rsquo;ll see actual memory reads/writes even if they seem redundant.</p>
 <p><em>Last updated: 2026-03-12</em></p>
 <p><em>For corrections or additions, please make pull request</em></p>
 
-    </div>
-  </article>
 
-  
-  
-  <aside class="toc-sidebar">
-    <h3>On this page</h3>
-    <nav><nav id="TableOfContents">
-  <ul>
-    <li><a href="#introduction">Introduction</a></li>
-    <li><a href="#the-example-stm32-led-blink">The Example: STM32 LED Blink</a>
-      <ul>
-        <li><a href="#original-c-code-mainc">Original C Code (main.c)</a></li>
-        <li><a href="#binary-ninja-decompiled-output">Binary Ninja Decompiled Output</a></li>
-      </ul>
-    </li>
-    <li><a href="#understanding-c-operators">Understanding C Operators</a>
-      <ul>
-        <li><a href="#1-post-decrement---">1. Post-Decrement (<code>--</code>)</a></li>
-        <li><a href="#2-bitwise-or-assignment-">2. Bitwise OR Assignment (<code>|=</code>)</a></li>
-        <li><a href="#3-bitwise-and-with-not--">3. Bitwise AND with NOT (<code>&amp; ~</code>)</a></li>
-        <li><a href="#4-xor-">4. XOR (<code>^=</code>)</a></li>
-        <li><a href="#5-left-shift-">5. Left Shift (<code>&lt;&lt;</code>)</a></li>
-        <li><a href="#6-the-arrow-operator--">6. The Arrow Operator (<code>-&gt;</code>)</a></li>
-      </ul>
-    </li>
-    <li><a href="#memory-mapped-io-the-bridge">Memory-Mapped I/O: The Bridge</a>
-      <ul>
-        <li><a href="#example-the-rcc-peripheral">Example: The RCC Peripheral</a></li>
-        <li><a href="#memory-map-overview">Memory Map Overview</a></li>
-        <li><a href="#how-the-compiler-translates">How the Compiler Translates</a></li>
-      </ul>
-    </li>
-    <li><a href="#reading-the-disassembly">Reading the Disassembly</a>
-      <ul>
-        <li><a href="#understanding-the-address-column">Understanding the Address Column</a></li>
-        <li><a href="#the-literal-pool">The Literal Pool</a></li>
-        <li><a href="#type-casts">Type Casts</a></li>
-      </ul>
-    </li>
-    <li><a href="#step-by-step-comparison">Step-by-Step Comparison</a>
-      <ul>
-        <li><a href="#enabling-the-clock">Enabling the Clock</a></li>
-        <li><a href="#example-2-configuring-the-gpio-pin">Example 2: Configuring the GPIO Pin</a></li>
-        <li><a href="#example-3-toggling-the-led">Example 3: Toggling the LED</a></li>
-        <li><a href="#example-4-the-delay-function">Example 4: The Delay Function</a></li>
-      </ul>
-    </li>
-    <li><a href="#key-patterns-to-recognize">Key Patterns to Recognize</a>
-      <ul>
-        <li><a href="#pattern-1-read-modify-write">Pattern 1: Read-Modify-Write</a></li>
-        <li><a href="#pattern-2-bit-set-or">Pattern 2: Bit Set (OR)</a></li>
-        <li><a href="#pattern-3-bit-clear-and-not">Pattern 3: Bit Clear (<code>AND</code> <code>NOT</code>)</a></li>
-        <li><a href="#pattern-4-bit-toggle-xor">Pattern 4: Bit Toggle (XOR)</a></li>
-        <li><a href="#pattern-5-bit-check-and">Pattern 5: Bit Check (AND)</a></li>
-        <li><a href="#summary-table">Summary Table</a></li>
-      </ul>
-    </li>
-    <li><a href="#practical-tips">Practical Tips</a>
-      <ul>
-        <li><a href="#1-use-a-reference-manual">1. Use a Reference Manual</a></li>
-        <li><a href="#2-calculate-addresses-manually">2. Calculate Addresses Manually</a></li>
-        <li><a href="#3-convert-between-number-formats">3. Convert Between Number Formats</a></li>
-        <li><a href="#4-recognize-magic-numbers">4. Recognize Magic Numbers</a></li>
-        <li><a href="#5-look-for-patterns-in-the-literal-pool">5. Look for Patterns in the Literal Pool</a></li>
-        <li><a href="#6-notes-on-compiler-optimizations">6. Notes on Compiler Optimizations</a></li>
-        <li><a href="#7-trace-data-flow">7. Trace Data Flow</a></li>
-      </ul>
-    </li>
-    <li><a href="#common-pitfalls">Common Pitfalls</a>
-      <ul>
-        <li><a href="#pitfall-1-forgetting-the-pointer-cast">Pitfall 1: Forgetting the Pointer Cast</a></li>
-        <li><a href="#pitfall-2-wrong-bit-calculations">Pitfall 2: Wrong Bit Calculations</a></li>
-        <li><a href="#pitfall-3-endian-type-confusion">Pitfall 3: Endian type Confusion</a></li>
-        <li><a href="#pitfall-4-volatile-keyword">Pitfall 4: Volatile Keyword</a></li>
-      </ul>
-    </li>
-    <li><a href="#quick-reference-card">Quick Reference Card</a>
-      <ul>
-        <li><a href="#operator-cheat-sheet">Operator Cheat Sheet</a></li>
-        <li><a href="#common-stm32-addresses">Common STM32 Addresses</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></nav>
-  </aside>
-  
-</div>
-
-  </main>
-  <footer class="site-footer">
-  <div class="container">
-    <p>© 2026 Flock137 · Built with <a href="https://gohugo.io">Hugo</a></p>
   </div>
-</footer>
 
+  <footer class="post-footer">
+  </footer>
+    <div class="comments-separator"></div>
+</article>
+    </main>
+    
+<footer class="footer">
+  <span>&copy; 2026 <a href="http://localhost:1313/">Flock137</a></span><span style="display: inline-block; margin-left: 1em;">
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA</a>
+  </span>
+  <span style="display: inline-block; margin-left: 1em;">
+    Powered by
+    <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+    <a href="https://github.com/reorx/hugo-PaperModX/" rel="noopener" target="_blank">PaperModX</a>
+  </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+    <path d="M12 6H0l6-6z" />
+  </svg>
+</a>
+
+<script>
+  (function() {
+     
+    const disableThemeToggle = '' == '1';
+    if (disableThemeToggle) {
+      return;
+    }
+
+    let button = document.getElementById("theme-toggle")
+    
+    button.removeEventListener('click', toggleThemeListener)
+    
+    button.addEventListener('click', toggleThemeListener)
+  })();
+</script>
+
+<script>
+  (function () {
+    let menu = document.getElementById('menu')
+    if (menu) {
+      menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+      menu.onscroll = function () {
+        localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+      }
+    }
+
+    const disableSmoothScroll = '' == '1';
+    const enableInstantClick = '' == '1';
+    
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || disableSmoothScroll || enableInstantClick) {
+      return;
+    }
+    
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener("click", function (e) {
+        e.preventDefault();
+        var id = this.getAttribute("href").substr(1);
+        document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+          behavior: "smooth"
+        });
+        if (id === "top") {
+          history.replaceState(null, null, " ");
+        } else {
+          history.pushState(null, null, `#${id}`);
+        }
+      });
+    });
+  })();
+</script>
+<script>
+  var mybutton = document.getElementById("top-link");
+  window.onscroll = function () {
+    if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+      mybutton.style.visibility = "visible";
+      mybutton.style.opacity = "1";
+    } else {
+      mybutton.style.visibility = "hidden";
+      mybutton.style.opacity = "0";
+    }
+  };
+</script>
+<script>
+  if (window.scrollListeners) {
+    
+    for (const listener of scrollListeners) {
+      window.removeEventListener('scroll', listener)
+    }
+  }
+  window.scrollListeners = []
+</script>
+
+
+
+<script src="/js/medium-zoom.min.js" data-no-instant
+></script>
+
+
+
+
+<script>
   
-  <script src="/js/theme.min.js" defer></script>
+  
+  (function() {
+    const enableTocScroll = '1' == '1'
+    if (!enableTocScroll) {
+      return
+    }
+    if (!document.querySelector('.toc')) {
+      console.log('no toc found, ignore toc scroll')
+      return
+    }
+    
+
+    
+    const scrollListeners = window.scrollListeners
+    const headings = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id]');
+    const activeClass = 'active';
+
+    
+    let activeHeading = headings[0];
+    getLinkByHeading(activeHeading).classList.add(activeClass);
+
+    const onScroll = () => {
+      const passedHeadings = [];
+      for (const h of headings) {
+        
+        if (getOffsetTop(h) < 5) {
+          passedHeadings.push(h)
+        } else {
+          break;
+        }
+      }
+      if (passedHeadings.length > 0) {
+        newActiveHeading = passedHeadings[passedHeadings.length - 1];
+      } else {
+        newActiveHeading = headings[0];
+      }
+      if (activeHeading != newActiveHeading) {
+        getLinkByHeading(activeHeading).classList.remove(activeClass);
+        activeHeading = newActiveHeading;
+        getLinkByHeading(activeHeading).classList.add(activeClass);
+      }
+    }
+
+    let timer = null;
+    const scrollListener = () => {
+      if (timer !== null) {
+        clearTimeout(timer)
+      }
+      timer = setTimeout(onScroll, 50)
+    }
+    window.addEventListener('scroll', scrollListener, false);
+    scrollListeners.push(scrollListener)
+
+    function getLinkByHeading(heading) {
+      const id = encodeURI(heading.getAttribute('id')).toLowerCase();
+      return document.querySelector(`.toc ul li a[href="#${id}"]`);
+    }
+
+    function getOffsetTop(heading) {
+      if (!heading.getClientRects().length) {
+        return 0;
+      }
+      let rect = heading.getBoundingClientRect();
+      return rect.top
+    }
+  })();
+  </script>
+
 </body>
+
 </html>

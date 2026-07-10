@@ -1,26 +1,172 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Arch on Flock137</title>
     <link>http://localhost:1313/tags/arch/</link>
     <description>Recent content in Arch on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/arch/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/arch/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Setting up a stable Arch-based Penetration Testing environment</title>
       <link>http://localhost:1313/posts/post_install_script/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/post_install_script/</guid>
-      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;This is actually my thought process of making this script &lt;a href=&#34;https://github.com/Flock137/EOSxBlackArch&#34;&gt;https://github.com/Flock137/EOSxBlackArch&lt;/a&gt;, where I put the BlackArch repo on top of EndeavourOS for a quick Arch pentest environment, since BlackArch is a bit of a hassle for installing quickly.&lt;/p&gt;&#xA;&lt;p&gt;I hope it would help you in the case you wanna make an automation script yourself someday.&lt;/p&gt;&#xA;&lt;h1 id=&#34;first-and-foremost&#34;&gt;First and foremost&lt;/h1&gt;&#xA;&lt;p&gt;Install EndeavourOS. We will port our BlackArch repo into right after the former&amp;rsquo;s installation finish.&lt;/p&gt;</description>
+      <description>Intro This is actually my thought process of making this script https://github.com/Flock137/EOSxBlackArch, where I put the BlackArch repo on top of EndeavourOS for a quick Arch pentest environment, since BlackArch is a bit of a hassle for installing quickly.
+I hope it would help you in the case you wanna make an automation script yourself someday.
+First and foremost Install EndeavourOS. We will port our BlackArch repo into right after the former&amp;rsquo;s installation finish.</description>
+      <content:encoded><![CDATA[<h1 id="intro">Intro</h1>
+<p>This is actually my thought process of making this script <a href="https://github.com/Flock137/EOSxBlackArch">https://github.com/Flock137/EOSxBlackArch</a>, where I put the BlackArch repo on top of EndeavourOS for a quick Arch pentest environment, since BlackArch is a bit of a hassle for installing quickly.</p>
+<p>I hope it would help you in the case you wanna make an automation script yourself someday.</p>
+<h1 id="first-and-foremost">First and foremost</h1>
+<p>Install EndeavourOS. We will port our BlackArch repo into right after the former&rsquo;s installation finish.</p>
+<h1 id="port-the-blackarch-repo">Port the BlackArch repo</h1>
+<p>Please refer to this tutorial for your reference: <a href="https://blackarch.org/downloads.html#install-repo">https://blackarch.org/downloads.html#install-repo</a> (Section: <strong>Installing on top of ArchLinux</strong>).</p>
+<p>The example below should give you a preview on what you need to do this step.</p>
+<pre tabindex="0"><code># Run https://blackarch.org/strap.sh as root and follow the instructions.
+
+curl -O https://blackarch.org/strap.sh
+
+# Verify the SHA1 sum
+
+echo bdbaf7ecd039859160849a46694fe4921371e5b1 strap.sh | sha1sum -c
+
+# Set execute bit
+
+chmod +x strap.sh
+
+# Run strap.sh
+
+sudo ./strap.sh
+
+# Enable multilib following https://wiki.archlinux.org/index.php/Official_repositories#Enabling_multilib and run:
+
+sudo pacman -Syu
+</code></pre><p>After the <code>sudo pacman -Syu</code>, most of the barebone, necessary security tools will be automatically installed for you</p>
+<h2 id="other-useful-commands">Other (useful) commands</h2>
+<pre tabindex="0"><code># To list all of the available tools, run
+
+sudo pacman -Sgg | grep blackarch | cut -d&#39; &#39; -f2 | sort -u
+
+# To install a category of tools, run
+
+sudo pacman -S blackarch-&lt;category&gt;
+
+# To see the blackarch categories, run
+
+sudo pacman -Sg | grep blackarch
+
+# To search for a specific package, run
+
+pacman -Ss &lt;package_name&gt;
+
+# Note - it maybe be necessary to overwrite certain packages when installing blackarch tools. If  
+# you experience &#34;failed to commit transaction&#34; errors, use the --needed and --overwrite switches  
+# For example:
+
+sudo pacman -Syyu --needed --overwrite=&#39;*&#39; &lt;wanted-package&gt;
+</code></pre><h1 id="other-manually-installed-apps">Other manually installed apps</h1>
+<ul>
+<li>cutter</li>
+<li>burpsuite</li>
+<li>ghidra</li>
+<li>impacket-ba (you will call the script up by its name, e.g. <code>rpcdump.py</code>)</li>
+<li>stegsolve</li>
+<li>steghide</li>
+<li>audacity</li>
+<li>bloodhound</li>
+<li>python-uncompyle6</li>
+<li>villain (maybe it got installed already? Gotta make an exception script for this situation. Nevermind, just put the flag <code>--needed</code> after each <code>pacman -S</code>)</li>
+<li>rekall</li>
+<li>autopsy</li>
+<li>vim</li>
+<li>(input more packages that you like to use here)</li>
+</ul>
+<h1 id="custom-zsh-shell">Custom zsh-shell</h1>
+<h2 id="first">First</h2>
+<pre tabindex="0"><code>sudo pacman -S zsh 
+</code></pre><h2 id="install-oh-my-zsh">Install oh-my-zsh</h2>
+<p>Reference: <a href="https://ohmyz.sh/#install">https://ohmyz.sh/#install</a></p>
+<pre tabindex="0"><code>sh -c &#34;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&#34;
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>sh -c &#34;$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)&#34;
+</code></pre><p>After ohmyzsh offer to change shell, type <code>y</code>.
+Manually: Log out and log back in so the change take effect.
+But the script will go on after this and prompt user to log out or reboot at the end.</p>
+<h2 id="install-autosugestions-and-syntax-highlighting">Install autosugestions and syntax highlighting</h2>
+<p>Reference: <a href="https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df">https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df</a></p>
+<ul>
+<li>
+<p>autosuggesions plugin:
+<code>git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions</code></p>
+</li>
+<li>
+<p>zsh-syntax-highlighting plugin <br>
+<code>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting</code></p>
+</li>
+</ul>
+<p>(I don&rsquo;t recommend installing too much plugins, though. It will slow down your terminal startup.)</p>
+<p>Open <code>~/.zshrc</code>:</p>
+<pre tabindex="0"><code>vim ~/.zshrc
+</code></pre><p>Find the line that say: <code>plugin=(git) </code>
+Add your plugins inside the parenthesis, like this:</p>
+<pre tabindex="0"><code>plugin=(git
+		zsh-autosuggestions
+		zsh-syntax-highlighting)
+</code></pre><p>Then exit the terminal for change to take effect</p>
+<h2 id="custom-the-terminal-handle">Custom the terminal handle</h2>
+<p><em>The line that have your name and stuffs like that, y&rsquo;know</em></p>
+<p>I personally use the <a href="https://github.com/heapbytes/heapbytes-zsh">heapbytes</a>, so my script will install this theme, as well.</p>
+<p>Heapbytes theme feature:</p>
+<ul>
+<li>Prints the current working directory</li>
+<li>Prints the tun0 IP if connected to a VPN</li>
+<li>Prints the wlan0 IP if you aren&rsquo;t connected to any VPN. (change the module name in <code>.zsh-theme</code> according to your wifi module)</li>
+<li>Git info</li>
+</ul>
+<p>Install <a href="https://github.com/heapbytes/heapbytes-zsh/raw/refs/heads/main/heapbytes.zsh-theme">https://github.com/heapbytes/heapbytes-zsh/raw/refs/heads/main/heapbytes.zsh-theme</a> to $ZSH_CUSTOM/themes/</p>
+<p>In <code>~/zshrc</code>:</p>
+<pre tabindex="0"><code>ZSH_THEME=&#34;heapbytes&#34;
+</code></pre><p>save and exit terminal for the change to take effect.</p>
+]]></content:encoded>
     </item>
+    
     <item>
       <title>How did I repair an (Arch) Linux bootloader twice</title>
       <link>http://localhost:1313/posts/bootloader_failed/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/bootloader_failed/</guid>
-      <description>&lt;h1 id=&#34;introduction-updating-bios-got-linux-overwritten&#34;&gt;Introduction: Updating BIOS, got Linux overwritten&lt;/h1&gt;&#xA;&lt;p&gt;After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.&#xA;Not to mention, I no longer see my &lt;code&gt;systemd&lt;/code&gt; bootloader screen.&lt;/p&gt;&#xA;&lt;h2 id=&#34;disable-bitlocker-key&#34;&gt;Disable bitlocker key&lt;/h2&gt;&#xA;&lt;p&gt;To disable bitlocker key (not decrypt the whole drive), so the windows partition won&amp;rsquo;t ask you bitlocker password over and over again when you dual-boot:&lt;/p&gt;</description>
+      <description>Introduction: Updating BIOS, got Linux overwritten After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk. Not to mention, I no longer see my systemd bootloader screen.
+Disable bitlocker key To disable bitlocker key (not decrypt the whole drive), so the windows partition won&amp;rsquo;t ask you bitlocker password over and over again when you dual-boot:</description>
+      <content:encoded><![CDATA[<h1 id="introduction-updating-bios-got-linux-overwritten">Introduction: Updating BIOS, got Linux overwritten</h1>
+<p>After I updated my BIOS, it happened to auto turn on secure boot, bitlocker again and overwrite the bootloader on my Linux partition on a separated disk.
+Not to mention, I no longer see my <code>systemd</code> bootloader screen.</p>
+<h2 id="disable-bitlocker-key">Disable bitlocker key</h2>
+<p>To disable bitlocker key (not decrypt the whole drive), so the windows partition won&rsquo;t ask you bitlocker password over and over again when you dual-boot:</p>
+<pre tabindex="0"><code>manage-bde -off F:
+</code></pre><p>Where <code>F:</code> is the letter disk you want the key to be disable. For me, I use <code>C:</code>.</p>
+<h2 id="secure-boot">Secure boot</h2>
+<p>Enter the BIOS to turn off secure boot. The way you would enter the BIOS would be depend on your desktop model.
+On Google, search:&quot;[Your desktop model] how to enter BIOS&quot;</p>
+<h2 id="restart-again">Restart again</h2>
+<p>After finish the two steps above, you need to enter the windows partition again and type in your bitlocker key, or if it doesn&rsquo;t ask, then nice! You&rsquo;re in!</p>
+<p>Let&rsquo;s check our Linux partition</p>
+<h1 id="save-linux-partition">Save Linux partition</h1>
+<p>Since I can&rsquo;t see my usual bootloader screen shows up, the laptop just straight up boot into my Windows partition instead. When checking with BIOS, turns out, what used to be my Linux Boot is now called &ldquo;Windows Boot Manager&rdquo;, that means the <strong>Linux bootloader got rewritten</strong>. In this case there&rsquo;s pretty much nothing you can do about it except for reinstallation.</p>
+<p>Lucky for me, when I was installing EndeavourOS, I have made a partition table in which I have separated <code>/</code> (root) with <code>/home</code>. It means that, none of my data got corrupted during the BIOS update, only the root partition was. Therefore, in my reinstallation, I only need to reformat my root and reinstall apps again, which luckily doesn&rsquo;t take long, with all data in <code>/home</code> perfectly intact after installation.</p>
+<p>However, there&rsquo;s an issue with bootloader right after I did my second update on the system, and I got thrown to rescue mode.</p>
+<h1 id="inside-rescue-mode-systemd">Inside Rescue mode (systemd)</h1>
+<ul>
+<li>Use <code>journalctl -xb</code>, read all the logs. You might like to do <code>arch-chroot</code> (It&rsquo;s a bit complicate, a tutorial might be written later)</li>
+<li>After <code>arch-chroot</code> failed, I use <code>lsblk -f</code>, to check the mount status, somehow the EFI partition failed to mount itself (it doesn&rsquo;t appear to be mounted anywhere, indicated by the table)</li>
+<li>Now, do <code>cat /etc/stab</code>, see if there is any: wrong UUID, unusual mount point, etc. In my case, the UUID of the bootloader was wrong (or perhaps outdated after update), that&rsquo;s why it failed to mount itself to the system</li>
+<li>Copy the UUID from <code>lsblk -f</code> and write it to <code>/etc/stab</code>, then reboot.</li>
+</ul>
+<p>If bootloader failing to mount itself is your only issue, you should be able to boot your system again.</p>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

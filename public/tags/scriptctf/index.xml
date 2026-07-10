@@ -1,19 +1,45 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>ScriptCTF on Flock137</title>
     <link>http://localhost:1313/tags/scriptctf/</link>
     <description>Recent content in ScriptCTF on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/scriptctf/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Sep 2025 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/scriptctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ScriptCTF Writeup - Forensics</title>
       <link>http://localhost:1313/posts/scriptctf/</link>
       <pubDate>Fri, 12 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/scriptctf/</guid>
-      <description>&lt;h1 id=&#34;pdf-author-connor-chang&#34;&gt;pdf (Author: Connor Chang)&lt;/h1&gt;&#xA;&lt;p&gt;Description: so sad cause no flag in pdf&lt;/p&gt;&#xA;&lt;p&gt;The challenge attachment can be found here: &lt;a href=&#34;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&#34;&gt;https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&amp;rsquo;t need to use it. All we have to do is using &lt;code&gt;binwalk&lt;/code&gt;&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;binwalk -e challenge.pdf &#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the extracted folder, click on (or &lt;code&gt;cat&lt;/code&gt;) the text file (&lt;code&gt;11B&lt;/code&gt; or something similar), the flag is in there&#xA;&lt;img src=&#34;images/challenge.png&#34; alt=&#34;alt text&#34;&gt;&lt;/p&gt;</description>
+      <description>pdf (Author: Connor Chang) Description: so sad cause no flag in pdf
+The challenge attachment can be found here: https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf
+For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&amp;rsquo;t need to use it. All we have to do is using binwalk
+binwalk -e challenge.pdf In the extracted folder, click on (or cat) the text file (11B or something similar), the flag is in there diskchal (Author: Connor Chang) Description: i accidentally vanished my flag, can u find it for me</description>
+      <content:encoded><![CDATA[<h1 id="pdf-author-connor-chang">pdf (Author: Connor Chang)</h1>
+<p>Description: so sad cause no flag in pdf</p>
+<p>The challenge attachment can be found here: <a href="https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf">https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/pdf/attachments/challenge.pdf</a></p>
+<p>For this challenge, you can open up Firefox to view the hint in the given PDF, but for this approach, we won&rsquo;t need to use it. All we have to do is using <code>binwalk</code></p>
+<pre tabindex="0"><code>binwalk -e challenge.pdf 
+</code></pre><p>In the extracted folder, click on (or <code>cat</code>) the text file (<code>11B</code> or something similar), the flag is in there
+<img loading="lazy" src="/posts/scriptctf/images/challenge.png" type="" alt="alt text"  /></p>
+<h1 id="diskchal-author-connor-chang">diskchal (Author: Connor Chang)</h1>
+<p>Description: i accidentally vanished my flag, can u find it for me</p>
+<p>Attachment: <a href="https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/diskchal/attachments/stick.img">https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/diskchal/attachments/stick.img</a></p>
+<p>After doing some basic investigation on the image, I was bored and decided to use <code>binwalk</code> according to&hellip; gut feelings. I somehow found the <code>flag.txt</code> and it effectively ended the challenge.
+<img loading="lazy" src="/posts/scriptctf/images/stick.png" type="" alt="alt text"  /></p>
+<h1 id="just-some-avocado-author-connor-chang">Just some Avocado (Author: Connor Chang)</h1>
+<p>Description: just an innocent little avocado!</p>
+<p>Attachment: <a href="https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/JustSomeAvocado/attachments/avocado.jpg">https://github.com/scriptCTF/scriptCTF2025-OfficialWriteups/blob/main/Forensics/JustSomeAvocado/attachments/avocado.jpg</a></p>
+<p>By instinct, I do a <code>binwalk -e</code> again and found a zip file with password. Bruteforce it using <code>john</code> or <code>hydra</code> with the wordlist <code>rockyou.txt</code> (you can find it on github).
+Inside the file, there&rsquo;s another zip file which contain our flag and a <code>staticnoise.wav</code>, in which by listening to it, I figure out this is a steganography.</p>
+<p>Open <code>staticnoise.wav</code> in Audacity, click on the <code>...</code> on the left pane, tick on &ldquo;spectrogram&rdquo;
+<img loading="lazy" src="/posts/scriptctf/images/spectrogram.png" type="" alt="alt text"  /></p>
+<p>And, you got the flag!
+<img loading="lazy" src="/posts/scriptctf/images/spectro_flag.png" type="" alt="alt text"  /></p>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

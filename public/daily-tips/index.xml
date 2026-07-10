@@ -1,40 +1,146 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Daily-Tips on Flock137</title>
     <link>http://localhost:1313/daily-tips/</link>
     <description>Recent content in Daily-Tips on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/daily-tips/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 19 Dec 2025 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/daily-tips/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How to download music from Youtube with yt-dlp (CLI)</title>
       <link>http://localhost:1313/daily-tips/ytb_music_download/</link>
       <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/daily-tips/ytb_music_download/</guid>
-      <description>&lt;h2 id=&#34;downloading-yt-dlp&#34;&gt;Downloading (yt-dlp)&lt;/h2&gt;&#xA;&lt;p&gt;You use this command:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;yt-dlp -f &amp;#34;bestvideo[height=2160]+bestaudio&amp;#34; -x --audio-format flac &amp;#34;VIDEO_URL&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In this command, I&amp;rsquo;m downloading from a 4K video (2160p), and I like my music to be in the &lt;code&gt;.flac&lt;/code&gt; file. Feel free to change the quality and filetype into whatever you like.&lt;/p&gt;&#xA;&lt;h2 id=&#34;update-metadata-ffmpeg&#34;&gt;Update metadata (ffmpeg)&lt;/h2&gt;&#xA;&lt;p&gt;Since the metadata won&amp;rsquo;t come with the file by default, you may like to add it manually.&lt;/p&gt;&#xA;&lt;p&gt;To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:&lt;/p&gt;</description>
+      <description>Downloading (yt-dlp) You use this command:
+yt-dlp -f &amp;#34;bestvideo[height=2160]+bestaudio&amp;#34; -x --audio-format flac &amp;#34;VIDEO_URL&amp;#34; In this command, I&amp;rsquo;m downloading from a 4K video (2160p), and I like my music to be in the .flac file. Feel free to change the quality and filetype into whatever you like.
+Update metadata (ffmpeg) Since the metadata won&amp;rsquo;t come with the file by default, you may like to add it manually.
+To do this, yt-dlp should also work.</description>
+      <content:encoded><![CDATA[<h2 id="downloading-yt-dlp">Downloading (yt-dlp)</h2>
+<p>You use this command:</p>
+<pre tabindex="0"><code>yt-dlp -f &#34;bestvideo[height=2160]+bestaudio&#34; -x --audio-format flac &#34;VIDEO_URL&#34;
+</code></pre><p>In this command, I&rsquo;m downloading from a 4K video (2160p), and I like my music to be in the <code>.flac</code> file. Feel free to change the quality and filetype into whatever you like.</p>
+<h2 id="update-metadata-ffmpeg">Update metadata (ffmpeg)</h2>
+<p>Since the metadata won&rsquo;t come with the file by default, you may like to add it manually.</p>
+<p>To do this, yt-dlp should also work. However, my preferred method is to use ffmpeg, instead:</p>
+<pre tabindex="0"><code>ffmpeg -i &#34;input.flac&#34; \
+    -metadata title=&#34;Song Title&#34; \
+    -metadata artist=&#34;Artist Name&#34; \
+    -metadata album=&#34;Album Name&#34; \
+    -metadata date=&#34;2024&#34; \ 
+    -metadata genre=&#34;Pop&#34; \ 
+    -codec copy &#34;output.flac&#34;
+</code></pre>]]></content:encoded>
     </item>
+    
     <item>
       <title>How to see differences between files</title>
       <link>http://localhost:1313/daily-tips/diff/</link>
       <pubDate>Thu, 18 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/daily-tips/diff/</guid>
-      <description>&lt;p&gt;In the case like this:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;warning: /etc/bluetooth/main.conf installed as /etc/bluetooth/main.conf.pacnew&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You may like to know what is the difference between these two, concisely. We use the command &lt;code&gt;diff&lt;/code&gt;, a basic utility of Linux&lt;/p&gt;&#xA;&lt;p&gt;An example:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;diff /etc/bluetooth/main.conf /etc/bluetooth/main.conf.pacnew&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Output:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;264a265,269&#xA;&amp;gt; # This enables the GATT client functionally, so it can be disabled in system&#xA;&amp;gt; # which can only operate as a peripheral.&#xA;&amp;gt; # Defaults to &amp;#39;true&amp;#39;.&#xA;&amp;gt; #Client = true&#xA;&amp;gt; &#xA;311,315d315&#xA;&amp;lt; # This enables the GATT client functionally, so it can be disabled in system&#xA;&amp;lt; # which can only operate as a peripheral.&#xA;&amp;lt; # Defaults to &amp;#39;true&amp;#39;.&#xA;&amp;lt; #Client = true&#xA;&amp;lt; &#xA;362c362&#xA;&amp;lt; #AutoEnable=false&#xA;---&#xA;&amp;gt; #AutoEnable=true&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;&amp;gt;&lt;/code&gt; indicate what appear in the latter file and &lt;code&gt;&amp;lt;&lt;/code&gt; is pointing toward the former file.&lt;/p&gt;</description>
+      <description>In the case like this:
+warning: /etc/bluetooth/main.conf installed as /etc/bluetooth/main.conf.pacnew You may like to know what is the difference between these two, concisely. We use the command diff, a basic utility of Linux
+An example:
+diff /etc/bluetooth/main.conf /etc/bluetooth/main.conf.pacnew Output:
+264a265,269 &amp;gt; # This enables the GATT client functionally, so it can be disabled in system &amp;gt; # which can only operate as a peripheral. &amp;gt; # Defaults to &amp;#39;true&amp;#39;. &amp;gt; #Client = true &amp;gt; 311,315d315 &amp;lt; # This enables the GATT client functionally, so it can be disabled in system &amp;lt; # which can only operate as a peripheral.</description>
+      <content:encoded><![CDATA[<p>In the case like this:</p>
+<pre tabindex="0"><code>warning: /etc/bluetooth/main.conf installed as /etc/bluetooth/main.conf.pacnew
+</code></pre><p>You may like to know what is the difference between these two, concisely. We use the command <code>diff</code>, a basic utility of Linux</p>
+<p>An example:</p>
+<pre tabindex="0"><code>diff /etc/bluetooth/main.conf /etc/bluetooth/main.conf.pacnew
+</code></pre><p>Output:</p>
+<pre tabindex="0"><code>264a265,269
+&gt; # This enables the GATT client functionally, so it can be disabled in system
+&gt; # which can only operate as a peripheral.
+&gt; # Defaults to &#39;true&#39;.
+&gt; #Client = true
+&gt; 
+311,315d315
+&lt; # This enables the GATT client functionally, so it can be disabled in system
+&lt; # which can only operate as a peripheral.
+&lt; # Defaults to &#39;true&#39;.
+&lt; #Client = true
+&lt; 
+362c362
+&lt; #AutoEnable=false
+---
+&gt; #AutoEnable=true
+</code></pre><p><code>&gt;</code> indicate what appear in the latter file and <code>&lt;</code> is pointing toward the former file.</p>
+]]></content:encoded>
     </item>
+    
     <item>
       <title>Checking whether media files are (partly) corrupted using ffmpeg</title>
       <link>http://localhost:1313/daily-tips/check_corrupted_flac/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/daily-tips/check_corrupted_flac/</guid>
-      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;Normally, you wouldn&amp;rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&amp;rsquo;t be able to play and that&amp;rsquo;s it.&lt;/p&gt;&#xA;&lt;p&gt;However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).&lt;/p&gt;</description>
+      <description>Intro Normally, you wouldn&amp;rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&amp;rsquo;t be able to play and that&amp;rsquo;s it.
+However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).</description>
+      <content:encoded><![CDATA[<h1 id="intro">Intro</h1>
+<p>Normally, you wouldn&rsquo;t need to this kind of check, even in the case of serious corruption, the file just won&rsquo;t be able to play and that&rsquo;s it.</p>
+<p>However, if you self-host and streaming your own music or media like myself, you might notice that some of your music might refuse to play while it plays normally on your music player (and it might even make your PC heats up).</p>
+<p>This is due to partial corruption in your file. Normally, when you play the file in your system, it will be able to automatically &ldquo;fill in the blank&rdquo; of the corruption bits. But in self-hosting or streaming scenarios, these services won&rsquo;t be able to pick that up and recover your file (well, to be fair, it did try, but can&rsquo;t since this is a computing intensive task), hence the reason it doesn&rsquo;t play (and also heats your CPU up whilst trying).</p>
+<h1 id="to-check-whether-there-is-corruption">To check whether there is corruption&hellip;</h1>
+<p>Open up your favourite text editor and store this script below in a file named <code>music_check</code>:</p>
+<pre tabindex="0"><code># Find all FLAC files and test them
+find ~/Music -name &#34;*.flac&#34; -type f | while read -r file; do
+    echo &#34;Testing: $file&#34;
+    if ! ffmpeg -v error -i &#34;$file&#34; -f null - 2&gt;&amp;1 | grep -q &#34;error\|invalid&#34;; then
+        echo &#34;✓ OK&#34;
+    else
+        echo &#34;✗ CORRUPTED: $file&#34;
+    fi
+done
+</code></pre><p>Then, type in the terminal <code>chmod u+x music_check</code> and run it using command <code>./music_check</code>, it will print out for your which files are corrupted.</p>
+<p>After you find out which one is corrupted, I recommend you to just re-download the file instead of fixing the corruption.</p>
+]]></content:encoded>
     </item>
+    
     <item>
       <title>How do you make a launcher for an AppImage?</title>
       <link>http://localhost:1313/daily-tips/appimage_launcher_template/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/daily-tips/appimage_launcher_template/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;For this purpose you actually have &lt;a href=&#34;https://github.com/TheAssassin/AppImageLauncher&#34;&gt;AppImageLauncher&lt;/a&gt; for the convenience,&#xA;or the apps would actually self-generate this for you, but this doesn&amp;rsquo;t always happen.&#xA;However, if you do mind the bloatness of said app (300 MB-ish), or the devs just don&amp;rsquo;t have the launcher ready, then you may consider making the launcher yourself, by hand.&lt;/p&gt;&#xA;&lt;h1 id=&#34;appimage-launcher-template-appnamedesktop&#34;&gt;AppImage Launcher Template (&lt;code&gt;AppName.desktop&lt;/code&gt;)&lt;/h1&gt;&#xA;&lt;p&gt;This is my standard template for almost every AppImage:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[Desktop Entry]&#xA;Version=1.0&#xA;Type=Application&#xA;Name=Application Name&#xA;GenericName=App Type&#xA;Categories=Utility;&#xA;Comment=Brief description of the application&#xA;Exec=/path/to/application.AppImage&#xA;Icon=/path/to/icon.png&#xA;Terminal=false&#xA;StartupNotify=true&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Explanations (don&amp;rsquo;t copy this part to your file, please):&lt;/p&gt;</description>
+      <description>Introduction For this purpose you actually have AppImageLauncher for the convenience, or the apps would actually self-generate this for you, but this doesn&amp;rsquo;t always happen. However, if you do mind the bloatness of said app (300 MB-ish), or the devs just don&amp;rsquo;t have the launcher ready, then you may consider making the launcher yourself, by hand.
+AppImage Launcher Template (AppName.desktop) This is my standard template for almost every AppImage:
+[Desktop Entry] Version=1.</description>
+      <content:encoded><![CDATA[<h1 id="introduction">Introduction</h1>
+<p>For this purpose you actually have <a href="https://github.com/TheAssassin/AppImageLauncher">AppImageLauncher</a> for the convenience,
+or the apps would actually self-generate this for you, but this doesn&rsquo;t always happen.
+However, if you do mind the bloatness of said app (300 MB-ish), or the devs just don&rsquo;t have the launcher ready, then you may consider making the launcher yourself, by hand.</p>
+<h1 id="appimage-launcher-template-appnamedesktop">AppImage Launcher Template (<code>AppName.desktop</code>)</h1>
+<p>This is my standard template for almost every AppImage:</p>
+<pre tabindex="0"><code>[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Application Name
+GenericName=App Type
+Categories=Utility;
+Comment=Brief description of the application
+Exec=/path/to/application.AppImage
+Icon=/path/to/icon.png
+Terminal=false
+StartupNotify=true
+</code></pre><p>Explanations (don&rsquo;t copy this part to your file, please):</p>
+<ul>
+<li><code>Version</code> - The app version. If you got too lazy to find which version it is, you may leave it as 1.0.0</li>
+<li><code>Type</code> - Just leave it as &ldquo;Application&rdquo;</li>
+<li><code>Name</code> - Write your App name here, you can use any name you like.</li>
+<li><code>GenericName</code> - Categories name for human-view (Web Browser, Utilities, System, etc.)</li>
+<li><code>Categories</code> - Categories name for machine, similar to that of GenericName, but you can&rsquo;t have space or special character inside</li>
+<li><code>Comment</code> - A brief description of what your app does</li>
+<li><code>Exec</code> - Path to the app&rsquo;s executable</li>
+<li><code>Icon</code> - Path to the app&rsquo;s icon (sometimes, the app is able to display the icon by itself, although you didn&rsquo;t set the icon path)</li>
+<li><code>Terminal</code> - Whether to invoke the terminal when open the app. Highly recommend leaving it as <code>false</code>, unless for specific reasons</li>
+<li><code>StartupNotify</code> - Would the app notify you when it launches? This one is depending on your need. By default, it is <code>true</code></li>
+</ul>
+<p>Then open up your favourite text editor (vim, notepad, vscode, etc.), copy and save the file as <code>your_app.desktop</code> at <code>~/.local/share/applications</code>, or anywhere you feel convenient to store (I personally like <code>~/AppImage</code>).</p>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

@@ -1,243 +1,341 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Flock137</title>
     <link>http://localhost:1313/tags/</link>
     <description>Recent content in Tags on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Apr 2026 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 21 Apr 2026 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Forensics</title>
       <link>http://localhost:1313/tags/forensics/</link>
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/forensics/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Linux</title>
       <link>http://localhost:1313/tags/linux/</link>
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/linux/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Windows</title>
       <link>http://localhost:1313/tags/windows/</link>
       <pubDate>Fri, 17 Apr 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/windows/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>ARM</title>
       <link>http://localhost:1313/tags/arm/</link>
       <pubDate>Thu, 12 Mar 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/arm/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Assembly</title>
       <link>http://localhost:1313/tags/assembly/</link>
       <pubDate>Thu, 12 Mar 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/assembly/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Hardware</title>
       <link>http://localhost:1313/tags/hardware/</link>
       <pubDate>Thu, 12 Mar 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/hardware/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Stm32</title>
       <link>http://localhost:1313/tags/stm32/</link>
       <pubDate>Thu, 12 Mar 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/stm32/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>CTF</title>
       <link>http://localhost:1313/tags/ctf/</link>
       <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/ctf/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Memory</title>
       <link>http://localhost:1313/tags/memory/</link>
       <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/memory/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Pcap</title>
       <link>http://localhost:1313/tags/pcap/</link>
       <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/pcap/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Wireshark</title>
       <link>http://localhost:1313/tags/wireshark/</link>
       <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/wireshark/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Debug</title>
       <link>http://localhost:1313/tags/debug/</link>
       <pubDate>Fri, 06 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/debug/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>CLI</title>
       <link>http://localhost:1313/tags/cli/</link>
       <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/cli/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Daily-Tech-Tips</title>
       <link>http://localhost:1313/tags/daily-tech-tips/</link>
       <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/daily-tech-tips/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Ffmpeg</title>
       <link>http://localhost:1313/tags/ffmpeg/</link>
       <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/ffmpeg/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Yt-Dlp</title>
       <link>http://localhost:1313/tags/yt-dlp/</link>
       <pubDate>Fri, 19 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/yt-dlp/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Arch</title>
       <link>http://localhost:1313/tags/arch/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/arch/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>EndeavourOS</title>
       <link>http://localhost:1313/tags/endeavouros/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/endeavouros/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Media</title>
       <link>http://localhost:1313/tags/media/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/media/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Red-Team</title>
       <link>http://localhost:1313/tags/red-team/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/red-team/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>VM</title>
       <link>http://localhost:1313/tags/vm/</link>
       <pubDate>Mon, 01 Dec 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/vm/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>AI</title>
       <link>http://localhost:1313/tags/ai/</link>
       <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/ai/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Ai_gon3_r0ug3</title>
       <link>http://localhost:1313/tags/ai_gon3_r0ug3/</link>
       <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/ai_gon3_r0ug3/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Writeup</title>
       <link>http://localhost:1313/tags/writeup/</link>
       <pubDate>Mon, 22 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/writeup/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>GCTF</title>
       <link>http://localhost:1313/tags/gctf/</link>
       <pubDate>Thu, 18 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/gctf/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Girls-in-CTF</title>
       <link>http://localhost:1313/tags/girls-in-ctf/</link>
       <pubDate>Thu, 18 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/girls-in-ctf/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>ScriptCTF</title>
       <link>http://localhost:1313/tags/scriptctf/</link>
       <pubDate>Fri, 12 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/scriptctf/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>FlareVM</title>
       <link>http://localhost:1313/tags/flarevm/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/flarevm/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Malware Analysis</title>
       <link>http://localhost:1313/tags/malware-analysis/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/malware-analysis/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Network</title>
       <link>http://localhost:1313/tags/network/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/network/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Tips</title>
       <link>http://localhost:1313/tags/tips/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/tips/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>VirtualBox</title>
       <link>http://localhost:1313/tags/virtualbox/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/virtualbox/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
     <item>
       <title>Misc</title>
       <link>http://localhost:1313/tags/misc/</link>
       <pubDate>Wed, 03 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/tags/misc/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
+    
   </channel>
 </rss>

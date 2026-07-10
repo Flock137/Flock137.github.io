@@ -1,33 +1,246 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Windows on Flock137</title>
     <link>http://localhost:1313/tags/windows/</link>
     <description>Recent content in Windows on Flock137</description>
-    <generator>Hugo</generator>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 17 Apr 2026 00:00:00 +0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/windows/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 17 Apr 2026 00:00:00 +0700</lastBuildDate><atom:link href="http://localhost:1313/tags/windows/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Sherlock - Reaper writeup</title>
       <link>http://localhost:1313/posts/reaper/</link>
       <pubDate>Fri, 17 Apr 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/reaper/</guid>
-      <description>&lt;p&gt;This is one of the HackTheBox&amp;rsquo;s Sherlock - Reaper.&lt;/p&gt;&#xA;&lt;p&gt;It&amp;rsquo;s also one of the more terrible and sloppy write-up of mine, I don&amp;rsquo;t recommend you reading this unless there really is no other choice.&lt;/p&gt;&#xA;&lt;h2 id=&#34;scenario&#34;&gt;Scenario&lt;/h2&gt;&#xA;&lt;p&gt;Our SIEM alerted us to a suspicious logon event which needs to be looked at immediately. The alert details were that the IP Address and the Source Workstation name were a mismatch. You are provided a network capture and event logs from the surrounding time around the incident timeframe. Corelate the given evidence and report back to your SOC Manager.&lt;/p&gt;</description>
+      <description>This is one of the HackTheBox&amp;rsquo;s Sherlock - Reaper.
+It&amp;rsquo;s also one of the more terrible and sloppy write-up of mine, I don&amp;rsquo;t recommend you reading this unless there really is no other choice.
+Scenario Our SIEM alerted us to a suspicious logon event which needs to be looked at immediately. The alert details were that the IP Address and the Source Workstation name were a mismatch. You are provided a network capture and event logs from the surrounding time around the incident timeframe.</description>
+      <content:encoded><![CDATA[<p>This is one of the HackTheBox&rsquo;s Sherlock - Reaper.</p>
+<p>It&rsquo;s also one of the more terrible and sloppy write-up of mine, I don&rsquo;t recommend you reading this unless there really is no other choice.</p>
+<h2 id="scenario">Scenario</h2>
+<p>Our SIEM alerted us to a suspicious logon event which needs to be looked at immediately. The alert details were that the IP Address and the Source Workstation name were a mismatch. You are provided a network capture and event logs from the surrounding time around the incident timeframe. Corelate the given evidence and report back to your SOC Manager.</p>
+<h2 id="tasks">Tasks</h2>
+<ol>
+<li>What is the IP Address for Forela-Wkstn001?</li>
+<li>What is the IP Address for Forela-Wkstn002?</li>
+<li>What is the username of the account whose hash was stolen by attacker?</li>
+<li>What is the IP Address of Unknown Device used by the attacker to intercept credentials?</li>
+<li>What was the fileshare navigated by the victim user account?</li>
+<li>What is the source port used to log on to target workstation using the compromised account?</li>
+<li>What is the Logon ID for the malicious session?</li>
+<li>The detection was based on the mismatch of hostname and the assigned IP Address. What is the workstation name and the source IP Address from which the malicious logon occur?</li>
+<li>At what UTC time did the malicious logon happen?</li>
+<li>What is the share Name accessed as part of the authentication process by the malicious tool used by the attacker?</li>
+</ol>
+<h2 id="folder-structure">Folder Structure</h2>
+<pre tabindex="0"><code>Reaper
+	security.evtx
+	ntlmrelay.pcapng
+</code></pre><p>Thus implying I am pretty much looking at an NTLM Relay Attack case.</p>
+<h2 id="ntlm-relay-attack">NTLM Relay Attack</h2>
+<p>Please see this explanation from <a href="https://0xdf.gitlab.io/2024/08/22/htb-sherlock-reaper.html#ntlm-relay-attack">0xdf</a> and <a href="https://youtu.be/He3PWdCQvzo">this video</a>, also. They would explain it better than I would, as Windows ain&rsquo;t my forte.</p>
+<h2 id="ntlm">NTLM</h2>
+<p></p>
+<p>NTLM uses a challenge-response mechanism:</p>
+<ol>
+<li>Client says &ldquo;I want to authenticate&rdquo;</li>
+<li>Server sends a random <strong>challenge</strong> (nonce)</li>
+<li>Client responds with a hash derived from their password + the challenge</li>
+<li>Server (or a DC) verifies the response</li>
+</ol>
+<h2 id="for-this-case">For this case</h2>
+<p>At this point, the victim has likely typoed some kind of UNC path for the domain controller as <code>\\D\</code> instead of <code>\\DC\</code>, and the attacker has responded to say that it is their IP.</p>
+<p>It was LLMNR poisoning</p>
+<blockquote>
+<p>A common technique is to poison LLMNR. When a host on a Windows domain tries to visit a host by DNS name, it first queries DNS, but if that fails, it tries link-local multicast name resolution (LLMNR).</p>
+</blockquote>
+<h3 id="llmnr">LLMNR</h3>
+<p>LLMNR (Link-Local Multicast Name Resolution) is a Windows protocol that acts as a fallback when DNS resolution fails. If a machine tries to resolve a hostname and the DNS server cannot find it, Windows automatically broadcasts an LLMNR query to every machine on the local network segment asking &ldquo;does anyone know where this host is?&rdquo;</p>
+<p>NBT-NS (NetBIOS Name Service) is an older protocol that serves the same fallback purpose. Both are enabled by default on Windows.</p>
+<p>The problem: any machine on the network can respond to these broadcasts — and Windows will trust the first response it gets.</p>
+<h2 id="overview">Overview</h2>
+<p><em>This section was mainly cited from HackTheBox write-up on this box itself. You can see the reference link at the end of the article</em></p>
+<p>We have three hosts: 001 (Task 1), 002 (Task 2), and Unknown - whose IP ends with 135, along with some random data - which is probably our threat actor.</p>
+<p></p>
+<p>Filtering <code>smb2</code> and the IP ends with 135 as source IP:</p>
+<p></p>
+<p>And at the same time, in event logs:</p>
+<p></p>
+<p>In this specific event, we have multiple indicators that an NTLM relay attack did occur and authentication was conducted from the attacker&rsquo;s machine using stolen credentials.
+The first indicator we see is that Security ID Says it is NULL SID and we have no Logon ID, LogonGUID is also null.
+In network information, we can see that the source workstation says WKSTN002. In IP address we see 172.17.79.135. (Suspicious!)
+Workstation002 has an IP address of 172.17.79.136, but it shows .135, which was an unknown device.
+Another indicator we see is that the log-on process says it&rsquo;s NTLMSSP, which we confirmed from our network traffic analysis.
+This confirms that the unknown device stole credentials from wkstn002 and used them to log on to wkstn001.</p>
+<p>Therefore, from the logs, we can conclude that:</p>
+<ul>
+<li>Arthur Kyle on Wkstn002 had hashes stolen by the attacker. One way this can happen is if the user had a typo when navigating to file share and the attacker was running responder to intercept traffic in the environment. (We&rsquo;ll discuss this later.)</li>
+<li>The hashes stolen by the attacker were then immediately relayed to the target system, which in our case, is Wkstn001.</li>
+<li>The attacker authenticates and logs in to the target machine(Wkstn001 using the <code>arthur.kyle</code> account) and then dumps the SAM Hashes from the remote machine. This is the default behavior of <a href="https://github.com/fortra/impacket/blob/master/examples/ntlmrelayx.py">ntlmrelayx</a> tool from impacket used for this purpose. After this, they can log on to the machine with the primary user account of that machine whose hash was dumped remotely.</li>
+</ul>
+<h2 id="task-1">Task 1</h2>
+<p>What is the IP Address for Forela-Wkstn001?</p>
+<p></p>
+<p>Answer: 172.17.79.129</p>
+<h2 id="task-2">Task 2</h2>
+<p>What is the IP Address for Forela-Wkstn002?</p>
+<p></p>
+<p>Answer: 172.17.79.136</p>
+<h2 id="task-3">Task 3</h2>
+<p>What is the username of the account whose hash was stolen by attacker?</p>
+<p></p>
+<p>Answer: <code>arthur.kyle</code></p>
+<h2 id="task-4">Task 4</h2>
+<p>What is the IP Address of Unknown Device used by the attacker to intercept credentials?</p>
+<p>According to the image above, it&rsquo;s <code>172.17.79.135</code></p>
+<h2 id="task-5">Task 5</h2>
+<p>What was the fileshare navigated by the victim user account?</p>
+<p>Answer: <code>\\DC01\Trip</code>. It&rsquo;s apparently unclear why is this the correct answer (it make more sense when you actually look at the whole thing, but I still do not have a verbal explanation for this)</p>
+<p></p>
+<h2 id="task-6">Task 6</h2>
+<p>What is the source port used to log on to target workstation using the compromised account?</p>
+<p>Refer to the image in task 3. It&rsquo;s 40252</p>
+<h2 id="task-7">Task 7</h2>
+<p>What is the Logon ID for the malicious session?</p>
+<p>Refer to the image in task 3. It&rsquo;s 0x64A799</p>
+<h2 id="task-8">Task 8</h2>
+<p>The detection was based on the mismatch of hostname and the assigned IP Address. What is the workstation name and the source IP Address from which the malicious logon occur?</p>
+<p></p>
+<p>Answer: FORELA-WKSTN002, 172.17.79.135</p>
+<h2 id="task-9">Task 9</h2>
+<p>At what UTC time did the malicious logon happen?</p>
+<p>Look at the logon event happen right before the share file:</p>
+<p></p>
+<p>At the section <code>TimeCreated SystemTime</code>, if the field ended with <code>Z</code>, it&rsquo;s UTC time.
+Answer: 2024-07-31 04:55:16</p>
+<h2 id="task-10">Task 10</h2>
+<p>What is the share name accessed as part of the authentication process by the malicious tool used by the attacker?</p>
+<p>Answer: <code>\\*\IPC$</code>. It&rsquo;s in windows event logs. That <code>*</code> was supposed to be an IP <code>172.17.19.129</code>, it&rsquo;s unknown why it was logged that way.</p>
+<h2 id="tips">Tips</h2>
+<p>If you feel stuck, maybe don&rsquo;t read others&rsquo; write-up yet. Try HackTheBox hints first. I made that mistake the first time, as the hints were rather clear-cut, and it does get you to the desired destination.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://www.hackthebox.com/blog/ntlm-relay-attack-detection">https://www.hackthebox.com/blog/ntlm-relay-attack-detection</a></li>
+<li><a href="https://0xdf.gitlab.io/2024/08/22/htb-sherlock-reaper.html">https://0xdf.gitlab.io/2024/08/22/htb-sherlock-reaper.html</a></li>
+</ul>
+]]></content:encoded>
     </item>
+    
     <item>
       <title>How to recover deleted files on usb or memory card</title>
       <link>http://localhost:1313/posts/file_recovery/</link>
       <pubDate>Sat, 21 Feb 2026 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/file_recovery/</guid>
-      <description>&lt;h1 id=&#34;tldr&#34;&gt;TLDR&lt;/h1&gt;&#xA;&lt;p&gt;Stop using both the usb and memory card at once. Else, it will be next to impossible to recover anything back, since the data cells got overwritten, instead of just being &amp;ldquo;unlisted&amp;rdquo;.&lt;/p&gt;&#xA;&lt;p&gt;On Window (Linux), you can just install Recuva (extundelete or fatcat) for free and point the app to your usb or memory card, you&amp;rsquo;re welcome. However, I would still prefer a more sure-fire way to preserve my data, hence the blog.&lt;/p&gt;</description>
+      <description>TLDR Stop using both the usb and memory card at once. Else, it will be next to impossible to recover anything back, since the data cells got overwritten, instead of just being &amp;ldquo;unlisted&amp;rdquo;.
+On Window (Linux), you can just install Recuva (extundelete or fatcat) for free and point the app to your usb or memory card, you&amp;rsquo;re welcome. However, I would still prefer a more sure-fire way to preserve my data, hence the blog.</description>
+      <content:encoded><![CDATA[<h1 id="tldr">TLDR</h1>
+<p>Stop using both the usb and memory card at once. Else, it will be next to impossible to recover anything back, since the data cells got overwritten, instead of just being &ldquo;unlisted&rdquo;.</p>
+<p>On Window (Linux), you can just install Recuva (extundelete or fatcat) for free and point the app to your usb or memory card, you&rsquo;re welcome. However, I would still prefer a more sure-fire way to preserve my data, hence the blog.</p>
+<h1 id="introduction">Introduction</h1>
+<p>Dear my future-self and future-comers, I hope you won&rsquo;t need this. But, if you do, this guide has your back.</p>
+<p>Godspeed!</p>
+<h1 id="before-we-begin">Before we begin&hellip;</h1>
+<p>Note that, while you are messing with your files in either Linux and Windows, anything deleted on detachable memory will be stored in their respective trash bins.</p>
+<p>On Windows, that will be in your usual trash bin.</p>
+<p>On Linux, however, to make sure people don&rsquo;t mess things up by accident, it will be stored in a hidden folder that look similar to <code>.Trash-1000</code> within that detachable device. In order to see the folder, you need to enable Hidden Files in your Files Manager. And, for deleting it, you can not use the GUI, but instead, open the Terminal within that USB and <code>sudo rm- rf .Trash-1000</code> to delete permanently (Yes, I wish there is a less destructive command, like <code>rm -rd</code>, but it is really the only command you can use&hellip;).
+<em><strong>Please only attempt this when you know exactly what you are doing.</strong></em></p>
+<h1 id="recovery-steps">Recovery steps</h1>
+<p>First, stop using your cards/usb (from now on, I will only mention the usb, but the steps for cards are still identical) at once, to minimize any writing activity on them. Then set permission to read-only.</p>
+<p>Next, we need to image the drive.</p>
+<h2 id="on-linux">On Linux</h2>
+<p>Use ddrescue OR dd (it&rsquo;s on linux by default, but I recommend using ddrescue because it&rsquo;s more straightforward)</p>
+<pre tabindex="0"><code>sudo ddrescue /dev/sdX usb_image.img usb_image.log
+</code></pre><p>Or:</p>
+<pre tabindex="0"><code>sudo dd if=/dev/sdX of=usb_image.img bs=4M status=progress conv=noerror,sync
+</code></pre><p>*change the sdX by your actual drive listed by <code>lsblk</code></p>
+<p>Now, try either on the image file that you just create:</p>
+<ul>
+<li>testdisk: When you want to preserve file names.</li>
+<li>photorec: When testdisk does not work, and you don&rsquo;t mind file names are messed up.</li>
+<li>If you can determine that your disks are either any <code>FAT</code> or any <code>ext</code>, try accordingly: extundelete or fatcat</li>
+</ul>
+<h2 id="windows">Windows</h2>
+<p>Download FTK Imager (proprietary, but free for personal use, you just need to fill in a form) for imaging disk:</p>
+<pre tabindex="0"><code>File -&gt; Create Disk Image -&gt; Physical Drive -&gt; select your USB -&gt; Output as raw (.dd or .img)
+</code></pre><p>After you have the image, use either Autopsy (the proper DFIR way) or Recuva (when you don&rsquo;t really need to know how to use Autopsy)</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>The tutorial did not cover any edge cases&hellip; I really hope you don&rsquo;t have to encounter them.</p>
+<p>Good luck!</p>
+]]></content:encoded>
     </item>
+    
     <item>
       <title>Revive FlareVM Network Connection (VirtualBox)</title>
       <link>http://localhost:1313/posts/flarevm_network/</link>
       <pubDate>Thu, 11 Sep 2025 00:00:00 +0700</pubDate>
+      
       <guid>http://localhost:1313/posts/flarevm_network/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;)&lt;/li&gt;&#xA;&lt;li&gt;The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues&lt;/li&gt;&#xA;&lt;li&gt;A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;virtualbox-network-setting-walkthrough&#34;&gt;VirtualBox network setting walkthrough&lt;/h1&gt;&#xA;&lt;p&gt;You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &amp;ldquo;Intel&amp;hellip; Desktop&amp;rdquo;, or if you don&amp;rsquo;t know what to choose, just leave the default option.&lt;/p&gt;</description>
+      <description>Introduction Normally, installing a FlareVM won&amp;rsquo;t mutate your network connection. However, for some reason, I wasn&amp;rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:
+Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&amp;hellip;) The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues A driver &amp;ldquo;Other&amp;rdquo; was spotted to be missing after FlareVM completely finish its installation VirtualBox network setting walkthrough You may like to switch to either NAT or Bridged Adapter.</description>
+      <content:encoded><![CDATA[<h1 id="introduction">Introduction</h1>
+<p>Normally, installing a FlareVM won&rsquo;t mutate your network connection. However, for some reason, I wasn&rsquo;t able to access network inside the VM. This could have caused by one or a couple of reasons:</p>
+<ul>
+<li>Non-fatal errors occured during installation (I was supposed to look at the screen during all process, but it took 6h to finish&hellip;)</li>
+<li>The recovery function of Windows got forced shut down to fulfill installation prerequisites, so it can not intervene and autofix the network issues</li>
+<li>A driver &ldquo;Other&rdquo; was spotted to be missing after FlareVM completely finish its installation</li>
+</ul>
+<h1 id="virtualbox-network-setting-walkthrough">VirtualBox network setting walkthrough</h1>
+<p>You may like to switch to either NAT or Bridged Adapter. In the Adapter type, choose something along the line of &ldquo;Intel&hellip; Desktop&rdquo;, or if you don&rsquo;t know what to choose, just leave the default option.</p>
+<p>If one of them does work, you may stop reading here.</p>
+<p>If you are not happy with only one work or both just does not provide you with internet connection, we are moving onto the next step.</p>
+<h1 id="device-manager">Device Manager</h1>
+<p>Open Device Manager, and see if any of your driver got the yellow exclamation mark ⚠️ or something similar. If there is, this is a driver problem.</p>
+<h1 id="install-driver-in-virtualbox">Install Driver in VirtualBox</h1>
+<p>The drivers for VirtualBox&rsquo;s virtual hardware are contained in the Guest Additions ISO image.</p>
+<h2 id="inserting-guest-additions-cd-image">Inserting Guest Additions CD Image</h2>
+<p>With your FlareVM running, click on the VirtualBox menu: Devices &gt; Insert Guest Additions CD Image.</p>
+<p>A virtual CD will be mounted inside your FlareVM. An auto-play dialog should pop up.</p>
+<h2 id="run-the-installer">Run the Installer</h2>
+<p>If the auto-play pops up, run VBoxWindowsAdditions.exe</p>
+<p>If it doesn&rsquo;t, open File Explorer (&ldquo;This PC&rdquo;), and you will see a new CD drive called VirtualBox Guest Additions. Double-click to open it and run VBoxWindowsAdditions.exe.</p>
+<p>After the program complete, reboot your machine.</p>
+<h2 id="verify-after-reboot">Verify After Reboot</h2>
+<p>After FlareVM restarts, go back to Device Manager.</p>
+<p>Under Network adapters, you should now see a properly installed network adapter without any yellow exclamation mark.</p>
+<p>Your network connection should now be active. Try both NAT and Bridged modes again.</p>
+<p>If it still does not work, we move on to the next step.</p>
+<h1 id="network-refresh">Network refresh</h1>
+<p>Type this in your Administrator Terminal:</p>
+<pre tabindex="0"><code>ipconfig /flushdns
+ping google.com
+</code></pre><p>If it works, congrats, you may stop here ~
+Else, let&rsquo;s continue.</p>
+<h1 id="dns-server">DNS Server</h1>
+<ol>
+<li>
+<p>Go to Control Panel &gt; Network and Internet &gt; Network and Sharing Center. On the left pane, click on Change Adapter Settings.
+<img loading="lazy" src="/posts/flarevm_network/images/Change_adapter_settings.png" type="" alt="alt text"  /></p>
+</li>
+<li>
+<p>Then right-click on Ethernet &gt; Properties
+<img loading="lazy" src="/posts/flarevm_network/images/Ethernet_prop.png" type="" alt="alt text"  /></p>
+</li>
+<li>
+<p>In Ethernet Properties window, single-click on &ldquo;Internet Protocol Version 4 (TCP/IPv4)&rdquo;, then click on the Properties button underneath it.</p>
+</li>
+<li>
+<p>On the pop-up window, check on &ldquo;Obtain IP address automatically&rdquo; and &ldquo;Use the following DNS server address&rdquo;. We will use <code>8.8.8.8</code> (Google DNS) and <code>1.1.1.1</code> (Cloudflare DNS). Click OK and close all windows
+<img loading="lazy" src="/posts/flarevm_network/images/props_and_config.png" type="" alt="alt text"  /></p>
+</li>
+<li>
+<p>Type in Admin Terminal:</p>
+</li>
+</ol>
+<pre tabindex="0"><code>ipconfig /release
+ipconfig /renew
+ipconfig /flushdns
+</code></pre><ol start="6">
+<li>Reboot</li>
+</ol>
+]]></content:encoded>
     </item>
+    
   </channel>
 </rss>
