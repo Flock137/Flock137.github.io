@@ -19,10 +19,10 @@ params:
       url: https://github.com/Flock137
     - name: linkedin
       url: https://www.linkedin.com/in/ha-dinh-53696429a/
-    - name: X
-      url: https://x.com/Flo_ck137
     - name: facebook
       url: https://www.facebook.com/thanh.ha.inh.340510
+    - name: rss
+      url: https://flock137.github.io/index.xml
 
 menu:
   main:
