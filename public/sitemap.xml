@@ -2,8 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/tags/english/</loc>
+    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2026-04-21T00:00:00+07:00</lastmod>
+    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/non-tech/english/</loc>
+    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/non-tech/</loc>
+    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/non-tech/</loc>
+    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/forensics/</loc>
     <lastmod>2026-04-21T00:00:00+07:00</lastmod>
@@ -15,9 +30,6 @@
     <lastmod>2026-04-21T00:00:00+07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/telly/</loc>
-    <lastmod>2026-04-21T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2026-04-21T00:00:00+07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/midnightcrash/</loc>
