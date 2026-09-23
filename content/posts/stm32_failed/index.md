@@ -8,6 +8,7 @@ tags:
   - Hardware
   - Debug
   - Linux
+  - stm32
 ---
 
 ## Introduction  
