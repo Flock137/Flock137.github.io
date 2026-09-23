@@ -12,7 +12,7 @@ tags:
   - Arch 
 ---
 
-I forgot how did I compile all of that in those two stm32 posts, lol. The post will be very brief since this one is just a quick guide for me, since I kinda panic when I realize that I can't quite recall what I have written myself...
+I forgot how did I compile all of that in those two stm32 posts, lol. The post will be very brief because this one is just a quick guide for me. I was kinda panic when I realized that I couldn't quite recall what I have written myself...
 
 
 ## Full Pre-requisites 
