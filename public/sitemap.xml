@@ -2,31 +2,40 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/tags/english/</loc>
-    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
+    <lastmod>2026-09-28T00:00:00+07:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/non-tech/english/</loc>
-    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
+    <loc>http://localhost:1313/posts/cyber_apocalypse_2026/</loc>
+    <lastmod>2026-09-28T00:00:00+07:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/non-tech/</loc>
-    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/non-tech/</loc>
-    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2026-07-07T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/forensics/</loc>
-    <lastmod>2026-04-21T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/linux/</loc>
-    <lastmod>2026-04-21T00:00:00+07:00</lastmod>
+    <loc>http://localhost:1313/tags/hardware/</loc>
+    <lastmod>2026-09-28T00:00:00+07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2026-09-28T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2026-09-28T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/write-up/</loc>
+    <lastmod>2026-09-28T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/arch/</loc>
+    <lastmod>2026-09-23T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/arm/</loc>
+    <lastmod>2026-09-23T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/stm32_build-flash/</loc>
+    <lastmod>2026-09-23T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/linux/</loc>
+    <lastmod>2026-09-23T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/stm32/</loc>
+    <lastmod>2026-09-23T00:00:00+07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/forensics/</loc>
     <lastmod>2026-04-21T00:00:00+07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/telly/</loc>
@@ -41,16 +50,7 @@
     <loc>http://localhost:1313/tags/windows/</loc>
     <lastmod>2026-04-17T00:00:00+07:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/arm/</loc>
-    <lastmod>2026-03-12T00:00:00+07:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/tags/assembly/</loc>
-    <lastmod>2026-03-12T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/hardware/</loc>
-    <lastmod>2026-03-12T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/stm32/</loc>
     <lastmod>2026-03-12T00:00:00+07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/arm_disasm/</loc>
@@ -100,9 +100,6 @@
   </url><url>
     <loc>http://localhost:1313/daily-tips/diff/</loc>
     <lastmod>2025-12-18T00:00:00+07:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/arch/</loc>
-    <lastmod>2025-12-01T00:00:00+07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/daily-tips/check_corrupted_flac/</loc>
     <lastmod>2025-12-01T00:00:00+07:00</lastmod>
