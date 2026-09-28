@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Write-Up on Flock137</title>
+		<link>http://localhost:1313/tags/write-up/</link>
+		<description>Recent content in Write-Up on Flock137</description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Mon, 28 Sep 2026 00:00:00 +0700</lastBuildDate>
+		
+			<atom:link href="http://localhost:1313/tags/write-up/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>HackTheBox&#39;s Cyber Apocalypse 2026 - Hardware</title>
+				<link>http://localhost:1313/posts/cyber_apocalypse_2026/</link>
+				<pubDate>Mon, 28 Sep 2026 00:00:00 +0700</pubDate>
+				<guid>http://localhost:1313/posts/cyber_apocalypse_2026/</guid>
+				<description>&lt;p&gt;Disclaimer: This write-up will be a bit brief. I will comeback to &lt;em&gt;actually&lt;/em&gt; finish this write-up later. Ughh, should have written it when I have just finished:(&lt;/p&gt;&#xA;&lt;h2 id=&#34;cadence-in-the-cord&#34;&gt;Cadence in the cord&lt;/h2&gt;&#xA;&lt;p&gt;Description:&#xA;With the Brine Signet shattered, every house hunts whatever might make its story law. Lady Seralyne — the Velvet Spider of Suncourt — sells what she claims is the dragon&amp;rsquo;s true note: not the lost thing itself, only a counterfeit cadence arranged to be believed, and a wavering house is ready to buy it as proof its claim rings true. We cut one of her sendings from the wire first. Read the pleasant words; then attend to the silences between them, and expose the forgery she is truly selling.&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>
