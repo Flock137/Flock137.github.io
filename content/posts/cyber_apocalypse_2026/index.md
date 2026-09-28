@@ -20,7 +20,7 @@ For this challenge we will be provided a `capture.sr` file, which is a sigrok fi
 
 After you done with that open up the file in sigrok. You should see the two channels named 0 and D1. And, by looking at it, I concluded that it was an UART signal. Use the "Decoder Selector" (the yellow-green standing wave icon) and pick UART. Then set TX as D1 and RX as 0. In order to know the exact baud rate, you need to measure the shortest pulse, by clicking on the blue flags icon and drag them around. Like this:
 
-![[images/sigrok-blue-flags-icon.png]]
+![](images/sigrok-blue-flags-icon.png)
 
 Then use the large value minus the small value, and compare that result (bit duration) to a [baud rate table](https://lucidar.me/en/serialib/most-used-baud-rates-table/), we got 9600 baud. Finally, optionally, set the data format to ASCII, to read the red herring (or hint) message:) (the [underscores](https://underscores.plus/) were my own notation for the space, initially)
 
@@ -40,7 +40,7 @@ Took me a good 2 hours of frustration to figure this out.
 
 You need to pay attention to what the last 3 sentences were implying at. The "rest" here means the signal line in-between the words' pulses. Like, the signal cover by the blue area below: 
 
-![[images/rests.png]]
+![](images/rests.png)
 
 Long rest count as 1 and short rest count as 0. Collect all of the signal 1 and 0, we have a binary string: 
 
@@ -174,6 +174,6 @@ For this one, my own explanation of the challenge won't be suffice and you shoul
 
 This is my image of the flag:
 
-![[images/flag.png]]
+![](images/flag.png)
 
 > HTB{3v3ry_crow_w3ar5_h3r_3y3s}
