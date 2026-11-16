@@ -1,5 +1,5 @@
 ---
-title: Rough TivaC code example write-up  
+title: Using switch interrupt to change the state of TivaC's LED (Rough Write-up)
 date: 2026-11-09
 draft: false
 showToc: true 
